@@ -1,0 +1,25 @@
+{
+  "run_id": null,
+  "experiment": null,
+  "status": null,
+  "git_commit": null,
+  "git_dirty": null,
+  "config": null,
+  "config_sha256": null,
+  "labels_sha256": null,
+  "command": null,
+  "started_at": null,
+  "finished_at": null,
+  "duration_seconds": null,
+  "hardware": {
+    "device": null,
+    "system": null,
+    "architecture": null
+  },
+  "environment": {
+    "python": null,
+    "packages": {}
+  },
+  "metrics": {},
+  "output_dir": null
+}

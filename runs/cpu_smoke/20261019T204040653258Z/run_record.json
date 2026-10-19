@@ -1,0 +1,53 @@
+{
+  "run_id": "20261019T204040653258Z",
+  "experiment": "cpu_smoke",
+  "status": "completed",
+  "git_commit": "d1064e6838d5e961a5cb06a64e5095ec3eefe0b9",
+  "git_dirty": true,
+  "config": {
+    "experiment": {
+      "name": "cpu_smoke",
+      "seed": 42
+    },
+    "data": {
+      "dataset": "synthetic",
+      "dataset_version": "smoke-v1",
+      "split_version": "smoke-v1"
+    },
+    "model": {
+      "name": "smoke_dummy",
+      "checkpoint_revision": null
+    },
+    "runtime": {
+      "device": "cpu"
+    },
+    "paths": {
+      "labels": "configs/labels.json",
+      "output_dir": "runs/cpu_smoke"
+    }
+  },
+  "config_sha256": "cafe3f7ced4a11515271d91c433a006f47417eb7607e79254dbac677910beea5",
+  "labels_sha256": "5cf7d68237eab4a39790dda4faf59af6d31bff7c927564e55272e890206902c5",
+  "command": "/home/ali-zbeeb/Desktop/Arabic-Dialect-Identification/.venv/bin/python /home/ali-zbeeb/Desktop/Arabic-Dialect-Identification/src/smoke.py",
+  "started_at": "2026-10-19T20:40:40.653258+00:00",
+  "finished_at": "2026-10-19T20:40:40.655783+00:00",
+  "duration_seconds": 0.002525,
+  "hardware": {
+    "device": "cpu",
+    "system": "Linux",
+    "architecture": "x86_64"
+  },
+  "environment": {
+    "python": "3.14.4",
+    "packages": {
+      "PyYAML": "6.0.3",
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1"
+    }
+  },
+  "metrics": {
+    "synthetic_examples": 4,
+    "synthetic_accuracy": 0.75
+  },
+  "output_dir": "runs/cpu_smoke/20261019T204040653258Z"
+}

@@ -1,0 +1,19 @@
+experiment:
+  name: cpu_smoke
+  seed: 42
+
+data:
+  dataset: synthetic
+  dataset_version: smoke-v1
+  split_version: smoke-v1
+
+model:
+  name: smoke_dummy
+  checkpoint_revision: null
+
+runtime:
+  device: cpu
+
+paths:
+  labels: configs/labels.json
+  output_dir: runs/cpu_smoke
