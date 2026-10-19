@@ -228,3 +228,8 @@ __marimo__/
 *.pth
 *.ckpt
 *.safetensors
+/runs/
+
+# IntelliJ IDEA
+.idea/
+*.iml
