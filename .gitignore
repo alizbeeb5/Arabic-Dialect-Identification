@@ -229,3 +229,7 @@ __marimo__/
 *.ckpt
 *.safetensors
 /runs/
+
+# IntelliJ IDEA
+.idea/
+*.iml
