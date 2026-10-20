@@ -104,3 +104,6 @@ C_avg remains unavailable until official scoring is implemented and verified.
 
 The fixture contains invented examples; its audio paths do not refer
 to real recordings.
+## Data preparation
+
+See [data preparation instructions](docs/data_preparation.md) for CPU setup, portable storage, resume modes and Colab usage.

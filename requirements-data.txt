@@ -1,0 +1,4 @@
+huggingface_hub==1.33.0
+pyarrow==23.0.1
+soundfile==0.14.0
+numpy==2.1.3
