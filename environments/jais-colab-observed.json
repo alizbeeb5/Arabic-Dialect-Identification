@@ -1,0 +1,17 @@
+{
+  "kind": "observed_direct_dependencies_not_full_environment_lock",
+  "python_version": null,
+  "gpu": "Tesla T4",
+  "dtype": "torch.float16",
+  "model_id": "IFM/Jais-ASR",
+  "model_revision": "1323995fa189c479369a3929be0e95039eba5cba",
+  "packages": {
+    "torch": "2.11.0+cu130",
+    "transformers": "5.16.1",
+    "accelerate": "1.15.0",
+    "numpy": "2.1.3",
+    "soundfile": "0.14.0",
+    "soxr": "1.1.0"
+  },
+  "source_bundle_sha256": "464cd908121b354eaf4a8bf12c07f54505e93827b7a0cef8bf9073d8265875b7"
+}

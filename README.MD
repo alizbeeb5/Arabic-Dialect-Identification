@@ -107,3 +107,10 @@ to real recordings.
 ## Data preparation
 
 See [data preparation instructions](docs/data_preparation.md) for CPU setup, portable storage, resume modes and Colab usage.
+
+## Jais-ASR inference
+
+See [the Task 10 adapter instructions](docs/jais_adapter.md) for the pinned
+model, separate environment, portable batch command, resumable cache and
+Colab module check. [The smoke evidence review](reports/jais_smoke_review.md)
+distinguishes notebook GPU evidence from packaged-module validation.
