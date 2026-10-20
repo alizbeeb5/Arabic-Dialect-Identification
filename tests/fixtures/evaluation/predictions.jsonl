@@ -1,0 +1,4 @@
+{"clip_id": "fixture_a", "predicted_label": "LEB", "model_revision": "fixture-model-v1", "status": "ok"}
+{"clip_id": "fixture_b", "predicted_label": "EGY", "model_revision": "fixture-model-v1", "status": "ok"}
+{"clip_id": "fixture_c", "predicted_label": "EGY", "model_revision": "fixture-model-v1", "status": "ok"}
+{"clip_id": "fixture_d", "predicted_label": null, "model_revision": "fixture-model-v1", "status": "audio_error", "error_code": "synthetic_decode_failure"}
