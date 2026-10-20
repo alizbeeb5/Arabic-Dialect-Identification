@@ -11,6 +11,7 @@ import json
 import os
 import types
 from dataclasses import asdict, dataclass, field
+from itertools import islice
 from pathlib import Path, PurePosixPath
 
 import numpy as np
@@ -27,7 +28,7 @@ CHECKPOINT_SHA256 = {
     "normalizer.ckpt": "30209fa89aad9f7fa007ea2ef17e33ba45c6eacbf7160b581d1946b49dfe6c04",
 }
 # Bump when a code change alters feature values for the same audio and config.
-FEATURE_CODE_VERSION = "acoustic-features-v1"
+FEATURE_CODE_VERSION = "acoustic-features-v2"
 DOWNSAMPLE = 4
 
 
@@ -305,7 +306,9 @@ class AcousticEncoder(torch.nn.Module):
             n_frames = torch.tensor([len(src) for src in srcs], device=self.device)
             longest = int(n_frames.max())
             batch = torch.stack([F.pad(src, (0, 0, 0, longest - len(src))) for src in srcs])
-            final, hidden = self.model[1](batch, n_frames.to(batch.dtype) / longest)
+            # SpeechBrain reconstructs integer lengths and builds its attention
+            # mask from these values. BF16 rounds frame counts above 256.
+            final, hidden = self.model[1](batch, n_frames.float() / longest)
         stacked = torch.stack([*hidden, final])[list(self.layers)].float()
         return stacked, frame_mask(n_frames, longest), n_frames
 
@@ -325,6 +328,8 @@ class AcousticEncoder(torch.nn.Module):
         Clips are grouped by length to limit padding work; batching does not
         change values beyond the documented tolerance.
         """
+        if batch_size <= 0:
+            raise ValueError("batch_size must be positive")
         clip_ids = [clip_id for clip_id, _ in clips]
         if len(set(clip_ids)) != len(clip_ids):
             raise ValueError("Duplicate clip_id in extraction request")
@@ -340,19 +345,49 @@ class AcousticEncoder(torch.nn.Module):
             raise FloatingPointError("Nonfinite pooled features")
         return ClipFeatures(clip_ids, features, n_frames, list(self.layer_names))
 
-    def extract_manifest(self, rows, audio_root, batch_size=8):
-        """Extract features for manifest rows (clip_id, audio_path[, audio_sha256])."""
-        clips, hashes = [], []
-        for row in rows:
-            path = resolve_audio_path(audio_root, row["audio_path"])
-            digest = sha256_file(path)
-            if row.get("audio_sha256") not in (None, digest):
-                raise ValueError(f"Audio content differs from manifest: {row['clip_id']}")
-            clips.append((row["clip_id"], load_waveform(path, self.config)))
-            hashes.append(digest)
-        result = self.extract(clips, batch_size=batch_size)
-        result.audio_sha256 = hashes
-        return result
+    def iter_extract_manifest(self, rows, audio_root, batch_size=8, chunk_size=128):
+        """Yield pooled chunks in input order, decoding at most chunk_size clips.
+
+        Write each yielded result to FeatureCache before requesting the next
+        chunk to keep both waveform and pooled-feature memory bounded.
+        """
+        if batch_size <= 0 or chunk_size <= 0:
+            raise ValueError("batch_size and chunk_size must be positive")
+        rows = iter(rows)
+        seen = set()
+        while chunk := list(islice(rows, chunk_size)):
+            clips, hashes = [], []
+            for row in chunk:
+                clip_id = row["clip_id"]
+                if clip_id in seen:
+                    raise ValueError("Duplicate clip_id in extraction request")
+                seen.add(clip_id)
+                path = resolve_audio_path(audio_root, row["audio_path"])
+                digest = sha256_file(path)
+                if row.get("audio_sha256") not in (None, digest):
+                    raise ValueError(f"Audio content differs from manifest: {clip_id}")
+                clips.append((clip_id, load_waveform(path, self.config)))
+                hashes.append(digest)
+            result = self.extract(clips, batch_size=batch_size)
+            result.audio_sha256 = hashes
+            del clips  # release decoded waveforms before handing off pooled features
+            yield result
+
+    def extract_manifest(self, rows, audio_root, batch_size=8, chunk_size=128):
+        """Collect pooled features for a small manifest; audio is decoded in chunks.
+
+        The returned features still occupy memory for the entire request. Use
+        iter_extract_manifest and cache.write for full-dataset extraction.
+        """
+        results = list(self.iter_extract_manifest(rows, audio_root, batch_size, chunk_size))
+        if not results:
+            return ClipFeatures([], np.empty((0, len(self.layers), self.output_dim), dtype=np.float32),
+                                np.empty(0, dtype=np.int64), list(self.layer_names))
+        return ClipFeatures(
+            [clip_id for result in results for clip_id in result.clip_ids],
+            np.concatenate([result.features for result in results]),
+            np.concatenate([result.n_frames for result in results]), list(self.layer_names),
+            [digest for result in results for digest in result.audio_sha256])
 
     def provenance(self):
         return {"encoder": self.config.encoder, "checkpoint": self.checkpoint,
@@ -400,6 +435,7 @@ class FeatureCache:
         self.index_path = self.root / "index.jsonl"
 
     def index(self):
+        self._check_config()
         if not self.index_path.exists():
             return {}
         rows = [json.loads(line) for line in self.index_path.read_text(encoding="utf-8").splitlines() if line]
@@ -408,7 +444,7 @@ class FeatureCache:
     # Provenance fields that determine feature values; descriptive fields may change.
     IDENTITY_FIELDS = ("feature_config_sha256", "checkpoint", "layer_names", "output_dim")
 
-    def _check_config(self):
+    def _check_config(self, create=False):
         path = self.root / "config.json"
         if path.exists():
             stored = json.loads(path.read_text(encoding="utf-8"))
@@ -416,7 +452,10 @@ class FeatureCache:
             if differs:
                 raise ValueError(f"Cache {path} was built with different {', '.join(differs)}; "
                                  "use another OUTPUT_ROOT or remove that cache directory")
-        else:
+        elif self.index_path.exists():
+            raise ValueError(f"Cache {self.root} has an index but no config.json; "
+                             "restore its provenance or use another OUTPUT_ROOT")
+        elif create:
             self.root.mkdir(parents=True, exist_ok=True)
             path.write_bytes(json.dumps(self.provenance, indent=2, sort_keys=True).encode("utf-8") + b"\n")
 
@@ -426,7 +465,7 @@ class FeatureCache:
             raise ValueError("Cache writes need the audio_sha256 of every clip")
         if result.layer_names != self.provenance["layer_names"]:
             raise ValueError("Feature layers differ from the cache provenance")
-        self._check_config()
+        self._check_config(create=True)
         existing = self.index()
         keys = [clip_cache_key(c, h, self.provenance) for c, h in zip(result.clip_ids, result.audio_sha256)]
         new = []
@@ -468,6 +507,8 @@ class FeatureCache:
         features, n_frames = [], []
         for clip_id in clip_ids:
             entry = index[clip_id]
+            if entry["cache_key"] != clip_cache_key(clip_id, entry["audio_sha256"], self.provenance):
+                raise ValueError(f"Cache key does not match provenance for {clip_id}")
             data = parts.get(entry["part"])
             if data is None:
                 data = parts[entry["part"]] = dict(np.load(self.root / entry["part"]))
@@ -476,7 +517,10 @@ class FeatureCache:
                 raise ValueError(f"Cache index and part file disagree for {clip_id}")
             features.append(data["features"][row])
             n_frames.append(data["n_frames"][row])
-        return ClipFeatures(clip_ids, np.stack(features), np.array(n_frames),
+        values = (np.stack(features) if features else
+                  np.empty((0, len(self.provenance["layer_names"]), self.provenance["output_dim"]),
+                           dtype=np.float32))
+        return ClipFeatures(clip_ids, values, np.array(n_frames, dtype=np.int64),
                             list(self.provenance["layer_names"]),
                             [index[c]["audio_sha256"] for c in clip_ids])
 
@@ -497,6 +541,8 @@ def main(argv=None):
                         help="Hugging Face download cache")
     parser.add_argument("--device")
     parser.add_argument("--batch-size", type=int, default=8)
+    parser.add_argument("--chunk-size", type=int, default=128,
+                        help="Maximum clips decoded and cached at once (default: 128)")
     parser.add_argument("--limit", type=int)
     parser.add_argument("--layers", default="all", help='"all" or comma-separated indices')
     parser.add_argument("--pooling", default="mean", choices=["mean", "mean_std"])
@@ -505,6 +551,8 @@ def main(argv=None):
     args = parser.parse_args(argv)
     if args.output_root is None:
         parser.error("--output-root or OUTPUT_ROOT is required")
+    if args.batch_size <= 0 or args.chunk_size <= 0:
+        parser.error("--batch-size and --chunk-size must be positive")
     layers = "all" if args.layers == "all" else tuple(int(i) for i in args.layers.split(","))
     config = FeatureConfig(layers=layers, pooling=args.pooling, precision=args.precision,
                            max_duration_sec=args.max_duration_sec)
@@ -512,8 +560,9 @@ def main(argv=None):
     cache = FeatureCache(args.output_root, encoder.provenance())
     rows = read_manifest(args.manifest, args.limit)
     todo = cache.missing(rows)
-    if todo:
-        cache.write(encoder.extract_manifest(todo, args.audio_root, batch_size=args.batch_size))
+    for result in encoder.iter_extract_manifest(todo, args.audio_root, batch_size=args.batch_size,
+                                               chunk_size=args.chunk_size):
+        cache.write(result)
     print(f"Cache: {cache.root} ({len(rows)} clips requested, {len(todo)} extracted)")
 
 
