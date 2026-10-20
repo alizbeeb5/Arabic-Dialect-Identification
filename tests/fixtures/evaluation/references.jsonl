@@ -1,0 +1,4 @@
+{"clip_id": "fixture_a", "audio_path": "fixture_a.wav", "label": "LEB", "split": "dev", "source_id": null, "speaker_id": null, "domain": "unknown", "duration_sec": 1.0, "sample_rate_hz": 16000}
+{"clip_id": "fixture_b", "audio_path": "fixture_b.wav", "label": "LEB", "split": "dev", "source_id": null, "speaker_id": null, "domain": "unknown", "duration_sec": 1.0, "sample_rate_hz": 16000}
+{"clip_id": "fixture_c", "audio_path": "fixture_c.wav", "label": "EGY", "split": "dev", "source_id": null, "speaker_id": null, "domain": "unknown", "duration_sec": 1.0, "sample_rate_hz": 16000}
+{"clip_id": "fixture_d", "audio_path": "fixture_d.wav", "label": "EGY", "split": "dev", "source_id": null, "speaker_id": null, "domain": "unknown", "duration_sec": 1.0, "sample_rate_hz": 16000}

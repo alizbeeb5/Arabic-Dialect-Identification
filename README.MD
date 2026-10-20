@@ -63,3 +63,44 @@ are completed.
 
 Downloaded datasets, checkpoints, credentials, and generated run outputs
 stay outside ordinary Git history.
+
+
+## Shared evaluation
+
+Run the evaluator checks from the repository root:
+
+```bash
+python -m unittest discover -s tests -p 'test_evaluate.py' -v
+```
+
+Evaluate the synthetic fixture:
+
+```bash
+python src/evaluation/evaluate.py \
+  --manifest tests/fixtures/evaluation/references.jsonl \
+  --predictions tests/fixtures/evaluation/predictions_shuffled.jsonl \
+  --metadata tests/fixtures/evaluation/metadata.json \
+  --model-name synthetic-fixture \
+  --output-dir reports/evaluation_fixture_v2
+```
+
+Use a new output directory for each run.
+
+Expected fixture results: accuracy 50%, supported-class macro-F1
+0.583333, and coverage 75%.
+
+Outputs:
+- metrics.json: metrics, failure counts, versions, and input/code hashes.
+- confusion_matrix.csv: 20 dialect columns plus failure/missing.
+
+Predictions are matched by clip_id, independent of row order.
+Explicit failures count as incorrect. Missing predictions reject a
+complete evaluation; --allow-incomplete produces a clearly labeled
+diagnostic that retains them in the denominator.
+
+Macro-F1 includes labels with positive reference support, checked
+against the manifest metadata. All 20 labels remain in per-class results.
+C_avg remains unavailable until official scoring is implemented and verified.
+
+The fixture contains invented examples; its audio paths do not refer
+to real recordings.

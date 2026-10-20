@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "dataset_version": "synthetic-evaluator-v1",
+  "split_version": "synthetic-dev-v1",
+  "manifest_sha256": "acfc5c00c0c262b73d78ab54a2a0608a6ac0371dfd4ec230dc8dd510e3b9b1b9",
+  "labels_sha256": "5cf7d68237eab4a39790dda4faf59af6d31bff7c927564e55272e890206902c5",
+  "audio_root": ".",
+  "evaluation_label_sets": {
+    "dev": [
+      "EGY",
+      "LEB"
+    ]
+  },
+  "selection_split": "dev",
+  "source_provenance": {
+    "type": "synthetic",
+    "description": "Invented scoring fixtures; no audio files exist."
+  }
+}
