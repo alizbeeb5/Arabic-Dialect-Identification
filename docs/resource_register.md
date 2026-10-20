@@ -66,10 +66,11 @@ full audio ingestion and overlap checks remain pending.
   and normalizer.ckpt.
 - License: no explicit license declaration found in model metadata;
   unresolved.
-- Status: candidate selected for the pilot; loading, feature extraction,
-  dependency compatibility, and hardware requirements remain unverified.
+- Status: selected for the pilot. Strict loading, feature extraction and
+  CPU/MPS inference verified on 2026-10-20 with speechbrain 1.1.2 and
+  torch 2.14.1; see docs/acoustic_features.md. On a Colab Tesla T4 (fp32,
+  batch 8), peak allocated GPU memory was 2.84 GB at about 45-50 audio-s/s.
 - Pretraining overlap with evaluation recordings: not yet audited.
-- 
 ### AraBEST-RQ download size
 
 - model.ckpt: 1,237,269,115 bytes.

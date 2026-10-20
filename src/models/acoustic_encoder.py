@@ -21,7 +21,11 @@ import torch.nn.functional as F
 ENCODER_NAME = "arabest-rq-300m-6k"
 REPO_ID = "Elyadata/AraBEST-RQ-300M-6k"
 REVISION = "dff453e2b5f72f76211a523b1050691967e5a59b"
-CHECKPOINT_FILES = ("model.ckpt", "normalizer.ckpt")
+# Content hashes of the pinned revision's files, checked before loading.
+CHECKPOINT_SHA256 = {
+    "model.ckpt": "2e9dc6347b93ed7b55c3847c68cfe25947ff4fe21aa7faa9fe5048f15c0ca35a",
+    "normalizer.ckpt": "30209fa89aad9f7fa007ea2ef17e33ba45c6eacbf7160b581d1946b49dfe6c04",
+}
 # Bump when a code change alters feature values for the same audio and config.
 FEATURE_CODE_VERSION = "acoustic-features-v1"
 DOWNSAMPLE = 4
@@ -216,7 +220,7 @@ class AcousticEncoder(torch.nn.Module):
     """Frozen AraBEST-RQ encoder returning frame features or pooled clip features."""
 
     def __init__(self, config=FeatureConfig(), architecture=Architecture(), device=None,
-                 checkpoint_dir=None):
+                 checkpoint_dir=None, expected_sha256=None):
         super().__init__()
         from speechbrain.lobes.features import Fbank
 
@@ -230,7 +234,7 @@ class AcousticEncoder(torch.nn.Module):
             win_length=config.win_length_ms, hop_length=config.hop_length_ms)
         self.checkpoint = {"repo_id": None, "revision": None, "files": {}}
         if checkpoint_dir is not None:
-            self._load_checkpoint(Path(checkpoint_dir))
+            self._load_checkpoint(Path(checkpoint_dir), expected_sha256)
         self.requires_grad_(False)
         self.to(self.device)
         self.eval()
@@ -243,18 +247,27 @@ class AcousticEncoder(torch.nn.Module):
         if config.encoder != ENCODER_NAME or config.checkpoint_revision != REVISION:
             raise ValueError("Only the pinned AraBEST-RQ-300M-6k revision is supported")
         paths = [hf_hub_download(REPO_ID, name, revision=config.checkpoint_revision,
-                                 cache_dir=cache_dir) for name in CHECKPOINT_FILES]
-        encoder = cls(config, Architecture(), device, checkpoint_dir=Path(paths[0]).parent)
+                                 cache_dir=cache_dir) for name in CHECKPOINT_SHA256]
+        encoder = cls(config, Architecture(), device, checkpoint_dir=Path(paths[0]).parent,
+                      expected_sha256=CHECKPOINT_SHA256)
         encoder.checkpoint.update(repo_id=REPO_ID, revision=config.checkpoint_revision)
         return encoder
 
-    def _load_checkpoint(self, directory):
+    def _load_checkpoint(self, directory, expected_sha256=None):
+        hashes = {name: sha256_file(directory / name) for name in CHECKPOINT_SHA256}
+        for name, digest in hashes.items():
+            if expected_sha256 and digest != expected_sha256[name]:
+                path = directory / name
+                raise ValueError(
+                    f"Corrupt or incomplete checkpoint file {path} ({path.stat().st_size} bytes, "
+                    f"sha256 {digest}). Delete the download cache and retry, preferably on local "
+                    "disk rather than a synced drive.")
         state = torch.load(directory / "model.ckpt", map_location="cpu", weights_only=True)
         self.model.load_state_dict(state, strict=True)
         # Sentence normalization uses per-clip statistics; the stored global
         # statistics are loaded for provenance but are not applied.
         self.normalize._load(str(directory / "normalizer.ckpt"))
-        self.checkpoint["files"] = {name: sha256_file(directory / name) for name in CHECKPOINT_FILES}
+        self.checkpoint["files"] = hashes
 
     def to(self, device):
         self.device = torch.device(device)
@@ -392,12 +405,17 @@ class FeatureCache:
         rows = [json.loads(line) for line in self.index_path.read_text(encoding="utf-8").splitlines() if line]
         return {row["clip_id"]: row for row in rows}
 
+    # Provenance fields that determine feature values; descriptive fields may change.
+    IDENTITY_FIELDS = ("feature_config_sha256", "checkpoint", "layer_names", "output_dim")
+
     def _check_config(self):
         path = self.root / "config.json"
         if path.exists():
             stored = json.loads(path.read_text(encoding="utf-8"))
-            if stored != self.provenance:
-                raise ValueError(f"Cache provenance differs from the current encoder: {path}")
+            differs = [key for key in self.IDENTITY_FIELDS if stored.get(key) != self.provenance[key]]
+            if differs:
+                raise ValueError(f"Cache {path} was built with different {', '.join(differs)}; "
+                                 "use another OUTPUT_ROOT or remove that cache directory")
         else:
             self.root.mkdir(parents=True, exist_ok=True)
             path.write_bytes(json.dumps(self.provenance, indent=2, sort_keys=True).encode("utf-8") + b"\n")

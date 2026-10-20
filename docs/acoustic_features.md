@@ -1,6 +1,6 @@
 # Acoustic feature interface
 
-Status: implemented; CPU/MPS smoke run verified, CUDA measurement pending.
+Status: implemented; smoke runs verified on CPU, Apple MPS and a Colab Tesla T4.
 Code: [src/models/acoustic_encoder.py](../src/models/acoustic_encoder.py),
 [src/models/acoustic_smoke.py](../src/models/acoustic_smoke.py),
 [tests/test_acoustic_encoder.py](../tests/test_acoustic_encoder.py).
@@ -48,8 +48,10 @@ Taken from the official recipe:
    Dynamic-chunk streaming masks are training-time only and are not used.
 
 Cropping: `max_duration_sec=None` by default, so the full clip is encoded. SSL
-pretraining used clips of 1–30 s. If long clips appear in the full data, set a
-crop such as 30 s; the cache key then changes automatically.
+pretraining used clips of 1–30 s. In the official manifests, every train clip is
+30 s or shorter, but 60 dev clips are longer (up to 212.4 s). Those long clips are
+untested for GPU memory. Cropping them at 30 s (`--max-duration-sec 30`) changes the
+dev features and needs team agreement; the cache key changes automatically.
 
 ## 3. Padding invariance
 
@@ -154,9 +156,11 @@ for the 77,821 ADI20 Micro train + validation clips. The small pilot cache is 1.
 |---|---|---|
 | Repeated fp32 inference, same device and batches | 1e-4 | 0.0 (CPU) |
 | Batched vs alone, fp32 | 1e-4 | 2.9e-6 (CPU) |
-| Cache write → load | exact | 0.0 |
+| Batched vs alone, fp32, Tesla T4 | 1e-4 | 7.5e-6 |
+| Cache write → load (newly written) | exact | 0.0 |
+| Cache reuse across batch sizes | 1e-4 | 6.4e-6 (CPU, batch 16 vs 8) |
 | CPU vs Apple MPS, fp32 | report only | 3.7e-5 (6 clips) |
-| bf16 autocast (CUDA) | 1e-1, not validated | pending |
+| bf16 autocast, Tesla T4: repeat / batched vs alone | 1e-1 | 0.0 / 1.5e-2 |
 
 Pooled values have a magnitude of about 13. Unit tests on the tiny model use 1e-5.
 Cross-device and cross-library-version differences are expected at the 1e-5–1e-4
@@ -172,12 +176,43 @@ level. Caches should not mix devices without a check.
 - Model load: 5.5 s. Extraction at batch size 8: 12.2 s, which is 1.64 clips/s or 11.5 audio-s/s.
 - Process peak RSS: 4.5 GB. GPU memory: not applicable.
 - Checks: all six passed (finite, shape `[20, 26, 848]`, clip IDs preserved,
-  repeat within tolerance, padding within tolerance, cache round trip exact).
+  repeat within tolerance, padding within tolerance, cache consistent).
 - Record: [reports/acoustic_smoke/](../reports/acoustic_smoke/).
 
-### CUDA (Colab): pending
+### CUDA (Colab Tesla T4), 2026-10-20
 
-Peak GPU memory and GPU throughput are not yet measured. Run:
+Run with [notebooks/W1_07_Acoustic_Smoke.ipynb](../notebooks/W1_07_Acoustic_Smoke.ipynb)
+on the same 20 pilot clips as the local run. The checkpoint was downloaded to local
+disk and matched both pinned SHA256 hashes. Code: commit `78b4b4f` plus the
+checkpoint-hash and cache fixes, which do not change feature values.
+
+| Run | Batch | Precision | Clips/s | Audio-s/s | Peak allocated | Peak reserved | Batched vs alone | Checks |
+|---|---|---|---|---|---|---|---|---|
+| `20261020T212714361664Z` (reference) | 8 | fp32 | 6.37 | 44.7 | 2.84 GB | 5.69 GB | 7.5e-6 | all passed |
+| `20261020T212738124371Z` | 16 | fp32 | 5.11 | 35.8 | 2.84 GB | 10.15 GB | 7.5e-6 | cache check failed* |
+| `20261020T212806399920Z` | 8 | bf16 | 4.95 | 34.7 | 2.78 GB | 5.44 GB | 1.5e-2 | all passed |
+
+Repeated inference was identical (difference 0.0) in every run. GB means 2^30 bytes.
+
+\* The batch-16 run reused the 20 clips cached by the batch-8 run, and the old check
+required an exact match across batch sizes. The check now allows the tolerance for
+clips cached earlier; locally, the same case gives 6.4e-6 and passes.
+
+An earlier fp32 run (`20261020T205105221734Z`, 7.15 clips/s, 2.84 GB) loaded the
+checkpoint from Google Drive, whose copy proved unreliable. It is not used as the
+reference. Throughput varies by about 10% between runs on shared Colab GPUs.
+
+Conclusions:
+- Use **fp32 with batch size 8** on a T4. bf16 is slower on the T4, which lacks fast
+  bf16 hardware, saves no memory, and is less precise. Re-evaluate it only on an A100/H100.
+- Batch 16 is slower because larger batches carry more padding. Both batch sizes peak
+  on the same final batch (the 4 longest clips, up to 25.7 s), which explains the equal
+  allocated memory.
+- Full extraction estimate on one T4 at 44.7–50.1 audio-s/s, from the official
+  manifests: train 163.8 h of audio, about 3.3–3.7 h; dev 25.0 h, about 0.5–0.6 h.
+- Peak memory is measured only for clips up to 25.7 s. See the cropping note in section 2.
+
+Rerun on any GPU with the notebook, or directly:
 
 ```bash
 pip install -r environments/acoustic.txt
@@ -186,17 +221,12 @@ REV=c8da454c9f474bb075d3fe608940ee29e8ccfa43
 python src/models/acoustic_smoke.py \
   --manifest "$DATA_ROOT/manifests/adi20_micro/$REV/pilot-sample/train.jsonl" \
   --audio-root "$DATA_ROOT/audio/adi20_micro/$REV" \
-  --output-root "$OUTPUT_ROOT" --batch-size 8
+  --output-root "$OUTPUT_ROOT" --cache-root /local/disk/hf-cache --batch-size 8
 ```
 
-The sampler gives the same 20 clip IDs as the local run, so GPU and CPU features
-can be compared directly. The record stores:
-- `peak_gpu_memory_allocated_bytes` and `peak_gpu_memory_reserved_bytes`, measured
-  after a warm-up batch;
-- weight memory, clips/s and audio-s/s;
-- GPU name and CUDA version.
-
-Optionally repeat with `--batch-size 16` and `--precision bf16`.
+Keep the Hugging Face download cache on local disk. On Google Drive, the 1.24 GB
+`model.ckpt` was read back corrupted. The encoder now checks both files against
+their pinned SHA256 hashes before loading.
 
 ## 8. Pilot sample and open items
 
@@ -208,3 +238,4 @@ Optionally repeat with `--batch-size 16` and `--precision bf16`.
   speech, and ADI20 is also YouTube-derived. Overlap with our training and evaluation
   recordings is not audited.
 - Defaults chosen pending team review: store all 26 layers, mean pooling, no crop, fp32.
+- The 30 s crop decision for the 60 long dev clips (section 2).

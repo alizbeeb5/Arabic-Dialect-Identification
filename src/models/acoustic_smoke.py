@@ -124,7 +124,7 @@ def main(argv=None):
     paired = encoder.extract([clips[short], clips[long_]], batch_size=2).features[0]
 
     cache = ae.FeatureCache(args.output_root, encoder.provenance())
-    cache.write(first)
+    written = cache.write(first)
     reloaded = cache.load(list(reversed(first.clip_ids)))
 
     expected_shape = [len(clips), len(encoder.layers), encoder.output_dim]
@@ -138,7 +138,9 @@ def main(argv=None):
         and reloaded.clip_ids == list(reversed(first.clip_ids)),
         "repeat_within_tolerance": repeat_diff <= tolerance,
         "padding_within_tolerance": padding_diff <= tolerance,
-        "cache_roundtrip_exact": cache_diff == 0.0,
+        # Newly written clips must read back exactly; clips cached by an earlier
+        # run (e.g. another batch size) only need to agree within tolerance.
+        "cache_consistent": cache_diff == 0.0 if written == len(clips) else cache_diff <= tolerance,
     }
 
     metrics = {
@@ -152,6 +154,7 @@ def main(argv=None):
         "clips_per_sec": len(clips) / first_sec, "audio_sec_per_sec": audio_sec / first_sec,
         "tolerance_abs": tolerance, "repeat_max_abs_diff": repeat_diff,
         "padding_max_abs_diff": padding_diff, "cache_roundtrip_max_abs_diff": cache_diff,
+        "cache_clips_written": written,
         "checks": checks, "process_peak_rss_bytes": peak_rss_bytes(),
         "peak_gpu_memory_allocated_bytes": None, "peak_gpu_memory_reserved_bytes": None,
     }

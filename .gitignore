@@ -233,3 +233,8 @@ __marimo__/
 # IntelliJ IDEA
 .idea/
 *.iml
+# Local virtual environments
+/.venvs/
+
+# macOS Finder metadata
+.DS_Store
