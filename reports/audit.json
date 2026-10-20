@@ -1,0 +1,462 @@
+{
+  "attempted_rows_by_split": {
+    "dev": 10806,
+    "train": 67015
+  },
+  "audio_root": "/content/drive/MyDrive/Arabic-Dialect-Identification-data/audio/adi20_micro/c8da454c9f474bb075d3fe608940ee29e8ccfa43",
+  "code_sha256": "72d3e3f9a2c70db9c13f0d759f52432a0eec87cc52de64ceadb3d674b2b9a474",
+  "cross_split_overlap_groups": {},
+  "download_bytes": 21768558127,
+  "exclusions": 0,
+  "finished_at_utc": "2026-10-20T20:07:38.708566+00:00",
+  "imported_shard_audits": 0,
+  "labels_sha256": "5cf7d68237eab4a39790dda4faf59af6d31bff7c927564e55272e890206902c5",
+  "manifests": {
+    "dev": {
+      "path": "/content/drive/MyDrive/Arabic-Dialect-Identification-data/manifests/adi20_micro/c8da454c9f474bb075d3fe608940ee29e8ccfa43/full-8db5842080c2f643/dev.jsonl",
+      "sha256": "525ecea4b39c504b28858ddbfaf0a954af703c91ae8edddb252a0a6f2c8d138b"
+    },
+    "train": {
+      "path": "/content/drive/MyDrive/Arabic-Dialect-Identification-data/manifests/adi20_micro/c8da454c9f474bb075d3fe608940ee29e8ccfa43/full-8db5842080c2f643/train.jsonl",
+      "sha256": "56a75aa929e2a2c4592012954386cb3d91ff7f256a7004ebe7c4a776573ea4ba"
+    }
+  },
+  "near_duplicate_audit_completed": false,
+  "notes": [
+    "Original WAV bytes preserved; no resampling, trimming or normalization.",
+    "Invalid rows are explicit exclusions; do not silently alter a fixed evaluation denominator.",
+    "Filename source IDs are inferences; speakers and domain remain unknown.",
+    "Exact duplicates are reported, not removed. Near-duplicates and frozen splits belong to Task 7.",
+    "A pilot takes the first rows; it is not a balanced or representative dataset.",
+    "Source SHA256 values are local fingerprints unless hub_hash_verified is true."
+  ],
+  "overlap_groups": {
+    "decoded_exact": 8,
+    "encoded_exact": 8,
+    "inferred_source": 616
+  },
+  "per_split": {
+    "dev": {
+      "channel_counts": {
+        "1": 10790,
+        "2": 16
+      },
+      "clips": 10806,
+      "clips_with_near_full_scale_samples": 755,
+      "duration_hours": 24.996969407832577,
+      "duration_max_sec": 212.38,
+      "duration_min_sec": 1.54,
+      "extracted_bytes": 2907390374,
+      "label_counts": {
+        "ALG": 240,
+        "BAH": 317,
+        "EGY": 650,
+        "IRA": 628,
+        "JOR": 367,
+        "KSA": 368,
+        "KUW": 430,
+        "LEB": 383,
+        "LIB": 627,
+        "MAU": 213,
+        "MOR": 380,
+        "MSA": 283,
+        "OMA": 632,
+        "PAL": 430,
+        "QAT": 914,
+        "SUD": 197,
+        "SYR": 446,
+        "TUN": 1649,
+        "UAE": 1130,
+        "YEM": 522
+      },
+      "sample_rate_counts": {
+        "16000": 10790,
+        "44100": 16
+      },
+      "silent_clips": 0,
+      "subtype_counts": {
+        "FLOAT": 61,
+        "PCM_16": 10745
+      },
+      "unknown_source_ids": 9012,
+      "unknown_speaker_ids": 10806
+    },
+    "train": {
+      "channel_counts": {
+        "1": 66985,
+        "2": 30
+      },
+      "clips": 67015,
+      "clips_with_near_full_scale_samples": 5477,
+      "duration_hours": 163.800695809949,
+      "duration_max_sec": 30.0,
+      "duration_min_sec": 2.3375625,
+      "extracted_bytes": 18916663466,
+      "label_counts": {
+        "ALG": 2520,
+        "BAH": 3350,
+        "EGY": 3222,
+        "IRA": 3429,
+        "JOR": 1913,
+        "KSA": 3633,
+        "KUW": 2847,
+        "LEB": 3094,
+        "LIB": 2550,
+        "MAU": 2789,
+        "MOR": 3031,
+        "MSA": 3350,
+        "OMA": 4600,
+        "PAL": 3129,
+        "QAT": 4222,
+        "SUD": 3846,
+        "SYR": 3833,
+        "TUN": 3350,
+        "UAE": 4414,
+        "YEM": 3893
+      },
+      "sample_rate_counts": {
+        "16000": 66985,
+        "44100": 30
+      },
+      "silent_clips": 0,
+      "subtype_counts": {
+        "FLOAT": 79,
+        "PCM_16": 66936
+      },
+      "unknown_source_ids": 61960,
+      "unknown_speaker_ids": 67015
+    }
+  },
+  "pilot": false,
+  "pipeline_version": "adi20-audit-v1",
+  "processed_shards": [
+    {
+      "bytes": 519596202,
+      "hub_hash_verified": false,
+      "path": "data/train-00000-of-00038.parquet",
+      "sha256": "25cdd5c43acf1e9574239b486a988bee79abb33d8c9b0cb96e904c118ba5e3f4"
+    },
+    {
+      "bytes": 600225791,
+      "hub_hash_verified": false,
+      "path": "data/train-00001-of-00038.parquet",
+      "sha256": "dad58dcf2cf8637c3a1bfccf0ce7252454f09c3a3e2a332ef4bb9226c5a51bf5"
+    },
+    {
+      "bytes": 1392318912,
+      "hub_hash_verified": false,
+      "path": "data/train-00002-of-00038.parquet",
+      "sha256": "eaf99b0cdcbe522d32fe3e00a57d0183373f132eb965e908882b8f8dccf012f6"
+    },
+    {
+      "bytes": 1142720262,
+      "hub_hash_verified": false,
+      "path": "data/train-00003-of-00038.parquet",
+      "sha256": "dff9ebd35968a76ea7add665d2da975beae40cb195e910a85f4ef797085437c6"
+    },
+    {
+      "bytes": 350076037,
+      "hub_hash_verified": false,
+      "path": "data/train-00004-of-00038.parquet",
+      "sha256": "a331d7cee60f181f8361ef6684957a90f3650ae897760af33ac192268e4313fa"
+    },
+    {
+      "bytes": 411274087,
+      "hub_hash_verified": false,
+      "path": "data/train-00005-of-00038.parquet",
+      "sha256": "f8388ca89160f96d8014d07658c334e44df51009c89695f5998372f7427ba71d"
+    },
+    {
+      "bytes": 521831989,
+      "hub_hash_verified": false,
+      "path": "data/train-00006-of-00038.parquet",
+      "sha256": "f2fd8dab90ab749d0398c08475873d065a7fe42453e0e0e6b19a34d8c7557641"
+    },
+    {
+      "bytes": 446799589,
+      "hub_hash_verified": false,
+      "path": "data/train-00007-of-00038.parquet",
+      "sha256": "7d9b7c91855d09bccfaab78dcc0e21d8c22e1c283fda6040f3ba552d3398646b"
+    },
+    {
+      "bytes": 437340339,
+      "hub_hash_verified": false,
+      "path": "data/train-00008-of-00038.parquet",
+      "sha256": "887c442419eed9c16384bf3e2e22ebc4f43f0e3eb208452fe2be72d2a356abda"
+    },
+    {
+      "bytes": 456969428,
+      "hub_hash_verified": false,
+      "path": "data/train-00009-of-00038.parquet",
+      "sha256": "cf688ee76a42e7fd4f595d0bcaf8942dc9d6513d40b5b67d10339191177d3bf2"
+    },
+    {
+      "bytes": 474431609,
+      "hub_hash_verified": false,
+      "path": "data/train-00010-of-00038.parquet",
+      "sha256": "516a632137ffa499b7a8d339cb98a3591f1a49a05308b642375e48d444fa3729"
+    },
+    {
+      "bytes": 552821208,
+      "hub_hash_verified": false,
+      "path": "data/train-00011-of-00038.parquet",
+      "sha256": "7e13705c0c953a393d458790c26680902e331df16e6fa455e4a643361ca9c296"
+    },
+    {
+      "bytes": 455338722,
+      "hub_hash_verified": false,
+      "path": "data/train-00012-of-00038.parquet",
+      "sha256": "8bc28b38a74dc68ae9b90faeaa39fc9a4f74899bdb1355d726291b8cd52fddad"
+    },
+    {
+      "bytes": 452880304,
+      "hub_hash_verified": false,
+      "path": "data/train-00013-of-00038.parquet",
+      "sha256": "f566fd310aeaf555dca5d0511ffe61dee7d4e8d3d9b27f81ea31a9d4afa5cbbc"
+    },
+    {
+      "bytes": 509421231,
+      "hub_hash_verified": false,
+      "path": "data/train-00014-of-00038.parquet",
+      "sha256": "b9c34890a276a057248522ffda6d567cbab56ba3e326ed78b8d4eddacc896c0d"
+    },
+    {
+      "bytes": 486508899,
+      "hub_hash_verified": false,
+      "path": "data/train-00015-of-00038.parquet",
+      "sha256": "16fb6b3876a03f89b1fc5a708b8e52a1cef06ac9846198e3b0020a2ce5fe2468"
+    },
+    {
+      "bytes": 465037399,
+      "hub_hash_verified": false,
+      "path": "data/train-00016-of-00038.parquet",
+      "sha256": "d04b167ffa8d2f99cdb786a3f02daddf598f1beda841061d80363122d4eb2574"
+    },
+    {
+      "bytes": 499693211,
+      "hub_hash_verified": false,
+      "path": "data/train-00017-of-00038.parquet",
+      "sha256": "8cc47ec2971d1370b6eaf3ea35f4928b3b352c9c39cfdb290eb83f8cc6e9c08e"
+    },
+    {
+      "bytes": 517357540,
+      "hub_hash_verified": false,
+      "path": "data/train-00018-of-00038.parquet",
+      "sha256": "c865f8faeb3d69fa13c85087edaac33c9457d1fcd464862a1d83c2881ed4a1de"
+    },
+    {
+      "bytes": 491713687,
+      "hub_hash_verified": false,
+      "path": "data/train-00019-of-00038.parquet",
+      "sha256": "655d12f4cf60ab90ca40f9f64c47c7f625a87b50ab220f58c6d994280109b57b"
+    },
+    {
+      "bytes": 463075395,
+      "hub_hash_verified": false,
+      "path": "data/train-00020-of-00038.parquet",
+      "sha256": "8764dc46f992e61fcc85cddf5e9adf5f644d7b6bb1277f56c0f5306106ddb609"
+    },
+    {
+      "bytes": 473707459,
+      "hub_hash_verified": false,
+      "path": "data/train-00021-of-00038.parquet",
+      "sha256": "c6a537afc46a46bd5104c0590e69bba8c6ca17a7d8d9212a3d28db1021edab74"
+    },
+    {
+      "bytes": 403396540,
+      "hub_hash_verified": false,
+      "path": "data/train-00022-of-00038.parquet",
+      "sha256": "702d0a3501f79fce830e7ecf5c4ce5a9bde64ccf57e0b912291d90016f7a74a9"
+    },
+    {
+      "bytes": 377377866,
+      "hub_hash_verified": false,
+      "path": "data/train-00023-of-00038.parquet",
+      "sha256": "919c22b63211b448a3f187fcc6123b3cf6837908fb8838a8d3b86a1c762abb68"
+    },
+    {
+      "bytes": 403600256,
+      "hub_hash_verified": false,
+      "path": "data/train-00024-of-00038.parquet",
+      "sha256": "4a9f7a48c4db2554438e97be2d878832b38182b3326ea0be3afcc149f66f2d6b"
+    },
+    {
+      "bytes": 475484542,
+      "hub_hash_verified": false,
+      "path": "data/train-00025-of-00038.parquet",
+      "sha256": "fc648d68bc11a5f41589ded3dfed6a1803be8eb314d9574a64541bb8d70b6b5e"
+    },
+    {
+      "bytes": 457439795,
+      "hub_hash_verified": false,
+      "path": "data/train-00026-of-00038.parquet",
+      "sha256": "331631a1ae8483509ced00effb4ee1dc681d117659e414de718964004625bd46"
+    },
+    {
+      "bytes": 412557637,
+      "hub_hash_verified": false,
+      "path": "data/train-00027-of-00038.parquet",
+      "sha256": "b031dba7349907b092f45e6f3c9aca915ccf9a1b68121d2dc943efb5f893876e"
+    },
+    {
+      "bytes": 438456553,
+      "hub_hash_verified": false,
+      "path": "data/train-00028-of-00038.parquet",
+      "sha256": "2dc822c178f63df949ff55e6804ee6725ca792a32319345c84d49568641a0d51"
+    },
+    {
+      "bytes": 439298125,
+      "hub_hash_verified": false,
+      "path": "data/train-00029-of-00038.parquet",
+      "sha256": "8a7f9c3979cd56a406d36097e7c01734020ca3e6d1e6c12db1c1418580ae8696"
+    },
+    {
+      "bytes": 414434430,
+      "hub_hash_verified": false,
+      "path": "data/train-00030-of-00038.parquet",
+      "sha256": "2b1f9b8373004faf2d7f69f05389ff4a9deb850e0e9b130e3cea10eb318a0d2d"
+    },
+    {
+      "bytes": 411184350,
+      "hub_hash_verified": false,
+      "path": "data/train-00031-of-00038.parquet",
+      "sha256": "f7f651d577020f87fdf5ff6ea3455598a0c63b935de91c7d0794512529a5a776"
+    },
+    {
+      "bytes": 415535770,
+      "hub_hash_verified": false,
+      "path": "data/train-00032-of-00038.parquet",
+      "sha256": "a7c47d2fa5ce7aee119f8545a2c7e6be7439979467b558d467583a013674d240"
+    },
+    {
+      "bytes": 395885183,
+      "hub_hash_verified": false,
+      "path": "data/train-00033-of-00038.parquet",
+      "sha256": "0f892410c77c7654063551c4d48c46fc1e70000c62dc4f9fd461edbc5b077d7c"
+    },
+    {
+      "bytes": 402846223,
+      "hub_hash_verified": false,
+      "path": "data/train-00034-of-00038.parquet",
+      "sha256": "0fd75093237315a01acfaa60c70549fe3faeaa39f0fd5616ee5ac393f08ec2ab"
+    },
+    {
+      "bytes": 416770143,
+      "hub_hash_verified": false,
+      "path": "data/train-00035-of-00038.parquet",
+      "sha256": "0b538afb94441f06afb132dc725c5c50904239d557a4907d4a2c45aeb392b070"
+    },
+    {
+      "bytes": 444812216,
+      "hub_hash_verified": false,
+      "path": "data/train-00036-of-00038.parquet",
+      "sha256": "a7f2ea959e630258f4e728df2b30b8197525d2ef65e88ae54c576c8a5aabced0"
+    },
+    {
+      "bytes": 435641315,
+      "hub_hash_verified": false,
+      "path": "data/train-00037-of-00038.parquet",
+      "sha256": "f3aef5bab1c4880dbb836d1d182983942f8ac9dd47b01708d525e06e1bab35e0"
+    },
+    {
+      "bytes": 370857360,
+      "hub_hash_verified": false,
+      "path": "data/validation-00000-of-00006.parquet",
+      "sha256": "ce37040f5c7083a3ea5c38865a3698cc72157aafb1f98562545f70f111fd9765"
+    },
+    {
+      "bytes": 688523147,
+      "hub_hash_verified": false,
+      "path": "data/validation-00001-of-00006.parquet",
+      "sha256": "720b661962e2205a528dfd25d4d04cfdc941b0e9d56618cbd9958ae0211a5e14"
+    },
+    {
+      "bytes": 502690380,
+      "hub_hash_verified": false,
+      "path": "data/validation-00002-of-00006.parquet",
+      "sha256": "5b7d9b47862edea134150a8dbd6823f8465b3dc61b233ea41ad11db679eb642e"
+    },
+    {
+      "bytes": 484258548,
+      "hub_hash_verified": false,
+      "path": "data/validation-00003-of-00006.parquet",
+      "sha256": "c673a0a416b1cd557a1c45843c22d7466ce52a44a702df52b35ab87b39335fbf"
+    },
+    {
+      "bytes": 457354461,
+      "hub_hash_verified": false,
+      "path": "data/validation-00004-of-00006.parquet",
+      "sha256": "e4efbfbc810717cb79c81d9ad1957fab4ef2653ed294d3b0c80c33e2707ffcd9"
+    },
+    {
+      "bytes": 399013987,
+      "hub_hash_verified": false,
+      "path": "data/validation-00005-of-00006.parquet",
+      "sha256": "4cd0c63c4fb791615bfec67e55c169cf6a0234f055df3a4a11533b39de907e5f"
+    }
+  ],
+  "release_id": "full-8db5842080c2f643",
+  "review_required_before_training": true,
+  "source_ids_verified": false,
+  "source_rows_by_split": {
+    "dev": 10806,
+    "train": 67015
+  },
+  "speaker_independence_verified": false,
+  "started_at_utc": "2026-10-20T19:56:12.571215+00:00",
+  "status": "completed",
+  "stored_audio_content_hashes_verified_this_run": false,
+  "stored_audio_verification": "size",
+  "summary": {
+    "channel_counts": {
+      "1": 77775,
+      "2": 46
+    },
+    "clips": 77821,
+    "clips_with_near_full_scale_samples": 6232,
+    "duration_hours": 188.79766521778154,
+    "duration_max_sec": 212.38,
+    "duration_min_sec": 1.54,
+    "extracted_bytes": 21824053840,
+    "label_counts": {
+      "ALG": 2760,
+      "BAH": 3667,
+      "EGY": 3872,
+      "IRA": 4057,
+      "JOR": 2280,
+      "KSA": 4001,
+      "KUW": 3277,
+      "LEB": 3477,
+      "LIB": 3177,
+      "MAU": 3002,
+      "MOR": 3411,
+      "MSA": 3633,
+      "OMA": 5232,
+      "PAL": 3559,
+      "QAT": 5136,
+      "SUD": 4043,
+      "SYR": 4279,
+      "TUN": 4999,
+      "UAE": 5544,
+      "YEM": 4415
+    },
+    "sample_rate_counts": {
+      "16000": 77775,
+      "44100": 46
+    },
+    "silent_clips": 0,
+    "subtype_counts": {
+      "FLOAT": 140,
+      "PCM_16": 77681
+    },
+    "unknown_source_ids": 70972,
+    "unknown_speaker_ids": 77821
+  },
+  "versions": {
+    "libsndfile": "1.2.2",
+    "numpy": "2.1.3",
+    "pyarrow": "23.0.1",
+    "python": "3.13.16",
+    "soundfile": "0.14.0"
+  }
+}
