@@ -1,6 +1,7 @@
 # Acoustic feature interface
 
-Status: implemented; smoke runs verified on CPU, Apple MPS and a Colab Tesla T4.
+Status: implemented; v1 smoke runs verified on CPU, Apple MPS and a Colab Tesla T4.
+The v2 fixes have CPU regression coverage; a real-checkpoint GPU rerun is pending.
 Code: [src/models/acoustic_encoder.py](../src/models/acoustic_encoder.py),
 [src/models/acoustic_smoke.py](../src/models/acoustic_smoke.py),
 [tests/test_acoustic_encoder.py](../tests/test_acoustic_encoder.py).
@@ -76,6 +77,8 @@ The fix:
 - Only the Conformer is batched, with padded frames zeroed before every depthwise
   convolution (`_masked_conv_forward`).
 - The encoder's key-padding mask and the pooling mask both use each clip's exact frame count.
+  Relative lengths stay float32 even when features use BF16; otherwise rounding
+  can change the attention mask (for example, 643 valid frames instead of 644).
 
 For an unpadded clip the output is identical (max diff 0.0) to the stock path,
 so this is the official model evaluated as if every clip were alone.
@@ -87,11 +90,23 @@ so this is the official model evaluated as if every clip were alone.
 from acoustic_encoder import AcousticEncoder, FeatureCache, FeatureConfig
 
 encoder = AcousticEncoder.from_pretrained(FeatureConfig(), device="cuda")
-result = encoder.extract_manifest(manifest_rows, audio_root, batch_size=8)
 cache = FeatureCache(OUTPUT_ROOT, encoder.provenance())
-cache.write(result)
+todo = cache.missing(manifest_rows)
+for result in encoder.iter_extract_manifest(todo, audio_root, batch_size=8, chunk_size=128):
+    cache.write(result)
 features = cache.load(clip_ids)          # same order as clip_ids
 ```
+
+Full extraction decodes at most `chunk_size` clips at a time and writes each
+pooled chunk before loading the next. `batch_size` controls encoder batches
+within that chunk. Completed chunks are reused on the next CLI invocation after
+an interruption between chunks. The CLI defaults are 128 clips per chunk and
+8 per encoder batch; tune `--chunk-size` to the available host RAM.
+
+`extract_manifest(...)` remains a convenience method for small requests: it
+decodes audio in chunks but collects all returned features in memory. Likewise,
+`cache.load(clip_ids)` materializes the requested features; load the IDs needed
+for a training batch rather than the full dataset when RAM is limited.
 
 `ClipFeatures` fields:
 
@@ -144,11 +159,33 @@ The cache behaves as follows:
   by `write()` rather than silently overwritten.
 - `extract_manifest` checks each WAV against the manifest's `audio_sha256`.
 - `load` checks that the index and part files agree.
+- Cache reads (including `missing`) validate checkpoint, feature configuration,
+  layer names and output dimension against `config.json`. An existing index
+  without its provenance is rejected. Read-only lookups do not create a cache.
+- `load` also checks each entry's cache key against the requested provenance.
 
 Bump `FEATURE_CODE_VERSION` whenever a code change alters feature values for the same audio and config.
+The current version is `acoustic-features-v2`, which fixes BF16 attention masks.
+It uses a different cache directory from v1, so old features are not reused.
+The smoke measurements below were recorded before this fix and are not GPU
+validation of v2.
 
 Size: `26 × 848 × 4 = 88,192` bytes per clip with mean pooling. That is about 6.9 GB
 for the 77,821 ADI20 Micro train + validation clips. The small pilot cache is 1.7 MB.
+
+Extract a prepared full manifest with bounded audio/feature working memory:
+
+```bash
+python src/models/acoustic_encoder.py \
+  --manifest "$TRAIN_MANIFEST" --audio-root "$AUDIO_ROOT" \
+  --output-root "$OUTPUT_ROOT" --cache-root "$CACHE_ROOT" \
+  --device cuda --batch-size 8 --chunk-size 128
+```
+
+At most 128 waveforms are decoded per iteration and pooled chunks are cached incrementally;
+manifest metadata, the cache index and duplicate-ID tracking still scale with
+the number of clips. One unusually long clip can still exceed device memory;
+chunking does not change the cropping policy in section 2.
 
 ## 6. Numerical tolerance
 

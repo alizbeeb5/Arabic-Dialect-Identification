@@ -9,7 +9,9 @@ import random
 import sys
 import tempfile
 import unittest
+import weakref
 from pathlib import Path
+from unittest.mock import patch
 
 import numpy as np
 import soundfile as sf
@@ -125,6 +127,28 @@ class EncoderTests(unittest.TestCase):
         self.assertFalse(self.encoder.training)
         self.assertFalse(any(p.requires_grad for p in self.encoder.parameters()))
 
+    def test_bf16_frontend_keeps_exact_attention_frame_counts(self):
+        from speechbrain.lobes.models.transformer.TransformerASR import make_transformer_src_tgt_masks
+
+        lengths = [161, 643, 644]  # BF16 cannot represent every frame count here.
+        srcs = [torch.zeros(n, 1280, dtype=torch.bfloat16) for n in lengths]
+
+        def check_masks(batch, relative_lengths):
+            self.assertEqual(batch.dtype, torch.bfloat16)
+            mask, *_ = make_transformer_src_tgt_masks(batch, wav_len=relative_lengths)
+            expected = ae.frame_mask(torch.tensor(lengths), max(lengths))
+            self.assertTrue(torch.equal(~mask, expected))
+            final = batch.new_zeros((len(lengths), max(lengths), TINY.d_model))
+            return final, [final] * (TINY.num_representations - 1)
+
+        # Exercise encode's BF16 inputs and SpeechBrain's real mask builder on
+        # CPU, without requiring a GPU or performing BF16 Conformer inference.
+        with patch.object(self.encoder, "_frontend", side_effect=srcs), \
+                patch.object(self.encoder.model[1], "forward", side_effect=check_masks):
+            _, mask, frames = self.encoder.encode([torch.zeros(1)] * len(lengths))
+        self.assertEqual(frames.tolist(), lengths)
+        self.assertEqual(mask.sum(1).tolist(), lengths)
+
     def test_layer_selection_and_mean_std_pooling(self):
         encoder = tiny_encoder(layers=(0, 3), pooling="mean_std")
         result = encoder.extract(self.clips[:2])
@@ -217,6 +241,120 @@ class CacheTests(unittest.TestCase):
         bad = [dict(self.rows[0], audio_sha256="f" * 64)]
         with self.assertRaises(ValueError):
             self.encoder.extract_manifest(bad, self.audio_root)
+
+    def test_manifest_stream_decodes_and_releases_one_chunk_at_a_time(self):
+        load = ae.load_waveform
+        waves = []
+
+        def tracked_load(path, config):
+            wave = load(path, config)
+            waves.append(weakref.ref(wave))
+            return wave
+
+        with patch.object(ae, "load_waveform", side_effect=tracked_load) as loader:
+            chunks = self.encoder.iter_extract_manifest(iter(self.rows), self.audio_root,
+                                                       batch_size=1, chunk_size=2)
+            first = next(chunks)
+            self.assertEqual(loader.call_count, 2)
+            self.assertTrue(all(wave() is None for wave in waves))
+            second = next(chunks)
+            self.assertEqual(loader.call_count, 3)
+            self.assertTrue(all(wave() is None for wave in waves))
+            with self.assertRaises(StopIteration):
+                next(chunks)
+        reference = self.encoder.extract_manifest(self.rows, self.audio_root, batch_size=1)
+        self.assertEqual(first.clip_ids + second.clip_ids, reference.clip_ids)
+        self.assertEqual(first.audio_sha256 + second.audio_sha256, reference.audio_sha256)
+        np.testing.assert_allclose(np.concatenate([first.features, second.features]),
+                                   reference.features, atol=TOLERANCE, rtol=0)
+        np.testing.assert_array_equal(np.concatenate([first.n_frames, second.n_frames]),
+                                      reference.n_frames)
+
+    def test_manifest_collector_preserves_order_across_chunks(self):
+        rows = list(reversed(self.rows))
+        result = self.encoder.extract_manifest(rows, self.audio_root, batch_size=2, chunk_size=1)
+        reference = self.encoder.extract_manifest(rows, self.audio_root, batch_size=2)
+        self.assertEqual(result.clip_ids, [row["clip_id"] for row in rows])
+        self.assertEqual(result.audio_sha256, [row["audio_sha256"] for row in rows])
+        np.testing.assert_allclose(result.features, reference.features, atol=TOLERANCE, rtol=0)
+
+    def test_duplicate_clip_ids_across_manifest_chunks_are_rejected(self):
+        rows = [self.rows[0], self.rows[1], self.rows[0]]
+        with self.assertRaisesRegex(ValueError, "Duplicate clip_id"):
+            list(self.encoder.iter_extract_manifest(rows, self.audio_root, chunk_size=1))
+
+    def test_nonpositive_chunk_or_batch_size_fails_before_decoding(self):
+        for batch_size, chunk_size in ((0, 2), (-1, 2), (2, 0), (2, -1)):
+            with self.subTest(batch_size=batch_size, chunk_size=chunk_size), \
+                    patch.object(ae, "load_waveform") as loader:
+                with self.assertRaisesRegex(ValueError, "must be positive"):
+                    list(self.encoder.iter_extract_manifest(self.rows, self.audio_root,
+                                                           batch_size, chunk_size))
+                loader.assert_not_called()
+
+    def test_cache_reads_reject_conflicting_provenance(self):
+        provenance = self.encoder.provenance()
+        cache = ae.FeatureCache(self.root / "out", provenance)
+        cache.write(self.encoder.extract_manifest(self.rows, self.audio_root))
+        changes = {"checkpoint": {"revision": "other", "files": {"model.ckpt": "f" * 64}},
+                   "layer_names": ["wrong_layer"], "output_dim": TINY.d_model + 1}
+        for field, value in changes.items():
+            with self.subTest(field=field):
+                changed = dict(provenance, **{field: value})
+                reader = ae.FeatureCache(self.root / "out", changed)
+                self.assertEqual(reader.root, cache.root)
+                with self.assertRaisesRegex(ValueError, f"different {field}"):
+                    reader.load([self.rows[0]["clip_id"]])
+                with self.assertRaisesRegex(ValueError, f"different {field}"):
+                    reader.missing(self.rows)
+
+    def test_cache_with_missing_provenance_is_not_silently_adopted(self):
+        cache = ae.FeatureCache(self.root / "out", self.encoder.provenance())
+        cache.write(self.encoder.extract_manifest(self.rows, self.audio_root))
+        config_path = cache.root / "config.json"
+        config_path.unlink()
+        with self.assertRaisesRegex(ValueError, "no config.json"):
+            cache.load()
+        with self.assertRaisesRegex(ValueError, "no config.json"):
+            cache.missing(self.rows)
+        self.assertFalse(config_path.exists())
+
+    def test_empty_cache_reads_do_not_create_provenance(self):
+        cache = ae.FeatureCache(self.root / "out", self.encoder.provenance())
+        self.assertEqual(cache.missing(self.rows), self.rows)
+        empty = cache.load([])
+        self.assertEqual(empty.features.shape, (0, TINY.num_representations, TINY.d_model))
+        self.assertFalse(cache.root.exists())
+
+    def test_cli_caches_completed_chunks_and_resumes_after_interruption(self):
+        manifest = self.root / "train.jsonl"
+        manifest.write_text("".join(json.dumps(row) + "\n" for row in self.rows), encoding="utf-8")
+        output = self.root / "out"
+        args = ["--manifest", str(manifest), "--audio-root", str(self.audio_root),
+                "--output-root", str(output), "--batch-size", "1", "--chunk-size", "1"]
+        extract_chunks = self.encoder.iter_extract_manifest
+
+        def interrupted(*args, **kwargs):
+            chunks = extract_chunks(*args, **kwargs)
+            yield next(chunks)
+            raise RuntimeError("simulated interruption between chunks")
+
+        with patch.object(ae.AcousticEncoder, "from_pretrained", return_value=self.encoder), \
+                patch.object(self.encoder, "extract_manifest", side_effect=AssertionError("collects all features")), \
+                patch.object(self.encoder, "iter_extract_manifest", side_effect=interrupted):
+            with self.assertRaisesRegex(RuntimeError, "simulated interruption"):
+                ae.main(args)
+        cache = ae.FeatureCache(output, self.encoder.provenance())
+        self.assertEqual(list(cache.index()), [self.rows[0]["clip_id"]])
+        with patch.object(ae.AcousticEncoder, "from_pretrained", return_value=self.encoder), \
+                patch.object(self.encoder, "extract", wraps=self.encoder.extract) as extractor:
+            ae.main(args)
+        extracted = [clip_id for call in extractor.call_args_list for clip_id, _ in call.args[0]]
+        self.assertEqual(extracted, [row["clip_id"] for row in self.rows[1:]])
+        self.assertEqual(cache.missing(self.rows), [])
+        result = cache.load([row["clip_id"] for row in self.rows])
+        expected = self.encoder.extract_manifest(self.rows, self.audio_root, batch_size=1)
+        np.testing.assert_array_equal(result.features, expected.features)
 
 
 if __name__ == "__main__":
