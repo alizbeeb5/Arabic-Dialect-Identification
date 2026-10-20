@@ -107,19 +107,3 @@ to real recordings.
 ## Data preparation
 
 See [data preparation instructions](docs/data_preparation.md) for CPU setup, portable storage, resume modes and Colab usage.
-
-## Acoustic features
-
-Separate environment (tested with Python 3.12.13 on macOS arm64):
-
-```bash
-python3.12 -m venv .venvs/acoustic
-source .venvs/acoustic/bin/activate
-python -m pip install -r environments/acoustic-lock.txt
-python -m unittest discover -s tests -p 'test_acoustic_encoder.py' -v
-```
-
-The unit tests use a tiny random encoder and need no checkpoint download.
-See [acoustic feature interface](docs/acoustic_features.md) for the frozen
-AraBEST-RQ encoder, pooled feature dimensions, cache keys, tolerances, and
-the smoke-run command and record.

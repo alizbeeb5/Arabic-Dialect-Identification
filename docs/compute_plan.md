@@ -105,7 +105,7 @@ Jais where their dependencies require it.
 | Base environment and CPU smoke command | Implemented |
 | Shared prediction validator/evaluator | Implemented |
 | Portable data preparation script and dependency file | Pending Task 6 |
-| Acoustic feature environment and extraction entry point | Implemented; CPU, MPS and Colab T4 smoke runs verified |
+| Acoustic model environment and entry point | Pending model implementation |
 | Jais environment and entry point | Pending adapter implementation |
 | Training commands and experiment configurations | Pending training implementation |
 | Cluster launcher integration | Pending the team's execution details |

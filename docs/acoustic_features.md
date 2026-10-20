@@ -181,8 +181,7 @@ level. Caches should not mix devices without a check.
 
 ### CUDA (Colab Tesla T4), 2026-10-20
 
-Run with [notebooks/W1_07_Acoustic_Smoke.ipynb](../notebooks/W1_07_Acoustic_Smoke.ipynb)
-on the same 20 pilot clips as the local run. The checkpoint was downloaded to local
+Run in Google Colab on the same 20 pilot clips as the local run. The checkpoint was downloaded to local
 disk and matched both pinned SHA256 hashes. Code: commit `78b4b4f` plus the
 checkpoint-hash and cache fixes, which do not change feature values.
 
@@ -212,7 +211,7 @@ Conclusions:
   manifests: train 163.8 h of audio, about 3.3–3.7 h; dev 25.0 h, about 0.5–0.6 h.
 - Peak memory is measured only for clips up to 25.7 s. See the cropping note in section 2.
 
-Rerun on any GPU with the notebook, or directly:
+Rerun on any GPU:
 
 ```bash
 pip install -r environments/acoustic.txt
