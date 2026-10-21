@@ -1,0 +1,72 @@
+{
+  "audio_root": "/content/drive/MyDrive/Arabic-Dialect-Identification-data/audio/adi20_micro/c8da454c9f474bb075d3fe608940ee29e8ccfa43",
+  "audio_root_relative_to_data_root": "audio/adi20_micro/c8da454c9f474bb075d3fe608940ee29e8ccfa43",
+  "clips": 500,
+  "dataset_version": "c8da454c9f474bb075d3fe608940ee29e8ccfa43",
+  "derived_from": {
+    "manifest": "train.jsonl",
+    "release": "full-8db5842080c2f643",
+    "sha256": "56a75aa929e2a2c4592012954386cb3d91ff7f256a7004ebe7c4a776573ea4ba"
+  },
+  "development_only": false,
+  "domain_relation": "in_source (ADI-20 Micro); not out-of-domain",
+  "evaluation_label_sets": {
+    "train": [
+      "MSA",
+      "BAH",
+      "TUN",
+      "ALG",
+      "EGY",
+      "IRA",
+      "JOR",
+      "KSA",
+      "KUW",
+      "LEB",
+      "LIB",
+      "MAU",
+      "MOR",
+      "OMA",
+      "PAL",
+      "QAT",
+      "SUD",
+      "SYR",
+      "UAE",
+      "YEM"
+    ]
+  },
+  "label_counts": {
+    "ALG": 25,
+    "BAH": 25,
+    "EGY": 25,
+    "IRA": 25,
+    "JOR": 25,
+    "KSA": 25,
+    "KUW": 25,
+    "LEB": 25,
+    "LIB": 25,
+    "MAU": 25,
+    "MOR": 25,
+    "MSA": 25,
+    "OMA": 25,
+    "PAL": 25,
+    "QAT": 25,
+    "SUD": 25,
+    "SYR": 25,
+    "TUN": 25,
+    "UAE": 25,
+    "YEM": 25
+  },
+  "labels_sha256": "5cf7d68237eab4a39790dda4faf59af6d31bff7c927564e55272e890206902c5",
+  "manifest_sha256": "4fb98eabdb15b8bc05fd7bafad0e1c9cd8885a5f50277397159cb2e4bedd65e3",
+  "role": "train",
+  "schema_version": "1.0",
+  "selection_split": null,
+  "source_independence_verified": false,
+  "source_provenance": {
+    "dataset_id": "UBC-NLP/NADI_2026_ADI20_micro",
+    "revision": "c8da454c9f474bb075d3fe608940ee29e8ccfa43"
+  },
+  "speaker_independence_verified": false,
+  "split_sha256": "e61cd569ac7b0bb3d7bd89a069ae82c7d02890deb99c3ef423c04a0f9a4d882f",
+  "split_version": "w1-07-pilot-v1-e61cd569ac7b"
+}

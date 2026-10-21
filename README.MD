@@ -114,3 +114,34 @@ See [the Task 10 adapter instructions](docs/jais_adapter.md) for the pinned
 model, separate environment, portable batch command, resumable cache and
 Colab module check. [The smoke evidence review](reports/jais_smoke_review.md)
 distinguishes notebook GPU evidence from packaged-module validation.
+
+## Freezing the pilot splits (W1-07)
+
+Reproduce the frozen pilot from the committed full-release manifests:
+
+```bash
+python src/data/freeze_splits.py --manifest-dir src/data/manifests
+```
+
+Expected output: `Frozen w1-07-pilot-v1-e61cd569ac7b: 500 train-pilot, 200 dev-pilot clips`.
+For a new prepare.py release, point `--manifest-dir` at its manifest folder instead.
+
+Standard library only; runs in seconds on CPU. Defaults: seed 490, 25 train clips
+per label, 200 dev clips (10 per label), clips spread round-robin across recording/duplicate groups (`--max-per-group N` adds a hard cap).
+
+Outputs (small, committed to Git):
+- data/manifests/train_pilot.jsonl and dev_pilot.jsonl, each with a .metadata.json sidecar
+- data/manifests/split_freeze.json: split version/hash, seeds and exact clip IDs
+- reports/split_audit.md, split_cross_groups.jsonl, split_exclusions.jsonl
+
+The upstream train/validation split is kept. Clips that share an inferred recording
+ID or identical audio form one group; groups that cross train/dev are excluded from
+both pilots. The dev pilot is in-source, not out-of-domain. A bounded prepare.py
+pilot release is refused unless `--allow-pilot-source` is passed, and the outputs are
+then marked development-only.
+
+Checks:
+
+```bash
+python -m unittest discover -s tests -p 'test_freeze_splits.py' -v
+```
