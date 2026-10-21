@@ -2,12 +2,15 @@
 
 import hashlib
 from collections import Counter
+from contextlib import redirect_stderr
 import importlib.util
+import io
 import json
 import random
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 SPEC = importlib.util.spec_from_file_location("freeze_splits", ROOT / "src/data/freeze_splits.py")
@@ -140,6 +143,27 @@ class FreezeTests(unittest.TestCase):
             stream.write(json.dumps(clip("dev", 999, "LEB")) + "\n")
         with self.assertRaisesRegex(freeze.FreezeError, "SHA256"):
             self.run_freeze()
+
+    def test_cli_rejects_train_and_test_as_development(self):
+        for split in ("train", "test"):
+            with self.subTest(split=split), redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit) as error:
+                    freeze.parse_args(["--manifest-dir", str(self.release),
+                                       "--dev-split", split])
+                self.assertEqual(error.exception.code, 2)
+
+    def test_direct_run_rejects_reserved_splits_before_reading_inputs(self):
+        for split in ("train", "test"):
+            with self.subTest(split=split):
+                args = freeze.parse_args(["--manifest-dir", str(self.release),
+                                          "--output-root", str(self.root / "out")])
+                args.dev_split = split
+                with patch.object(freeze, "read_manifest", side_effect=AssertionError(
+                        "Reserved splits must be rejected before reading inputs")) as read:
+                    with self.assertRaisesRegex(freeze.FreezeError, "train or test"):
+                        freeze.run(args)
+                    read.assert_not_called()
+                self.assertFalse((self.root / "out").exists())
 
     def test_pilot_source_needs_explicit_flag(self):
         write_release(self.release, *standard_release(), pilot=True)

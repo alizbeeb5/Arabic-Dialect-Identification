@@ -206,12 +206,15 @@ def parse_args(argv=None):
     for name in ("train_per_label", "dev_total", "max_per_group"):
         if getattr(args, name) is not None and getattr(args, name) <= 0:
             parser.error(f"--{name.replace('_', '-')} must be positive")
-    if args.dev_split == "train":
-        parser.error("--dev-split cannot be train")
+    if args.dev_split in ("train", "test"):
+        parser.error("--dev-split cannot be train or test; use development data")
     return args
 
 
 def run(args):
+    # Direct Python callers must respect the same boundary as the CLI.
+    if args.dev_split in ("train", "test"):
+        raise FreezeError("--dev-split cannot be train or test; use development data")
     labels = load_labels(args.labels)
     labels_hash = sha256_file(args.labels)
     train_rows, train_meta, train_hash = read_manifest(args.manifest_dir, "train", labels)

@@ -140,6 +140,9 @@ both pilots. The dev pilot is in-source, not out-of-domain. A bounded prepare.py
 pilot release is refused unless `--allow-pilot-source` is passed, and the outputs are
 then marked development-only.
 
+Both the CLI and Python entry point reject `train` and `test` as the development
+split before reading input manifests. Final-test data stays outside pilot selection.
+
 Checks:
 
 ```bash
