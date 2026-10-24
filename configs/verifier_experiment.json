@@ -1,0 +1,135 @@
+{
+  "schema_version": "1.0",
+  "status": "specification_only_no_trainer",
+  "task": "EEC-19",
+  "release_bindings_required_before_training": {
+    "train_manifest": null,
+    "train_metadata": null,
+    "selection_dev_manifest": null,
+    "selection_dev_metadata": null,
+    "selection_split_approval": null,
+    "feature_cache_provenance": null
+  },
+  "labels_path": "configs/labels.json",
+  "encoder": {
+    "checkpoint": "Elyadata/AraBEST-RQ-300M-6k",
+    "revision": "dff453e2b5f72f76211a523b1050691967e5a59b",
+    "feature_code_version": "acoustic-features-v2",
+    "frozen": true,
+    "layer_index": 25,
+    "pooling": "mean",
+    "feature_dim": 848,
+    "precision": "fp32",
+    "max_duration_sec": null
+  },
+  "shared_head": {
+    "score": "dot(dialect_embedding[c], h) + bias[c]",
+    "num_labels": 20,
+    "trainable_parameters": 16980,
+    "weight_init": "xavier_uniform",
+    "bias_init": "zeros",
+    "copy_initial_tensors_between_arms": true
+  },
+  "arms": {
+    "classifier": {
+      "loss": "cross_entropy",
+      "label_smoothing": 0.0
+    },
+    "verifier": {
+      "loss": "weighted_binary_cross_entropy_with_logits",
+      "positive_pairs_per_clip": 1,
+      "negative_pairs_per_clip": 19,
+      "negative_policy": "all_other_labels",
+      "positive_weight": 0.5,
+      "each_negative_weight": 0.02631578947368421,
+      "reduction": "sum_weighted_pairs_then_mean_original_clips"
+    }
+  },
+  "optimization": {
+    "optimizer": "AdamW",
+    "betas": [
+      0.9,
+      0.999
+    ],
+    "eps": 1e-08,
+    "weight_decay_W": 0.01,
+    "weight_decay_bias": 0.0,
+    "gradient_clip_norm": 1.0,
+    "batch_size_original_clips": 256,
+    "drop_last": false,
+    "epochs": 30,
+    "scheduler": null,
+    "early_stopping": false,
+    "augmentation": false,
+    "class_rebalancing": false
+  },
+  "search": {
+    "learning_rates": [
+      0.0001,
+      0.0003,
+      0.001
+    ],
+    "runs_per_arm": 6,
+    "validation_frequency": "each_epoch",
+    "checkpoint_selection": [
+      "accuracy_desc",
+      "supported_macro_f1_desc",
+      "epoch_asc"
+    ],
+    "learning_rate_selection": [
+      "accuracy_desc",
+      "supported_macro_f1_desc",
+      "learning_rate_asc"
+    ],
+    "tuning_seed": 11,
+    "reporting_seeds": [
+      17,
+      29,
+      43
+    ],
+    "reporting_learning_rate_policy": "freeze_per_arm_after_tuning_before_reporting_seeds",
+    "reset_model_and_optimizer_each_trial": true,
+    "rng_streams": "separate_initialization_and_shuffle_streams_seeded_by_run_seed"
+  },
+  "evaluation": {
+    "score_all_labels": true,
+    "export_score_type": "logits",
+    "tie_break": "lowest_canonical_label_index",
+    "duration_slices_seconds": [
+      [
+        0,
+        5
+      ],
+      [
+        5,
+        15
+      ],
+      [
+        15,
+        null
+      ]
+    ],
+    "duration_slice_boundary_rule": "lower_exclusive_upper_inclusive",
+    "minimum_slice_support_for_decision": 100,
+    "minimum_mean_accuracy_gain": 0.005,
+    "minimum_positive_seed_gains": 2,
+    "maximum_mean_macro_f1_drop": 0.005,
+    "maximum_mean_robustness_accuracy_drop": 0.02,
+    "calibrated_match_probability_claim": false
+  },
+  "release_bindings_optional_before_training": {
+    "ood_dev_release": null
+  },
+  "reference_data": {
+    "dataset_revision": "c8da454c9f474bb075d3fe608940ee29e8ccfa43",
+    "release": "full-8db5842080c2f643",
+    "train_manifest_sha256": "56a75aa929e2a2c4592012954386cb3d91ff7f256a7004ebe7c4a776573ea4ba",
+    "dev_manifest_sha256": "525ecea4b39c504b28858ddbfaf0a954af703c91ae8edddb252a0a6f2c8d138b",
+    "pilot_split_version": "w1-07-pilot-v1-e61cd569ac7b",
+    "pilot_train_clips": 500,
+    "pilot_dev_clips": 200,
+    "pilot_purpose": "implementation_checks_only_not_full_keep_drop_decision",
+    "recording_independence_verified": false,
+    "speaker_independence_verified": false
+  }
+}
