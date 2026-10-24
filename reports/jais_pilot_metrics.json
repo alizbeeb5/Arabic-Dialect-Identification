@@ -1,0 +1,71 @@
+{
+  "schema_version": "1.0",
+  "task": "EEC-17 / W1-13",
+  "date": "2026-10-24",
+  "evaluation_scope": "in_source_frozen_pilot_not_official_test",
+  "dataset": "UBC-NLP/NADI_2026_ADI20_micro",
+  "dataset_revision": "c8da454c9f474bb075d3fe608940ee29e8ccfa43",
+  "split_version": "w1-07-pilot-v1-e61cd569ac7b",
+  "num_output_labels": 20,
+  "model": "IFM/Jais-ASR",
+  "model_revision": "1323995fa189c479369a3929be0e95039eba5cba",
+  "inference_code_commit": "26b36593c7b4857b34a0b5f864c409f6d546be91",
+  "evidence_zip_sha256": "d4c0808ed6ca286d496f224f49386ea55a995bce6c41ebdd11d90e272314b1bd",
+  "metric_units": "accuracy, macro_f1 and coverage are fractions in [0,1]",
+  "macro_f1_label_policy": "supported_classes_all_20_have_support",
+  "c_avg": {
+    "value": null,
+    "reason": "No verified official scorer or full class-score vectors."
+  },
+  "splits": {
+    "train": {
+      "expected": 500,
+      "correct": 314,
+      "accuracy": 0.628,
+      "macro_f1": 0.637798121685272,
+      "coverage": 0.972,
+      "successful": 486,
+      "failed": 14,
+      "missing": 0,
+      "manifest_sha256": "4fb98eabdb15b8bc05fd7bafad0e1c9cd8885a5f50277397159cb2e4bedd65e3",
+      "predictions_sha256": "e38375508a656c50c965dffa7fdeb07d9ebb29e661e355e8924f030b10996302",
+      "transcript_status_counts": {
+        "ok": 492,
+        "refused": 8
+      },
+      "dialect_failure_counts": {
+        "refused": 8,
+        "unrecognized_dialect": 6
+      },
+      "wall_seconds": 980.731519389,
+      "peak_gpu_allocated_gib": 11.057334423065186,
+      "cache_hits": 20,
+      "cold_end_to_end_clips_per_second": null,
+      "timing_scope": "model loading, audio/cache reads, preprocessing, generation and cache writes; excludes final export",
+      "gpu_only_generation_seconds": null
+    },
+    "dev": {
+      "expected": 200,
+      "correct": 143,
+      "accuracy": 0.715,
+      "macro_f1": 0.7045528323025294,
+      "coverage": 1.0,
+      "successful": 200,
+      "failed": 0,
+      "missing": 0,
+      "manifest_sha256": "fb8684c35ef68e25834d5a4c82cddbd31044a899a63b665c41d3f9a179052d02",
+      "predictions_sha256": "daaa9ec6513ac62bfd401517e16f29f5d575c752e48b2fd4040c8959c254f422",
+      "transcript_status_counts": {
+        "ok": 196,
+        "truncated": 4
+      },
+      "dialect_failure_counts": {},
+      "wall_seconds": 486.47270571700005,
+      "peak_gpu_allocated_gib": 11.854891300201416,
+      "cache_hits": 0,
+      "cold_end_to_end_clips_per_second": 0.41112275704188783,
+      "timing_scope": "model loading, audio/cache reads, preprocessing, generation and cache writes; excludes final export",
+      "gpu_only_generation_seconds": null
+    }
+  }
+}
