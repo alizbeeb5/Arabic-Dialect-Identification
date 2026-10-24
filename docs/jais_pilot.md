@@ -6,6 +6,18 @@ input checks and the 20-clip smoke. Inspect its summary before running 500 train
 and 200 dev clips. The notebook uses the packaged adapter's existing provenance,
 cache and failure handling; adapter source is unchanged by this task.
 
+Notebook setup fetches and checks out the verified immutable inference commit
+`26b36593c7b4857b34a0b5f864c409f6d546be91` in detached mode. It does not depend on
+the task branch remaining available. This pins the executed scripts; download
+this updated notebook from the PR/main separately.
+
+Every subprocess streams merged stdout/stderr into the notebook with flushing.
+The same output is saved under the run directory's `logs/`, including setup
+errors and inference progress. Python child scripts run unbuffered. Exit 2 is
+still handled as a completed adapter run with clip failures, and other errors
+point to their saved log. Interrupting a command stops its child process;
+per-clip adapter receipts remain available for a later retry.
+
 ## Inputs and outputs
 
 Use committed `data/manifests/train_pilot.jsonl` (500) and `dev_pilot.jsonl` (200),

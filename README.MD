@@ -148,3 +148,30 @@ Checks:
 ```bash
 python -m unittest discover -s tests -p 'test_freeze_splits.py' -v
 ```
+
+
+## Verified Jais pilot results
+
+On 2026-10-24, pretrained Jais-ASR was evaluated on the frozen, balanced ADI-20
+pilot. No Jais fine-tuning was performed. This is an **in-source development
+result**, not official-test or out-of-domain benchmark performance.
+
+| Development metric | Result |
+|---|---:|
+| Clips / dialect classes | 200 / 20 |
+| Correct dialect predictions | 143 / 200 |
+| Accuracy (failures count as incorrect) | **71.50%** |
+| Macro-F1 (all 20 supported classes) | **70.46%** |
+| Dialect-prediction coverage | **100%** |
+| Transcript quality | 196 clean, 4 explicitly truncated |
+| Wall time (including loading and I/O) | 486.47 s |
+| Peak allocated GPU memory (Tesla T4, FP16) | 11.85 GiB |
+
+All 200 development IDs are retained in evaluation, including the four partial
+transcripts. The 500-clip training subset supplies 492 usable transcripts and
+8 explicit refusals for the text-classifier handoff. C_avg is unavailable.
+
+See the [verified result and failure analysis](reports/jais_pilot_review.md),
+[exact metrics JSON](reports/jais_pilot_metrics.json), and
+[Task 13 workflow](docs/jais_pilot.md). Recompute the uploaded evidence with
+`python tests/check_jais_pilot_evidence.py /path/to/task13_evidence.zip`.
