@@ -150,6 +150,28 @@ python -m unittest discover -s tests -p 'test_freeze_splits.py' -v
 ```
 
 
+
+## MFCC + SVM pilot sanity baseline (W1-11)
+
+A CPU-only reference that exercises the full data/evaluation path: 78 MFCC summary
+statistics per clip, StandardScaler + RBF SVM fitted on the training pilot only,
+scored on the 200-clip dev pilot with the shared evaluator. It is a sanity
+reference, not a competitive baseline. Run `notebooks/W1_11_MFCC_SVM_Baseline.ipynb`
+on Colab (it fetches just the 700 pilot clips from Hugging Face if they are not on
+your Drive, via `src/data/fetch_pilot_audio.py`), or:
+
+```bash
+python src/experiments/mfcc_svm_baseline.py --audio-root "$AUDIO_ROOT" --output-dir "$NEW_RUN_DIR"
+```
+
+On 2026-10-24 it scored **24.50% accuracy / 0.2383 macro-F1** on the 200-clip dev
+pilot (49/200; chance 5%), in 17.7 s on CPU. See the [result review](reports/mfcc_svm_pilot_review.md)
+and [the Task 11 instructions](docs/mfcc_svm_baseline.md). Checks:
+
+```bash
+python -m unittest discover -s tests -p 'test_mfcc_svm_baseline.py' -v
+```
+
 ## Verified Jais pilot results
 
 On 2026-10-24, pretrained Jais-ASR was evaluated on the frozen, balanced ADI-20
