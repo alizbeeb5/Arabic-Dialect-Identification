@@ -97,3 +97,14 @@ Offline checks (not GPU validation):
 python -m unittest discover -s tests -p 'test_jais_pilot.py' -v
 python -m unittest discover -s tests -p 'test_jais_adapter.py' -v
 ```
+
+## Verified pilot evidence
+
+The 2026-10-24 GPU pilot has been completed and independently recomputed from the
+uploaded run artifacts. See [the result review](../reports/jais_pilot_review.md)
+for exact scores, failures, truncation analysis, measured resources and Task 14
+handoff. Verify a copy of the same bundle with:
+
+```bash
+python tests/check_jais_pilot_evidence.py /path/to/task13_evidence.zip
+```
