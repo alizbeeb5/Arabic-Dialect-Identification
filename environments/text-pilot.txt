@@ -1,0 +1,7 @@
+# Direct CPU dependencies actually used for the Task 14 pilot.
+# Separate from the Jais GPU environment; no model download is needed.
+numpy==2.3.5
+scipy==1.17.0
+scikit-learn==1.8.0
+joblib==1.5.3
+threadpoolctl==3.6.0

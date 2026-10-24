@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0",
+  "experiment": "transcript_tfidf_pilot",
+  "seed": 490,
+  "input_policy": {
+    "accepted_statuses": [
+      "ok",
+      "truncated"
+    ],
+    "excluded_training_text": "drop_and_report",
+    "unavailable_dev_text": "retained_training_class_prior",
+    "use_partial_text": true,
+    "fit_vectorizer_on": "accepted_training_transcripts_only"
+  },
+  "features": {
+    "word": {
+      "analyzer": "word",
+      "ngram_range": [
+        1,
+        2
+      ],
+      "token_pattern": "(?u)\\b\\w+\\b",
+      "min_df": 1,
+      "lowercase": false,
+      "sublinear_tf": true
+    },
+    "character": {
+      "analyzer": "char_wb",
+      "ngram_range": [
+        3,
+        5
+      ],
+      "min_df": 1,
+      "lowercase": false,
+      "sublinear_tf": true
+    }
+  },
+  "classifier": {
+    "C": 1.0,
+    "solver": "lbfgs",
+    "max_iter": 1000,
+    "tol": 0.0001,
+    "class_weight": null
+  },
+  "selection": {
+    "hyperparameter_search": false,
+    "configuration_fixed_before_dev_scoring": true
+  },
+  "labels_path": "configs/labels.json"
+}
