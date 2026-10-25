@@ -13,8 +13,8 @@ pilot is in-source ADI-20, not out-of-domain.
 Colab (T4 GPU): open `notebooks/W1_12_Acoustic_Classifier.ipynb` and run the cells in order.
 `MODE = 'overfit_check'` extracts all 700 pilot features into the cache on Drive and runs the
 overfit gate only; `MODE = 'full'` reuses the cache, trains the head, predicts the dev pilot and runs
-the shared evaluator. Unpushed code is uploaded as a zip that includes `.git`, so the run record
-still names the base commit and marks uncommitted files; pushed code is fetched by `PINNED_COMMIT`.
+the shared evaluator. The notebook defaults to fetching reviewed code by immutable `PINNED_COMMIT`.
+Optional ZIP mode includes `.git`, so a run records the base commit and any uncommitted files.
 
 Command line, in the acoustic environment (`environments/acoustic.txt`), from the repository root:
 
@@ -77,8 +77,11 @@ part of the cache key; extract all clips of one experiment with one setting.
 - The run record stores the checkpoint revision and file hashes, the feature config hash, the
   provenance hash and a hash of the exact cache entries (clip ID + cache key) each split read.
   Identical values across runs show that train and dev features came from the same cache.
-- Each WAV is checked against the manifest `audio_sha256` before extraction. A failing clip
-  becomes an explicit failure (`audio_error` row for dev, excluded from fitting for train).
+- Each uncached WAV is checked against the manifest `audio_sha256` before extraction. Integrity
+  and decoding failures become `audio_error` records. Failed extraction batches are retried one
+  clip at a time; clips that still fail become `inference_error` records. Successful clips are
+  cached and reused on retry. Failed training clips are excluded from fitting; every dev ID stays
+  in the evaluation denominator. Cache/provenance/write errors stop the run as setup errors.
 
 ## Leakage controls
 
@@ -113,3 +116,7 @@ The tests use a tiny random encoder on synthetic audio (no checkpoint or network
 end-to-end outputs and frozen evidence, byte-identical reruns from the cache without audio,
 dev-label permutation, a failed overfit gate, explicit audio failures, config rejection of an
 unfrozen encoder or dev-based selection, and the notebook's source, mode and zip handling.
+
+The committed Colab results are historical evidence from the original source at
+`cc0fe5e6efea9cded41ba820391d1bcda159b434`. Review fixes add clip-failure isolation and a
+pinned notebook setup; no new full-audio/GPU run is claimed for those fixes.

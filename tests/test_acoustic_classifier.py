@@ -13,6 +13,7 @@ import unittest
 
 import numpy as np
 import torch
+from unittest.mock import patch
 
 from src.evaluation import evaluate as ev
 from src.experiments import acoustic_classifier as clf
@@ -224,6 +225,64 @@ class PipelineTests(unittest.TestCase):
         self.assertNotIn("scores", failed[0])
         metrics = json.loads((self.root / "run/evaluation/metrics.json").read_text())
         self.assertEqual((metrics["expected"], metrics["failed"]), (20, 1))
+
+    def test_matching_hash_but_undecodable_dev_audio_is_retained(self):
+        row = self.dev_rows[0]
+        path = self.root / "audio" / row["audio_path"]
+        path.write_bytes(b"manifest matches these bytes, but they are not audio")
+        row.update(audio_sha256=ev.sha256_file(path), encoded_bytes=path.stat().st_size)
+        base.write_jsonl(self.dev, self.dev_rows)
+        meta = json.loads(self.dev_meta.read_text())
+        meta["manifest_sha256"] = ev.sha256_file(self.dev)
+        base.write_json(self.dev_meta, meta)
+        self.assertEqual(self.run_classifier("run"), 2)
+        predictions = ev.read_jsonl(self.root / "run/predictions.jsonl")
+        self.assertEqual(len(predictions), len(self.dev_rows))
+        self.assertEqual(predictions[0]["status"], "audio_error")
+        self.assertEqual(predictions[0]["error_code"], "audio_unreadable")
+        self.assertEqual(sum(p["status"] == "ok" for p in predictions), len(predictions) - 1)
+        metrics = json.loads((self.root / "run/evaluation/metrics.json").read_text())
+        self.assertEqual((metrics["expected"], metrics["failed"]), (20, 1))
+
+    def test_model_failure_is_isolated_and_other_clips_are_cached(self):
+        original = ae.AcousticEncoder.extract
+        bad_id = self.dev_rows[0]["clip_id"]
+
+        def extract(encoder, clips, batch_size=8):
+            if any(cid == bad_id for cid, _ in clips):
+                raise RuntimeError("synthetic clip inference failure")
+            return original(encoder, clips, batch_size=batch_size)
+
+        with patch.object(ae.AcousticEncoder, "extract", extract):
+            self.assertEqual(self.run_classifier("run"), 2)
+        predictions = ev.read_jsonl(self.root / "run/predictions.jsonl")
+        self.assertEqual(predictions[0]["status"], "inference_error")
+        self.assertEqual(predictions[0]["error_code"], "feature_extraction_failed")
+        self.assertEqual(sum(p["status"] == "ok" for p in predictions), len(predictions) - 1)
+        self.assertEqual(self.record("run")["features"]["extracted_this_run"]["dev"], 19)
+        # A retry extracts only the previously failing clip and recovers full coverage.
+        self.assertEqual(self.run_classifier("retry"), 0)
+        self.assertEqual(self.record("retry")["features"]["extracted_this_run"], {"train": 0, "dev": 1})
+        metrics = json.loads((self.root / "run/evaluation/metrics.json").read_text())
+        self.assertEqual((metrics["expected"], metrics["failed"]), (20, 1))
+
+    def test_batch_failure_can_recover_without_dropping_clips(self):
+        original = ae.AcousticEncoder.extract
+
+        def extract(encoder, clips, batch_size=8):
+            if len(clips) > 1:
+                raise RuntimeError("synthetic batch memory limit")
+            return original(encoder, clips, batch_size=batch_size)
+
+        with patch.object(ae.AcousticEncoder, "extract", extract):
+            self.assertEqual(self.run_classifier("run"), 0)
+        self.assertEqual(self.record("run")["features"]["extracted_this_run"], {"train": 40, "dev": 20})
+        self.assertEqual(self.record("run")["counts"]["dev_failed"], 0)
+
+    def test_cache_write_error_is_a_setup_error(self):
+        with patch.object(ae.FeatureCache, "write", side_effect=OSError("disk full")):
+            self.assertEqual(self.run_classifier("run"), 1)
+        self.assertFalse((self.root / "run/predictions.jsonl").exists())
 
     def test_config_rejects_unfrozen_encoder_and_dev_selection(self):
         for section, values, message in (("encoder", {"frozen": False}, "frozen"),

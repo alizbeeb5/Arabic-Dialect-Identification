@@ -120,24 +120,62 @@ def prepare_features(encoder, cache, rows, audio_root, settings, split_name):
     if todo and audio_root is None:
         raise ValueError(f"[{split_name}] {len(todo)} clips are not cached; --audio-root is required")
     ready, failures = [], []
+
+    def failed(row, error, status, code):
+        failures.append({"clip_id": row["clip_id"], "status": status, "error_code": code,
+                         "error_type": type(error).__name__, "message": str(error)[:300]})
+
     for row in todo:
         try:
             base.verify_audio(ae.resolve_audio_path(audio_root, row["audio_path"]), row)
             ready.append(row)
         except Exception as error:  # noqa: BLE001 - every clip failure is recorded explicitly
-            failures.append({"clip_id": row["clip_id"],
-                             "error_code": ("audio_integrity_mismatch" if isinstance(error, base.AudioIntegrityError)
-                                            else "audio_unreadable"),
-                             "error_type": type(error).__name__, "message": str(error)[:300]})
-    started, done = time.perf_counter(), 0
-    for result in encoder.iter_extract_manifest(ready, audio_root, batch_size=settings["batch_size"],
-                                               chunk_size=settings["chunk_size"]):
+            failed(row, error, "audio_error", "audio_integrity_mismatch"
+                   if isinstance(error, base.AudioIntegrityError) else "audio_unreadable")
+    started, extracted = time.perf_counter(), []
+
+    def store_result(result, hashes):
+        result.audio_sha256 = hashes
+        # Cache/provenance/write errors are setup errors, not individual clip failures.
         cache.write(result)
-        done += len(result.clip_ids)
-        base.progress(f"[{split_name}] features {done}/{len(ready)} ({time.perf_counter() - started:.1f}s)")
-    base.progress(f"[{split_name}] {len(rows) - len(todo)} clips reused from cache, {len(ready)} extracted, "
+        extracted.extend(result.clip_ids)
+
+    for start in range(0, len(ready), settings["chunk_size"]):
+        clips, hashes, inputs = [], [], []
+        for row in ready[start:start + settings["chunk_size"]]:
+            try:
+                wave = ae.load_waveform(ae.resolve_audio_path(audio_root, row["audio_path"]), encoder.config)
+            except Exception as error:  # decode errors belong to this clip
+                failed(row, error, "audio_error", "audio_unreadable")
+                continue
+            clips.append((row["clip_id"], wave))
+            hashes.append(row["audio_sha256"])
+            inputs.append(row)
+        if not clips:
+            continue
+        try:
+            result = encoder.extract(clips, batch_size=settings["batch_size"])
+        except Exception:  # isolate the failing clip; a batch OOM may succeed individually
+            result = None
+        if result is None:  # retry after the batch exception/traceback has been released
+            if encoder.device.type == "cuda":
+                torch.cuda.empty_cache()
+            for clip, digest, row in zip(clips, hashes, inputs):
+                try:
+                    result = encoder.extract([clip], batch_size=1)
+                except Exception as error:
+                    failed(row, error, "inference_error", "feature_extraction_failed")
+                    if encoder.device.type == "cuda":
+                        torch.cuda.empty_cache()
+                    continue
+                store_result(result, [digest])
+        else:
+            store_result(result, hashes)
+        del clips
+        base.progress(f"[{split_name}] features {len(extracted)}/{len(ready)} ({time.perf_counter() - started:.1f}s)")
+    base.progress(f"[{split_name}] {len(rows) - len(todo)} clips reused from cache, {len(extracted)} extracted, "
                   f"{len(failures)} failed")
-    return [row["clip_id"] for row in ready], failures
+    return extracted, failures
 
 
 def cache_keys_sha256(cache, clip_ids):
@@ -511,7 +549,7 @@ def run(args, load_encoder=ae.AcousticEncoder.from_pretrained):
                    for cid, p, row in zip(dev_ids, predicted, logits)}
     for failure in dev_failures:
         predictions[failure["clip_id"]] = {"clip_id": failure["clip_id"], "predicted_label": None,
-                                           "model_revision": model_revision, "status": "audio_error",
+                                           "model_revision": model_revision, "status": failure["status"],
                                            "error_code": failure["error_code"]}
     prediction_rows = [predictions[r["clip_id"]] for r in dev_rows]
     predictions_path = args.output_dir / "predictions.jsonl"

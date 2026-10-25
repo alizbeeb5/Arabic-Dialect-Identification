@@ -140,7 +140,7 @@ is unlikely to fit on a T4.
 
 Code: base commit `d535541` plus uncommitted W1-12 files, uploaded as a zip (`aa7d0a7f…`); script
 `119dd763…`, config `6d7df173…`, encoder code `dd9f8cf0…` (all in `run_record.json` and matching
-the files in this change). Environment: Python 3.13.16, torch 2.14.1, torchaudio 2.11.0+cu130,
+the original PR source at `cc0fe5e6efea9cded41ba820391d1bcda159b434`). Environment: Python 3.13.16, torch 2.14.1, torchaudio 2.11.0+cu130,
 speechbrain 1.1.2, numpy 2.5.4. The checkpoint (`cc2984ca…`, 71,677 bytes) is git-ignored and stays
 in the run folder on Drive (`runs/acoustic_classifier_w1_12/20261025T102216142117Z_full/`).
 
@@ -169,3 +169,11 @@ In order of cost, each motivated by training-set evidence above:
    training release with a GPU larger than a T4 and a decision on long clips. This is the first
    fine-tuning experiment the pilot justifies; fine-tuning now would confound an under-trained head
    with encoder adaptation.
+
+## Post-review corrections
+
+The extraction runner now isolates hash, decoding and model failures, retries failed batches
+clip by clip, and preserves all dev IDs as explicit audio/inference failures. Cache-write and
+provenance errors still stop execution. The notebook is configured to fetch an immutable source
+commit by default. The 67/200 result and historical run records above are preserved; these
+review corrections have offline regression coverage, without a new full-audio/GPU run.
