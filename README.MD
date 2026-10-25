@@ -175,3 +175,15 @@ See the [verified result and failure analysis](reports/jais_pilot_review.md),
 [exact metrics JSON](reports/jais_pilot_metrics.json), and
 [Task 13 workflow](docs/jais_pilot.md). Recompute the uploaded evidence with
 `python tests/check_jais_pilot_evidence.py /path/to/task13_evidence.zip`.
+
+## Transcript-only pilot baseline (Task 14)
+
+On the same frozen 200 development clips, combined word/character TF-IDF plus
+logistic regression scored **25.00% accuracy**, **23.64% macro-F1** and **100%
+prediction coverage**. It was fitted on 492 available training transcripts and
+used all four partial dev transcripts. The fixed first run was not tuned after
+seeing development results; it is a small-data baseline, not a benchmark claim.
+
+See the [Task 14 result review](reports/transcript_tfidf_pilot_review.md),
+[exact metrics](reports/transcript_tfidf_pilot_metrics.json), and
+[reproduction instructions](docs/transcript_tfidf.md).

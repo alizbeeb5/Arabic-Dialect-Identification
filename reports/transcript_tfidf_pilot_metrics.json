@@ -1,0 +1,278 @@
+{
+  "schema_version": "1.0",
+  "task": "EEC-18 / W1-14",
+  "date": "2026-10-24",
+  "scope": "in_source_fixed_pilot_not_official_test",
+  "training_code_commit": "faa0084e61c4e68fa8fd030186121774e1e3eeed",
+  "model_revision": "sha256:2c82c5c32574d6b58905042d96b59725389aa93bfc3733bb50f3c93471d866f4",
+  "training_input": {
+    "dataset_version": "c8da454c9f474bb075d3fe608940ee29e8ccfa43",
+    "labels_sha256": "5cf7d68237eab4a39790dda4faf59af6d31bff7c927564e55272e890206902c5",
+    "manifest_sha256": "4fb98eabdb15b8bc05fd7bafad0e1c9cd8885a5f50277397159cb2e4bedd65e3",
+    "metadata_sha256": "3494ba515ece8194a8aaaa43c83379431590c4ad8690ed7d2a47adfe43929743",
+    "split_version": "w1-07-pilot-v1-e61cd569ac7b",
+    "summary_sha256": "3fd2b46da052bc9d497cc3b7d2a4985bf8838279c76a8c52aedd5de0dfe99c52",
+    "targets.jsonl_sha256": "69f6dfd5b32bf42eac4371351bf38b4846fc08333f4bc4b7a3d4e895d94decc9",
+    "transcripts.jsonl_sha256": "476140fd2885759834d3fe5a8f084f834414eb9f2aa1e5cb8053918fe2d15c2f"
+  },
+  "environment": {
+    "joblib": "1.5.3",
+    "numpy": "2.3.5",
+    "python": "3.12.14",
+    "scikit-learn": "1.8.0",
+    "scipy": "1.17.0",
+    "threadpoolctl": "3.6.0"
+  },
+  "config": {
+    "classifier": {
+      "C": 1.0,
+      "class_weight": null,
+      "max_iter": 1000,
+      "solver": "lbfgs",
+      "tol": 0.0001
+    },
+    "experiment": "transcript_tfidf_pilot",
+    "features": {
+      "character": {
+        "analyzer": "char_wb",
+        "lowercase": false,
+        "min_df": 1,
+        "ngram_range": [
+          3,
+          5
+        ],
+        "sublinear_tf": true
+      },
+      "word": {
+        "analyzer": "word",
+        "lowercase": false,
+        "min_df": 1,
+        "ngram_range": [
+          1,
+          2
+        ],
+        "sublinear_tf": true,
+        "token_pattern": "(?u)\\b\\w+\\b"
+      }
+    },
+    "input_policy": {
+      "accepted_statuses": [
+        "ok",
+        "truncated"
+      ],
+      "excluded_training_text": "drop_and_report",
+      "fit_vectorizer_on": "accepted_training_transcripts_only",
+      "unavailable_dev_text": "retained_training_class_prior",
+      "use_partial_text": true
+    },
+    "labels_path": "configs/labels.json",
+    "schema_version": "1.0",
+    "seed": 490,
+    "selection": {
+      "configuration_fixed_before_dev_scoring": true,
+      "hyperparameter_search": false
+    }
+  },
+  "fit": {
+    "expected_training_clips": 500,
+    "retained_training_clips": 492,
+    "training_matrix_shape": [
+      492,
+      44997
+    ],
+    "feature_counts": {
+      "character": 31609,
+      "word": 13388
+    },
+    "optimizer_iterations": [
+      11
+    ],
+    "fit_seconds": 0.6054911309999511
+  },
+  "train": {
+    "expected": 500,
+    "correct": 492,
+    "accuracy": 0.984,
+    "macro_f1": 0.9848099180978334,
+    "coverage": 1.0
+  },
+  "dev": {
+    "expected": 200,
+    "correct": 50,
+    "accuracy": 0.25,
+    "macro_f1": 0.23642323859715164,
+    "coverage": 1.0,
+    "successful": 200,
+    "failed": 0,
+    "missing": 0,
+    "manifest_sha256": "fb8684c35ef68e25834d5a4c82cddbd31044a899a63b665c41d3f9a179052d02",
+    "predictions_sha256": "977e367b92b5235af17ede75ae170c8cb166ec205588f8ec8410f6b97cd6f08e",
+    "per_dialect": {
+      "ALG": {
+        "f1": 0.18181818181818182,
+        "precision": 0.16666666666666666,
+        "recall": 0.2,
+        "support": 10,
+        "supported": true
+      },
+      "BAH": {
+        "f1": 0.5217391304347826,
+        "precision": 0.46153846153846156,
+        "recall": 0.6,
+        "support": 10,
+        "supported": true
+      },
+      "EGY": {
+        "f1": 0.4,
+        "precision": 0.3,
+        "recall": 0.6,
+        "support": 10,
+        "supported": true
+      },
+      "IRA": {
+        "f1": 0.3,
+        "precision": 0.3,
+        "recall": 0.3,
+        "support": 10,
+        "supported": true
+      },
+      "JOR": {
+        "f1": 0.26666666666666666,
+        "precision": 0.4,
+        "recall": 0.2,
+        "support": 10,
+        "supported": true
+      },
+      "KSA": {
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "support": 10,
+        "supported": true
+      },
+      "KUW": {
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "support": 10,
+        "supported": true
+      },
+      "LEB": {
+        "f1": 0.2,
+        "precision": 0.2,
+        "recall": 0.2,
+        "support": 10,
+        "supported": true
+      },
+      "LIB": {
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "support": 10,
+        "supported": true
+      },
+      "MAU": {
+        "f1": 0.2857142857142857,
+        "precision": 0.5,
+        "recall": 0.2,
+        "support": 10,
+        "supported": true
+      },
+      "MOR": {
+        "f1": 0.6363636363636364,
+        "precision": 0.5833333333333334,
+        "recall": 0.7,
+        "support": 10,
+        "supported": true
+      },
+      "MSA": {
+        "f1": 0.7619047619047619,
+        "precision": 0.7272727272727273,
+        "recall": 0.8,
+        "support": 10,
+        "supported": true
+      },
+      "OMA": {
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "support": 10,
+        "supported": true
+      },
+      "PAL": {
+        "f1": 0.1,
+        "precision": 0.1,
+        "recall": 0.1,
+        "support": 10,
+        "supported": true
+      },
+      "QAT": {
+        "f1": 0.08695652173913043,
+        "precision": 0.07692307692307693,
+        "recall": 0.1,
+        "support": 10,
+        "supported": true
+      },
+      "SUD": {
+        "f1": 0.1111111111111111,
+        "precision": 0.125,
+        "recall": 0.1,
+        "support": 10,
+        "supported": true
+      },
+      "SYR": {
+        "f1": 0.2857142857142857,
+        "precision": 0.2727272727272727,
+        "recall": 0.3,
+        "support": 10,
+        "supported": true
+      },
+      "TUN": {
+        "f1": 0.3,
+        "precision": 0.3,
+        "recall": 0.3,
+        "support": 10,
+        "supported": true
+      },
+      "UAE": {
+        "f1": 0.19047619047619047,
+        "precision": 0.18181818181818182,
+        "recall": 0.2,
+        "support": 10,
+        "supported": true
+      },
+      "YEM": {
+        "f1": 0.1,
+        "precision": 0.1,
+        "recall": 0.1,
+        "support": 10,
+        "supported": true
+      }
+    }
+  },
+  "dev_text_sources": {
+    "clean": 196,
+    "partial": 4,
+    "prior_fallback": 0
+  },
+  "comparison": {
+    "jais_direct_accuracy": 0.715,
+    "jais_direct_macro_f1": 0.7045528323025294,
+    "both_correct": 34,
+    "jais_only_correct": 109,
+    "text_only_correct": 16,
+    "both_wrong": 41
+  },
+  "reproduction": {
+    "refit_prediction_records_identical": true,
+    "maximum_probability_difference": 0.0
+  },
+  "metric_units": "fractions, except counts and seconds",
+  "calibration": "not independently measured",
+  "c_avg": {
+    "reason": "Official C_avg scoring is not implemented or verified.",
+    "value": null
+  },
+  "published_source_commit": "b474536a35ee265fe4b092c3c8ce67a114d08af9",
+  "source_tree_sha": "305d3a39192fe28a06d1a92942c570237b1846c0"
+}
