@@ -6,6 +6,18 @@ improves identification on speech from different data sources.
 The initial plan uses ADI-20 for training and Casablanca for target-domain
 evaluation, subject to source-overlap and checkpoint-exposure checks.
 
+## Week 1 results
+
+The [pilot comparison and analysis](reports/week1_results.md) combines all four models on the
+same frozen 200 development clips, with saved prediction evidence, paired errors and compute
+estimates. Reproduce the analysis without a GPU, raw audio or model checkpoint:
+
+```bash
+python src/analysis/week1_results.py --output-dir /tmp/week1-analysis-review
+```
+
+These are in-source development results, not official-test or out-of-domain scores.
+
 ## Base environment
 
 Tested locally with Python 3.14.4 on Linux.
