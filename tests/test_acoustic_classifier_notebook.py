@@ -2,6 +2,7 @@
 import ast
 import json
 import os
+import re
 from pathlib import Path
 import subprocess
 import sys
@@ -61,7 +62,7 @@ class NotebookTests(unittest.TestCase):
         self.assertNotIn('--overfit-check-only', self.run_cell('full'))
 
     def test_zip_source_unpacks_and_records_base_commit_and_dirty_state(self):
-        source = cell_with("SOURCE = 'zip'")
+        source = cell_with("PINNED_COMMIT =").replace("SOURCE = 'github'", "SOURCE = 'zip'", 1)
         self.assertIn(COLAB_REPO, source)
         with tempfile.TemporaryDirectory() as td:
             td = Path(td)
@@ -100,12 +101,46 @@ class NotebookTests(unittest.TestCase):
         self.assertTrue(scope['RUN_ROOT'].name.endswith('_overfit_check'))
 
     def test_github_source_requires_a_pinned_commit(self):
-        source = cell_with("SOURCE = 'zip'").replace("SOURCE = 'zip'", "SOURCE = 'github'", 1)
+        source = re.sub(r"PINNED_COMMIT = '[a-f0-9]{40}'", 'PINNED_COMMIT = None', cell_with('PINNED_COMMIT ='))
         with tempfile.TemporaryDirectory() as td:
             scope = {'Path': Path, 'DATA_ROOT': Path(td), 'MODE': 'full'}
             source = source.replace(COLAB_REPO, f"Path({str(Path(td) / 'repo')!r})")
             with self.assertRaisesRegex(RuntimeError, 'PINNED_COMMIT'):
                 exec(compile(source, '<source-cell>', 'exec'), scope)
+
+    def test_default_github_source_fetches_immutable_commit(self):
+        source = cell_with('PINNED_COMMIT =')
+        self.assertIn("SOURCE = 'github'", source)
+        self.assertRegex(source, r"PINNED_COMMIT = '[a-f0-9]{40}'")
+        with tempfile.TemporaryDirectory() as td:
+            td = Path(td)
+            checkout = td / 'fixture'
+            (checkout / 'src/experiments').mkdir(parents=True)
+            (checkout / 'src/experiments/acoustic_classifier.py').write_text('# fixture\n')
+            def git(*args):
+                return subprocess.run(['git', '-C', str(checkout), *args], check=True,
+                                      capture_output=True, text=True).stdout.strip()
+            git('init', '--quiet')
+            git('add', '.')
+            git('-c', 'user.name=t', '-c', 'user.email=t@example.com', 'commit', '--quiet', '-m', 'fixture')
+            commit = git('rev-parse', 'HEAD')
+            source = re.sub(r"PINNED_COMMIT = '[a-f0-9]{40}'", f"PINNED_COMMIT = '{commit}'", source)
+            source = source.replace('https://github.com/alizbeeb5/Arabic-Dialect-Identification.git', str(checkout))
+            source = source.replace(COLAB_REPO, f"Path({str(td / 'repo')!r})")
+            scope = {'Path': Path, 'DATA_ROOT': td, 'MODE': 'full'}
+            with patch('builtins.print'):
+                exec(compile(source, '<source-cell>', 'exec'), scope)
+            self.assertEqual(scope['SOURCE_COMMIT'], commit)
+            self.assertEqual(scope['SOURCE_STATUS'], '')
+
+    def test_github_source_rejects_a_wrong_checkout(self):
+        source = cell_with('PINNED_COMMIT =')
+        with tempfile.TemporaryDirectory() as td:
+            source = source.replace(COLAB_REPO, f"Path({str(Path(td) / 'repo')!r})")
+            scope = {'Path': Path, 'DATA_ROOT': Path(td), 'MODE': 'full'}
+            with patch.object(subprocess, 'run', return_value=types.SimpleNamespace(stdout='wrong\n')):
+                with self.assertRaisesRegex(RuntimeError, 'Source mismatch'):
+                    exec(compile(source, '<source-cell>', 'exec'), scope)
 
 
 if __name__ == '__main__':
