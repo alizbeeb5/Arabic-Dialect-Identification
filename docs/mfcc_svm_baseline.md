@@ -43,8 +43,13 @@ python src/experiments/mfcc_svm_baseline.py \
 
 The train/dev manifests default to the committed frozen pilot
 (`data/manifests/{train,dev}_pilot.jsonl` and their metadata). The configuration is
-`configs/mfcc_svm_baseline.json`. Dependencies: numpy, scipy, scikit-learn, soundfile
-(no GPU, no torch). The output directory must not already exist.
+`configs/mfcc_svm_baseline.json`. Unsupported window settings are rejected; only
+the documented Hamming window is implemented. Dependencies: numpy, scipy, scikit-learn, soundfile
+(no GPU, no torch). The output directory must not already exist. Every WAV is checked against its
+manifest `audio_sha256` (and `encoded_bytes` when supplied) inside the experiment
+before decoding, including files already present on Drive. A readable file with
+the wrong identity becomes an explicit `audio_error` with
+`error_code=audio_integrity_mismatch`; it is never used for fitting or prediction.
 
 Exit codes: `0` completed with no clip failures, `2` completed with explicit clip
 failures (still written and scored), `1` setup or contract error.
@@ -73,7 +78,7 @@ Result: 13 × 3 × 2 = **78 features per clip**. Feature names are saved with th
 - Week 1 tuning is deliberately small: `C ∈ {1, 10}` chosen by 5-fold stratified CV
   (seed 490) **on the training pilot only**, scoring macro-F1. The scaler is refitted
   inside every fold, then on the full training pilot for the final model.
-- Development rows are reduced to `clip_id` and `audio_path` before feature
+- Development rows retain only `clip_id`, `audio_path` and audio integrity fields before feature
   extraction and prediction; gold dev labels are read only by the shared evaluator
   after `predictions.jsonl` is written. A test confirms that permuting dev labels
   leaves predictions unchanged.
@@ -108,9 +113,23 @@ On Colab most of the time is reading WAVs from Drive; the arithmetic itself took
 python -m unittest discover -s tests -p 'test_mfcc_svm_baseline.py' -v
 ```
 
-13 offline checks on synthetic audio: feature shape/determinism, DCT and mel
+Offline checks on synthetic audio include: feature shape/determinism, DCT and mel
 filterbank against SciPy/librosa references, resampling and stereo handling, path
 traversal, end-to-end outputs and evaluation, model replay from saved features,
 dev-label isolation, explicit failure rows, refusal of reused output folders, wrong
 splits and tampered manifests, and that the defaults are the frozen 500/200 pilot.
 The librosa cross-check is skipped when librosa is not installed.
+
+
+## Post-review safeguards
+
+The notebook is pinned to an immutable reviewed source commit, so setup does not
+require the original task branch to exist. The experiment enforces audio hashes
+on both splits even when downloading is skipped. Regression tests cover a
+readable, same-size replacement WAV, preserving integrity fields while stripping
+gold labels, and rejecting unsupported windows.
+
+The committed 49/200 evidence records the original pre-fix script; see its
+explicit source identity in the result review. These input/config safeguards do
+not change MFCC values for valid WAVs. New wall times will also include the cost
+of hash verification. No replacement full-audio run is claimed by these fixes.

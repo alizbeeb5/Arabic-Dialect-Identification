@@ -50,7 +50,8 @@ def write_split(root, split, per_label, broken=()):
                          subtype="FLOAT")
             rows.append({"clip_id": clip_id, "audio_path": f"{split}/{clip_id}.wav", "label": label,
                          "split": split, "source_id": None, "speaker_id": None, "domain": "unknown",
-                         "duration_sec": 1.0, "sample_rate_hz": RATE})
+                         "duration_sec": 1.0, "sample_rate_hz": RATE,
+                         "audio_sha256": ev.sha256_file(path), "encoded_bytes": path.stat().st_size})
     manifest = root / f"{split}.jsonl"
     base.write_jsonl(manifest, rows)
     metadata = root / f"{split}.metadata.json"
@@ -92,6 +93,17 @@ class FeatureTests(unittest.TestCase):
         expected = librosa.filters.mel(sr=RATE, n_fft=f["n_fft"], n_mels=f["n_mels"], fmin=f["f_min_hz"],
                                        fmax=f["f_max_hz"], htk=True, norm=None)
         np.testing.assert_allclose(self.extractor.filters, expected, atol=1e-6)
+
+    def test_rejects_unsupported_window_in_config_and_direct_extractor(self):
+        config = json.loads(json.dumps(CONFIG))
+        config["features"]["window"] = "hann"
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "config.json"
+            base.write_json(path, config)
+            with self.assertRaisesRegex(ValueError, "hamming"):
+                base.load_config(path)
+        with self.assertRaisesRegex(ValueError, "hamming"):
+            base.MfccExtractor(config["features"])
 
     def test_frame_count(self):
         # 1 s at 16 kHz, 400-sample frames every 160 samples -> 1 + (16000 - 400) // 160 frames.
@@ -187,6 +199,33 @@ class PipelineTests(unittest.TestCase):
         metrics = json.loads((self.root / "run/evaluation/metrics.json").read_text())
         self.assertEqual(metrics["expected"], 40)
         self.assertEqual(metrics["failed"], 1)
+
+    def test_readable_same_size_wrong_audio_is_a_failure(self):
+        dev, dev_meta, rows = write_split(self.root, "dev", per_label=2)
+        row = rows[0]
+        path = self.root / "audio" / row["audio_path"]
+        old_size = path.stat().st_size
+        sf.write(path, tone(19, 999), RATE, subtype="FLOAT")
+        self.assertEqual(path.stat().st_size, old_size)
+        self.assertNotEqual(ev.sha256_file(path), row["audio_sha256"])
+        self.assertEqual(self.run_baseline(dev, dev_meta, "wrong-audio"), 2)
+        predictions = ev.read_jsonl(self.root / "wrong-audio/predictions.jsonl")
+        failed = [p for p in predictions if p["status"] != "ok"]
+        self.assertEqual(len(predictions), len(rows))
+        self.assertEqual(len(failed), 1)
+        self.assertEqual(failed[0]["clip_id"], row["clip_id"])
+        self.assertEqual(failed[0]["error_code"], "audio_integrity_mismatch")
+        metrics = json.loads((self.root / "wrong-audio/evaluation/metrics.json").read_text())
+        self.assertEqual(metrics["expected"], len(rows))
+        self.assertEqual(metrics["failed"], 1)
+
+    def test_audio_identity_survives_dev_label_removal_and_is_required(self):
+        row = {"clip_id": "x", "audio_path": "x.wav", "audio_sha256": "0" * 64,
+               "encoded_bytes": 12, "label": "LEB", "source_id": "private-source"}
+        stripped = base.without_labels([row])[0]
+        self.assertEqual(set(stripped), {"clip_id", "audio_path", "audio_sha256", "encoded_bytes"})
+        with self.assertRaisesRegex(base.AudioIntegrityError, "audio_sha256"):
+            base.verify_audio(Path("unused"), {"clip_id": "x"})
 
     def test_refuses_existing_output_and_overlapping_ids(self):
         dev, dev_meta, _ = write_split(self.root, "dev", per_label=2)

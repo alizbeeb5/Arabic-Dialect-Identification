@@ -97,6 +97,8 @@ def progress(message):
 def load_config(path):
     config = json.loads(Path(path).read_text(encoding="utf-8"))
     feats, clf = config["features"], config["classifier"]
+    if feats.get("window") != "hamming":
+        raise ValueError("Only the hamming window is implemented")
     if feats["statistics"] != list(FEATURE_STATS):
         raise ValueError(f"Only statistics {list(FEATURE_STATS)} are implemented")
     if not 0 < feats["f_min_hz"] < feats["f_max_hz"] <= feats["sample_rate_hz"] / 2:
@@ -169,6 +171,8 @@ def deltas(features, width):
 class MfccExtractor:
     def __init__(self, feature_config):
         self.config = dict(feature_config)
+        if self.config.get("window") != "hamming":
+            raise ValueError("Only the hamming window is implemented")
         rate = self.config["sample_rate_hz"]
         self.frame_length = int(round(self.config["frame_length_ms"] * rate / 1000))
         self.frame_shift = int(round(self.config["frame_shift_ms"] * rate / 1000))
@@ -234,18 +238,37 @@ def load_wave(path, sample_rate):
     return wave, int(rate)
 
 
+class AudioIntegrityError(ValueError):
+    """The stored WAV does not match the frozen manifest's audio identity."""
+
+
+def verify_audio(path, row):
+    expected = row.get("audio_sha256")
+    if (not isinstance(expected, str) or len(expected) != 64
+            or any(c not in "0123456789abcdef" for c in expected)):
+        raise AudioIntegrityError("Missing or invalid manifest audio_sha256")
+    size = row.get("encoded_bytes")
+    if size is not None and path.stat().st_size != size:
+        raise AudioIntegrityError("Stored WAV size differs from the manifest")
+    if ev.sha256_file(path) != expected:
+        raise AudioIntegrityError("Stored WAV SHA256 differs from the manifest")
+
+
 def extract_split(rows, audio_root, extractor, split_name):
     """Return (matrix, clip_ids, failures). Uses audio only; never reads labels."""
     vectors, ids, failures = [], [], []
     started = time.perf_counter()
     for number, row in enumerate(rows, start=1):
         try:
-            wave, _ = load_wave(resolve_audio_path(audio_root, row["audio_path"]),
-                                extractor.config["sample_rate_hz"])
+            path = resolve_audio_path(audio_root, row["audio_path"])
+            verify_audio(path, row)
+            wave, _ = load_wave(path, extractor.config["sample_rate_hz"])
             vectors.append(extractor.summary(wave))
             ids.append(row["clip_id"])
         except Exception as error:  # noqa: BLE001 - every clip failure is recorded explicitly
-            failures.append({"clip_id": row["clip_id"], "error_code": "audio_unreadable",
+            failures.append({"clip_id": row["clip_id"],
+                             "error_code": ("audio_integrity_mismatch" if isinstance(error, AudioIntegrityError)
+                                            else "audio_unreadable"),
                              "error_type": type(error).__name__, "message": str(error)[:300]})
         if number % 50 == 0 or number == len(rows):
             progress(f"[{split_name}] features {number}/{len(rows)} "
@@ -271,8 +294,9 @@ def load_split(manifest, metadata, labels_path, labels):
 
 
 def without_labels(rows):
-    """Development rows as seen by feature extraction and prediction: no gold label."""
-    return [{"clip_id": r["clip_id"], "audio_path": r["audio_path"]} for r in rows]
+    """Retain audio identity checks, never gold labels or source/speaker fields."""
+    fields = ("clip_id", "audio_path", "audio_sha256", "encoded_bytes")
+    return [{key: r[key] for key in fields if key in r} for r in rows]
 
 
 # ---------------------------------------------------------------- model

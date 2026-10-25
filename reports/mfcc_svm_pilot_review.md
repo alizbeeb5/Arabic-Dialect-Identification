@@ -89,7 +89,7 @@ Drive would add I/O time. For context, the Jais pilot needed 486.47 s wall time 
   was checked against the committed manifest's clip ID, byte length and SHA256.
 - Code: the Colab checkout was `main` at `427bf38` with this branch's files unpacked on
   top, so the record shows `dirty: true`. The executed script and config hashes
-  (`8f3c5629…`, `8a6dfc76…`) equal the files committed on this branch; the evaluator
+  (`8f3c5629…`, `8a6dfc76…`) equal the original files at commit `67fe0d230d2e91c862c8cc7b32fa05f00860e785`; the evaluator
   hash (`857d2f29…`) equals `src/evaluation/evaluate.py` on `main`.
 - Environment: Python 3.13.16, numpy 2.1.3, scipy 1.16.3, scikit-learn 1.6.1,
   soundfile 0.14.0, joblib 1.6.0.
@@ -118,3 +118,23 @@ artifact hashes in the run record were re-verified against the downloaded run fo
       result was rerun with an identical outcome.
 - [x] Labelled a pilot sanity reference, not a competitive substitute for strong
       baselines.
+
+
+## Post-review fixes and evidence limits
+
+Review fixes add per-WAV SHA256/size verification to the experiment, preserve
+integrity fields when removing development labels, reject unsupported window
+settings, and pin notebook setup to the reviewed implementation. The original
+run record and predictions above remain unchanged: their script hash identifies
+the pre-fix source at `67fe0d230d2e91c862c8cc7b32fa05f00860e785`.
+
+The committed predictions were independently re-scored: 49/200, accuracy 0.245,
+macro-F1 0.23830908131117856, complete coverage. Available source/config/prediction
+hashes match the historical record. Synthetic checks validate the fixes; no new
+700-clip audio run was performed during this review. The new hash checks add I/O
+cost that is not part of the historical 17.741-second measurement.
+
+The actual model, feature array and diagnostic decision-score hashes require
+the saved run ZIP for independent replay. They are not independently verified
+from the committed predictions alone. Preserve or attach that run artifact
+outside ordinary Git history for the experiment handoff.
