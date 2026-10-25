@@ -1,0 +1,106 @@
+{
+  "task": "EEC-15 / W1-11",
+  "result_role": "pilot_sanity_reference_not_competitive_baseline",
+  "note": "Pilot sanity reference that exercises the data/evaluation path; not a competitive substitute for strong baselines. In-source ADI-20 development pilot, not out-of-domain.",
+  "model_name": "mfcc-svm-pilot-sanity",
+  "model_revision": "mfcc-svm-pilot-sanity:35e8dac7384735e9",
+  "status": "completed",
+  "command": "/usr/bin/python3 /content/project/src/experiments/mfcc_svm_baseline.py --audio-root /content/Arabic-Dialect-Identification-data/audio/adi20_micro/c8da454c9f474bb075d3fe608940ee29e8ccfa43 --output-dir /content/Arabic-Dialect-Identification-data/runs/mfcc_svm_w1_11/20261024T212842Z-full",
+  "started_at_utc": "2026-10-24T21:28:43.529739+00:00",
+  "finished_at_utc": "2026-10-24T21:29:01.270867+00:00",
+  "code": {
+    "commit": "427bf38cfa06b29478e08312eab8a7373945b10f",
+    "dirty": true,
+    "script_sha256": "8f3c56290181eb57afc4dc26317dd9c33e4127865ff139b41e3e04a413e3c55c",
+    "config_sha256": "8a6dfc76b3f0f84d89655ae25bd00f139a367ba0a4667703bbd2e30190162f54"
+  },
+  "data": {
+    "dataset_version": "c8da454c9f474bb075d3fe608940ee29e8ccfa43",
+    "split_version": "w1-07-pilot-v1-e61cd569ac7b",
+    "train_manifest_sha256": "4fb98eabdb15b8bc05fd7bafad0e1c9cd8885a5f50277397159cb2e4bedd65e3",
+    "dev_manifest_sha256": "fb8684c35ef68e25834d5a4c82cddbd31044a899a63b665c41d3f9a179052d02",
+    "labels_sha256": "5cf7d68237eab4a39790dda4faf59af6d31bff7c927564e55272e890206902c5",
+    "audio_root": "/content/Arabic-Dialect-Identification-data/audio/adi20_micro/c8da454c9f474bb075d3fe608940ee29e8ccfa43"
+  },
+  "leakage_controls": {
+    "scaler_fit_on": "training pilot features only (inside each CV fold and for the final refit)",
+    "classifier_fit_on": "training pilot features and labels only",
+    "hyperparameter_selection": "stratified CV within the training pilot; no development labels",
+    "dev_labels_used_for": "shared evaluator only, after predictions were written"
+  },
+  "counts": {
+    "train_clips": 500,
+    "train_used": 500,
+    "train_failed": 0,
+    "dev_clips": 200,
+    "dev_predicted": 200,
+    "dev_failed": 0
+  },
+  "features": {
+    "dim": 78,
+    "code_version": "mfcc-stats-v1"
+  },
+  "model_selection": {
+    "selected_C": 1.0,
+    "cv": {
+      "folds": 5,
+      "seed": 490,
+      "data": "training pilot only",
+      "results": [
+        {
+          "C": 1.0,
+          "mean_cv_f1_macro": 0.24948729048729051,
+          "std": 0.04489008175430461
+        },
+        {
+          "C": 10.0,
+          "mean_cv_f1_macro": 0.23622732496261908,
+          "std": 0.05177379156342213
+        }
+      ]
+    }
+  },
+  "train_accuracy_resubstitution": 0.778,
+  "development_evaluation": {
+    "evaluation_mode": "complete",
+    "expected": 200,
+    "successful": 200,
+    "failed": 0,
+    "missing": 0,
+    "correct": 49,
+    "coverage": 1.0,
+    "accuracy": 0.245,
+    "macro_f1": 0.23830908131117856,
+    "command": "/usr/bin/python3 /content/project/src/evaluation/evaluate.py --manifest /content/project/data/manifests/dev_pilot.jsonl --metadata /content/project/data/manifests/dev_pilot.metadata.json --predictions /content/Arabic-Dialect-Identification-data/runs/mfcc_svm_w1_11/20261024T212842Z-full/predictions.jsonl --labels /content/project/configs/labels.json --split dev --model-name mfcc-svm-pilot-sanity --output-dir /content/Arabic-Dialect-Identification-data/runs/mfcc_svm_w1_11/20261024T212842Z-full/evaluation"
+  },
+  "resources": {
+    "train_feature_extraction_sec": 12.765,
+    "fit_including_cv_sec": 1.115,
+    "dev_feature_extraction_sec": 3.527,
+    "dev_predict_sec": 0.069,
+    "wall_time_sec": 17.741,
+    "device": "cpu",
+    "peak_rss_mib": 428.8
+  },
+  "environment": {
+    "python": "3.13.16",
+    "system": "Linux",
+    "machine": "x86_64",
+    "processor": "x86_64",
+    "packages": {
+      "numpy": "2.1.3",
+      "scipy": "1.16.3",
+      "scikit-learn": "1.6.1",
+      "soundfile": "0.14.0",
+      "joblib": "1.6.0"
+    }
+  },
+  "artifacts": {
+    "model.joblib": "35e8dac7384735e9faa29fabf9a721527b375066bec15e1d858fe6689d579ef4",
+    "predictions.jsonl": "f95153dacec70d805f09f32f759399f11b06590c8073a2394cd8f8171bbc3fac",
+    "dev_decision_scores.jsonl": "9b3c5adbacf53fea4fd483e401ca495c859774c925ecde1b98b86ffe98b585e0",
+    "features.npz": "4d2f1f75392417afe6e401db2ffc0e8bd14cbd5f46bc9a8458e1301360d32eee",
+    "failures.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "config.json": "d7d2232698f35b62df201d6f1083071ce8e236d637aa476770876357b39626aa"
+  }
+}

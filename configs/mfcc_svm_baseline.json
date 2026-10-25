@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0",
+  "task": "EEC-15 / W1-11",
+  "result_role": "pilot_sanity_reference_not_competitive_baseline",
+  "seed": 490,
+  "labels_path": "configs/labels.json",
+  "features": {
+    "code_version": "mfcc-stats-v1",
+    "sample_rate_hz": 16000,
+    "pre_emphasis": 0.97,
+    "frame_length_ms": 25.0,
+    "frame_shift_ms": 10.0,
+    "window": "hamming",
+    "n_fft": 512,
+    "n_mels": 40,
+    "f_min_hz": 20.0,
+    "f_max_hz": 7600.0,
+    "n_mfcc": 13,
+    "include_c0": true,
+    "log_floor": 1e-10,
+    "delta_width": 2,
+    "include_deltas": true,
+    "include_delta_deltas": true,
+    "statistics": ["mean", "std"]
+  },
+  "classifier": {
+    "scaler": "StandardScaler fitted on training features only",
+    "model": "sklearn.svm.SVC",
+    "kernel": "rbf",
+    "gamma": "scale",
+    "decision_function_shape": "ovr",
+    "break_ties": true,
+    "C_grid": [1.0, 10.0],
+    "cv_folds": 5,
+    "cv_selection_metric": "f1_macro"
+  }
+}
