@@ -1,0 +1,143 @@
+{
+  "task": "EEC-16 / W1-12",
+  "result_role": "pilot_frozen_encoder_reference_for_verifier",
+  "note": "Linear head on frozen AraBEST-RQ features; matched classifier reference for the verifier experiment. In-source ADI-20 development pilot, not out-of-domain.",
+  "model_name": "arabest-rq-frozen-linear-pilot",
+  "status": "overfit_check_only",
+  "command": "/usr/bin/python3 /content/Arabic-Dialect-Identification/src/experiments/acoustic_classifier.py --audio-root /content/drive/MyDrive/Arabic-Dialect-Identification-data/audio/adi20_micro/c8da454c9f474bb075d3fe608940ee29e8ccfa43 --output-root /content/drive/MyDrive/Arabic-Dialect-Identification-data/output --cache-root /content/hf-cache --device cuda --output-dir /content/drive/MyDrive/Arabic-Dialect-Identification-data/runs/acoustic_classifier_w1_12/20261025T094600896433Z_overfit_check --overfit-check-only",
+  "started_at_utc": "2026-10-25T09:49:59.472332+00:00",
+  "code": {
+    "commit": "d535541cb410ed6c49c195ae89823e541dc3c77b",
+    "dirty": true,
+    "script_sha256": "119dd763f1fb4ebb046a0ccef50bb7b0edb89394a054b9e87593b7aca4a25312",
+    "encoder_code_sha256": "dd9f8cf0561995d2815cfe7bfd537c2266b40f9186325915d8aaae3a152ecd32",
+    "config_sha256": "6d7df17330c1f850d41546c6b48068d3347d953c5039e7875f7dcf3fec6405d7",
+    "notebook_source": {
+      "kind": "zip",
+      "commit": "d535541cb410ed6c49c195ae89823e541dc3c77b",
+      "uncommitted": "?? configs/acoustic_classifier.json\n?? notebooks/W1_12_Acoustic_Classifier.ipynb\n?? src/experiments/acoustic_classifier.py\n?? tests/test_acoustic_classifier.py\n?? tests/test_acoustic_classifier_notebook.py",
+      "zip_sha256": "aa7d0a7f1d2101951da6aaf752de304c61550ed8faac687cbf82de7a3977f2fd"
+    }
+  },
+  "data": {
+    "dataset_version": "c8da454c9f474bb075d3fe608940ee29e8ccfa43",
+    "split_version": "w1-07-pilot-v1-e61cd569ac7b",
+    "train_manifest_sha256": "4fb98eabdb15b8bc05fd7bafad0e1c9cd8885a5f50277397159cb2e4bedd65e3",
+    "dev_manifest_sha256": "fb8684c35ef68e25834d5a4c82cddbd31044a899a63b665c41d3f9a179052d02",
+    "labels_sha256": "5cf7d68237eab4a39790dda4faf59af6d31bff7c927564e55272e890206902c5",
+    "audio_root": "/content/drive/MyDrive/Arabic-Dialect-Identification-data/audio/adi20_micro/c8da454c9f474bb075d3fe608940ee29e8ccfa43"
+  },
+  "encoder": {
+    "repo_id": "Elyadata/AraBEST-RQ-300M-6k",
+    "revision": "dff453e2b5f72f76211a523b1050691967e5a59b",
+    "checkpoint_files_sha256": {
+      "model.ckpt": "2e9dc6347b93ed7b55c3847c68cfe25947ff4fe21aa7faa9fe5048f15c0ca35a",
+      "normalizer.ckpt": "30209fa89aad9f7fa007ea2ef17e33ba45c6eacbf7160b581d1946b49dfe6c04"
+    },
+    "feature_code_version": "acoustic-features-v2",
+    "frozen": {
+      "parameters": 307124016,
+      "trainable_parameters": 0,
+      "training_mode": false,
+      "state_sha256_before": "0fe20c2f88c384ebb32c906b572ba826867071285cb39f22ec08ee9dcb132bf2",
+      "state_sha256_after": "0fe20c2f88c384ebb32c906b572ba826867071285cb39f22ec08ee9dcb132bf2"
+    },
+    "head_input": "cached numpy features; no autograd path reaches the encoder"
+  },
+  "features": {
+    "cache_root": "/content/drive/MyDrive/Arabic-Dialect-Identification-data/output/features/arabest-rq-300m-6k/dff453e2b5f7/e4b3c287854e40f9",
+    "feature_config_sha256": "e4b3c287854e40f9a54070de436754442225d1798d02c81956077742881f70bb",
+    "provenance_sha256": "dd7e012c8ee7880ce784711f122c1a341ed914c105190f4183b661e5b2595653",
+    "single_cache_for_train_and_dev": true,
+    "layer_name": "final",
+    "layer_index": 25,
+    "dim": 848,
+    "extraction_batch_size": 1,
+    "train_cache_keys_sha256": "e35341008f4e5e4acafbd20d1237d8539493241c1af55152f7701f556f290638",
+    "dev_cache_keys_sha256": "03518ee560cfa4be6c0be4799123170dc0fd1a75c0ef9c89eb58fad407238679",
+    "extracted_this_run": {
+      "train": 500,
+      "dev": 200
+    },
+    "extracted_audio_sec": 6741.802,
+    "reused_from_cache": {
+      "train": 0,
+      "dev": 0
+    },
+    "train_stats": {
+      "clips": 500,
+      "finite": true,
+      "mean": 0.004515791777521372,
+      "mean_abs": 0.10019498318433762,
+      "max_abs": 3.7548468112945557,
+      "mean_dim_std": 0.09780345857143402,
+      "constant_dims": 0,
+      "duplicate_rows": 0,
+      "mean_offdiag_cosine": 0.51397705078125
+    },
+    "dev_stats": {
+      "clips": 200,
+      "finite": true,
+      "mean": 0.005078393965959549,
+      "mean_abs": 0.1006786897778511,
+      "max_abs": 3.034710168838501,
+      "mean_dim_std": 0.09515394270420074,
+      "constant_dims": 0,
+      "duplicate_rows": 0,
+      "mean_offdiag_cosine": 0.5388336777687073
+    }
+  },
+  "leakage_controls": {
+    "head_fit_on": "training pilot features and labels only",
+    "hyperparameters": "fixed in the config before training; no search",
+    "checkpoint_selection": "last epoch; no early stopping",
+    "dev_labels_used_for": "learning-curve diagnostics and the shared evaluator; never for training decisions"
+  },
+  "counts": {
+    "train_clips": 500,
+    "train_used": 500,
+    "train_failed": 0,
+    "dev_clips": 200,
+    "dev_used": 200,
+    "dev_failed": 0
+  },
+  "environment": {
+    "python": "3.13.16",
+    "system": "Linux",
+    "machine": "x86_64",
+    "processor": "x86_64",
+    "gpu": "Tesla T4",
+    "packages": {
+      "numpy": "2.5.4",
+      "torch": "2.14.1",
+      "torchaudio": "2.11.0+cu130",
+      "speechbrain": "1.1.2",
+      "soundfile": "0.14.0"
+    }
+  },
+  "overfit_check": {
+    "passed": true,
+    "initial_loss": 2.989499807357788,
+    "final_loss": 0.06060629338026047,
+    "initial_accuracy": 0.05000000074505806,
+    "final_accuracy": 1.0,
+    "chance_loss": 2.995732273553991
+  },
+  "finished_at_utc": "2026-10-25T09:55:39.750967+00:00",
+  "resources": {
+    "encoder_load_sec": 23.864,
+    "feature_extraction_sec": 310.335,
+    "overfit_check_sec": 0.531,
+    "wall_time_sec": 340.279,
+    "extraction_audio_sec_per_sec": 21.72,
+    "encoder_device": "cuda",
+    "head_device": "cpu",
+    "peak_gpu_memory_allocated_bytes": 13047002624,
+    "peak_rss_mib": 3452.4
+  },
+  "artifacts": {
+    "overfit_check.json": "4746f97340cf8ce28ae995a837983de8bb78a5f498792cdb0d62e3b3b07b4cc9",
+    "failures.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "config.json": "07ab38aed40090447f2565f71146b10450e34423debbdaf275d91b4199bd5cba"
+  }
+}
