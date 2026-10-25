@@ -1,0 +1,253 @@
+{
+  "acoustic_correct_when_jais_and_text_wrong": 6,
+  "all_four_oracle_correct_diagnostic_only": 167,
+  "all_four_wrong": 33,
+  "compute": {
+    "acoustic_full_extraction_hours_nominal": 8.69063248006397,
+    "acoustic_measured_audio_sec_per_wall_sec": 21.72427215750721,
+    "acoustic_planning_hours_1x_to_2x_nominal": [
+      8.69063248006397,
+      17.38126496012794
+    ],
+    "feature_float32_bytes_all_26_layers": 6863189632,
+    "feature_float32_bytes_final_layer_only": 263968832,
+    "full_audio_hours": 188.79766521778154,
+    "full_clips": 77821,
+    "gpu_price_per_hour": null,
+    "jais_full_cold_wall_hours_bracket": [
+      44.16753910322417,
+      52.58026726611481
+    ],
+    "jais_remaining_clips_reusing_700": 77121,
+    "jais_remaining_wall_hours_bracket": [
+      43.770252029397604,
+      52.10730769111217
+    ],
+    "jais_seconds_per_new_clip_bracket": [
+      2.04319066539375,
+      2.4323635285850003
+    ],
+    "pricing_note": "No agreed rate. Cost = single-GPU occupied wall hours * rate; rates must match the measured GPU. No A100/H100 scaling measured.",
+    "raw_bytes": 21768558127,
+    "wav_bytes": 21824053840
+  },
+  "labels_sha256": "5cf7d68237eab4a39790dda4faf59af6d31bff7c927564e55272e890206902c5",
+  "manifest_sha256": "fb8684c35ef68e25834d5a4c82cddbd31044a899a63b665c41d3f9a179052d02",
+  "metrics": {
+    "acoustic": {
+      "accuracy": 0.335,
+      "accuracy_wilson95": [
+        0.2732408697841632,
+        0.40297808792033485
+      ],
+      "correct": 67,
+      "coverage": 1.0,
+      "expected": 200,
+      "macro_f1": 0.31489512472615855,
+      "predictions": "reports/acoustic_classifier_pilot/predictions.jsonl",
+      "sha256": "3ef4b1fc9350535402fe54e81e7f07f08252bd5c7f1e1d3fe497366074fcb971"
+    },
+    "jais": {
+      "accuracy": 0.715,
+      "accuracy_wilson95": [
+        0.6488465397039482,
+        0.7730499699538271
+      ],
+      "correct": 143,
+      "coverage": 1.0,
+      "expected": 200,
+      "macro_f1": 0.7045528323025294,
+      "predictions": "reports/week1_evidence/jais_predictions.jsonl",
+      "sha256": "daaa9ec6513ac62bfd401517e16f29f5d575c752e48b2fd4040c8959c254f422"
+    },
+    "mfcc": {
+      "accuracy": 0.245,
+      "accuracy_wilson95": [
+        0.1905686808903718,
+        0.30904243556203415
+      ],
+      "correct": 49,
+      "coverage": 1.0,
+      "expected": 200,
+      "macro_f1": 0.23830908131117856,
+      "predictions": "reports/mfcc_svm_pilot/predictions.jsonl",
+      "sha256": "f95153dacec70d805f09f32f759399f11b06590c8073a2394cd8f8171bbc3fac"
+    },
+    "text": {
+      "accuracy": 0.25,
+      "accuracy_wilson95": [
+        0.19508168006817497,
+        0.31434098312045833
+      ],
+      "correct": 50,
+      "coverage": 1.0,
+      "expected": 200,
+      "macro_f1": 0.23642323859715164,
+      "predictions": "reports/week1_evidence/text_predictions.jsonl",
+      "sha256": "977e367b92b5235af17ede75ae170c8cb166ec205588f8ec8410f6b97cd6f08e"
+    }
+  },
+  "paired_correctness": {
+    "acoustic_vs_jais": {
+      "both_correct": 53,
+      "both_wrong": 43,
+      "first_only_correct": 14,
+      "oracle_correct_diagnostic_only": 157,
+      "same_wrong_label": 8,
+      "second_only_correct": 90
+    },
+    "acoustic_vs_text": {
+      "both_correct": 20,
+      "both_wrong": 103,
+      "first_only_correct": 47,
+      "oracle_correct_diagnostic_only": 97,
+      "same_wrong_label": 6,
+      "second_only_correct": 30
+    },
+    "jais_vs_text": {
+      "both_correct": 34,
+      "both_wrong": 41,
+      "first_only_correct": 109,
+      "oracle_correct_diagnostic_only": 159,
+      "same_wrong_label": 2,
+      "second_only_correct": 16
+    },
+    "mfcc_vs_acoustic": {
+      "both_correct": 32,
+      "both_wrong": 116,
+      "first_only_correct": 17,
+      "oracle_correct_diagnostic_only": 84,
+      "same_wrong_label": 21,
+      "second_only_correct": 35
+    },
+    "mfcc_vs_jais": {
+      "both_correct": 37,
+      "both_wrong": 45,
+      "first_only_correct": 12,
+      "oracle_correct_diagnostic_only": 155,
+      "same_wrong_label": 5,
+      "second_only_correct": 106
+    },
+    "mfcc_vs_text": {
+      "both_correct": 20,
+      "both_wrong": 121,
+      "first_only_correct": 29,
+      "oracle_correct_diagnostic_only": 79,
+      "same_wrong_label": 11,
+      "second_only_correct": 30
+    }
+  },
+  "scope": "in_source_fixed_pilot_not_official_test",
+  "split_version": "w1-07-pilot-v1-e61cd569ac7b",
+  "top_directed_confusions": {
+    "acoustic": [
+      {
+        "count": 4,
+        "predicted": "TUN",
+        "true": "QAT"
+      },
+      {
+        "count": 3,
+        "predicted": "TUN",
+        "true": "ALG"
+      },
+      {
+        "count": 3,
+        "predicted": "OMA",
+        "true": "EGY"
+      },
+      {
+        "count": 3,
+        "predicted": "MAU",
+        "true": "LEB"
+      },
+      {
+        "count": 3,
+        "predicted": "TUN",
+        "true": "LIB"
+      }
+    ],
+    "jais": [
+      {
+        "count": 6,
+        "predicted": "MSA",
+        "true": "BAH"
+      },
+      {
+        "count": 6,
+        "predicted": "ALG",
+        "true": "TUN"
+      },
+      {
+        "count": 5,
+        "predicted": "QAT",
+        "true": "KUW"
+      },
+      {
+        "count": 3,
+        "predicted": "MAU",
+        "true": "MSA"
+      },
+      {
+        "count": 2,
+        "predicted": "QAT",
+        "true": "BAH"
+      }
+    ],
+    "mfcc": [
+      {
+        "count": 4,
+        "predicted": "QAT",
+        "true": "EGY"
+      },
+      {
+        "count": 4,
+        "predicted": "OMA",
+        "true": "SYR"
+      },
+      {
+        "count": 4,
+        "predicted": "MSA",
+        "true": "TUN"
+      },
+      {
+        "count": 2,
+        "predicted": "BAH",
+        "true": "ALG"
+      },
+      {
+        "count": 2,
+        "predicted": "KUW",
+        "true": "ALG"
+      }
+    ],
+    "text": [
+      {
+        "count": 3,
+        "predicted": "MOR",
+        "true": "ALG"
+      },
+      {
+        "count": 3,
+        "predicted": "ALG",
+        "true": "KSA"
+      },
+      {
+        "count": 3,
+        "predicted": "SYR",
+        "true": "KUW"
+      },
+      {
+        "count": 3,
+        "predicted": "KSA",
+        "true": "OMA"
+      },
+      {
+        "count": 3,
+        "predicted": "LEB",
+        "true": "PAL"
+      }
+    ]
+  },
+  "uncertainty_note": "Wilson intervals are descriptive clip-level intervals; clustered recordings and pilot selection limit population inference."
+}

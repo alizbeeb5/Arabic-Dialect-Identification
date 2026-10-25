@@ -1,6 +1,6 @@
 # Training execution and storage plan
 
-Status: draft
+Status: execution interface documented; cluster allocation, pricing and runtime verification pending
 Task: EEC-9 / W1-05
 
 ## 1. Responsibilities and delivery
@@ -104,10 +104,10 @@ Jais where their dependencies require it.
 |---|---|
 | Base environment and CPU smoke command | Implemented |
 | Shared prediction validator/evaluator | Implemented |
-| Portable data preparation script and dependency file | Pending Task 6 |
-| Acoustic model environment and entry point | Pending model implementation |
-| Jais environment and entry point | Pending adapter implementation |
-| Training commands and experiment configurations | Pending training implementation |
+| Portable data preparation script and dependency file | Implemented; full release prepared and audited (77,821 clips) |
+| Acoustic model environment and entry point | Implemented; feature extraction and frozen-head pilot measured on Colab T4, not the external cluster |
+| Jais environment and entry point | Implemented; fixed 500/200 pilot measured on Colab T4, not the external cluster |
+| Training commands and experiment configurations | MFCC, frozen acoustic head and transcript TF-IDF pilots implemented; full cluster training not verified |
 | Cluster launcher integration | Pending the team's execution details |
 
 Planned interfaces are not presented as working commands.
@@ -135,3 +135,32 @@ software versions, worker count and launch command in its run record.
 - Evaluation metrics and confusion matrix.
 - Training/inference logs and measured resource usage.
 - Any execution errors or deviations from the requested configuration.
+
+## 9. Week 1 measured estimate (2026-10-25)
+
+Full calculations, measurement scopes and evidence are in
+[reports/week1_results.md](../reports/week1_results.md#compute-and-storage-estimate).
+The machine-readable estimates are in
+[reports/week1_analysis/summary.json](../reports/week1_analysis/summary.json).
+
+| Operation | T4 planning estimate |
+|---|---|
+| Frozen features, 77,821 clips / 188.798 audio hours | 8.69 h nominal; 8.69-17.38 occupied GPU hours with an explicit 1-2x buffer |
+| Cold Jais inference/transcription, all clips | 44.17-52.58 occupied GPU hours from the observed train/dev rate bracket |
+| Jais with the 700 existing outputs reused | 43.77-52.11 hours for remaining clips, subject to a versioned failure/retry policy |
+
+These are extrapolations, not full-run measurements or statistical confidence ranges. The
+acoustic estimate requires a long-clip memory policy before execution. A100/H100 throughput,
+multi-GPU scaling, allocation and hourly price remain unknown. Use price times occupied hours
+only after measuring the intended hardware; do not combine a T4 timing with an A100 rate.
+No dollar quote or paid allocation is implied.
+
+Preparation measured 21.769 GB raw shards and 21.824 GB WAV (43.593 GB total, decimal units).
+All 26 pooled float32 feature layers add a calculated 6.863 GB payload for the full dataset;
+final-layer-only payload is 0.264 GB. Budget downloads, transcript cache, outputs, filesystem
+overhead and headroom separately. Full transcript-cache size is not yet measured.
+
+Reuse a pinned feature/transcription cache across head/text experiments. Parallel workers must
+not repeat dataset preparation or race on shared cache files. See
+[acoustic commands](acoustic_classifier.md), [Jais commands](jais_pilot.md) and
+[text commands](transcript_tfidf.md). Record actual cluster timings before revising this estimate.

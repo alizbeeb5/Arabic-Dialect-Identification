@@ -1,0 +1,110 @@
+{
+  "checkpoint_sha256": "2c82c5c32574d6b58905042d96b59725389aa93bfc3733bb50f3c93471d866f4",
+  "command": "predict",
+  "config": {
+    "classifier": {
+      "C": 1.0,
+      "class_weight": null,
+      "max_iter": 1000,
+      "solver": "lbfgs",
+      "tol": 0.0001
+    },
+    "experiment": "transcript_tfidf_pilot",
+    "features": {
+      "character": {
+        "analyzer": "char_wb",
+        "lowercase": false,
+        "min_df": 1,
+        "ngram_range": [
+          3,
+          5
+        ],
+        "sublinear_tf": true
+      },
+      "word": {
+        "analyzer": "word",
+        "lowercase": false,
+        "min_df": 1,
+        "ngram_range": [
+          1,
+          2
+        ],
+        "sublinear_tf": true,
+        "token_pattern": "(?u)\\b\\w+\\b"
+      }
+    },
+    "input_policy": {
+      "accepted_statuses": [
+        "ok",
+        "truncated"
+      ],
+      "excluded_training_text": "drop_and_report",
+      "fit_vectorizer_on": "accepted_training_transcripts_only",
+      "unavailable_dev_text": "retained_training_class_prior",
+      "use_partial_text": true
+    },
+    "labels_path": "configs/labels.json",
+    "schema_version": "1.0",
+    "seed": 490,
+    "selection": {
+      "configuration_fixed_before_dev_scoring": true,
+      "hyperparameter_search": false
+    }
+  },
+  "environment": {
+    "joblib": "1.5.3",
+    "numpy": "2.3.5",
+    "python": "3.12.14",
+    "scikit-learn": "1.8.0",
+    "scipy": "1.17.0",
+    "threadpoolctl": "3.6.0"
+  },
+  "expected": 200,
+  "git_commit": "c03bfad27c0c999dbfd237f8034b3d3e1d6b1109",
+  "git_dirty": false,
+  "input": {
+    "dataset_version": "c8da454c9f474bb075d3fe608940ee29e8ccfa43",
+    "labels_sha256": "5cf7d68237eab4a39790dda4faf59af6d31bff7c927564e55272e890206902c5",
+    "manifest_sha256": "fb8684c35ef68e25834d5a4c82cddbd31044a899a63b665c41d3f9a179052d02",
+    "metadata_sha256": "e85db634fb1487e3fcb241de8148b89c8b3d173fe54f60e183709c91f3fa65d7",
+    "split_version": "w1-07-pilot-v1-e61cd569ac7b",
+    "summary_sha256": "9ae7e4219ecc7ce1420ffefe728fd36f5b948990ea030d8fa2dfa99a4fb79de2",
+    "targets.jsonl_sha256": "d5d243db3b6b6f1eb34724e1abe731e65297dd345c9be427370fb0cbf3ddb89f",
+    "transcripts.jsonl_sha256": "79a8e41a0e382b3df57eee589b6c8b35bb0ba95e1f72d8231523624d3e93191a"
+  },
+  "model_revision": "sha256:2c82c5c32574d6b58905042d96b59725389aa93bfc3733bb50f3c93471d866f4",
+  "note": "Task 16 analysis replay; checkpoint and prediction hashes match the original Task 14 release exactly. No Jais/audio/model inference was rerun.",
+  "prediction_command": [
+    "python",
+    "src/models/transcript_tfidf.py",
+    "predict",
+    "--model",
+    "<MODEL_RUN>/model.joblib",
+    "--export-dir",
+    "<DEV_EXPORT>",
+    "--manifest",
+    "data/manifests/dev_pilot.jsonl",
+    "--metadata",
+    "data/manifests/dev_pilot.metadata.json",
+    "--split",
+    "dev",
+    "--output-dir",
+    "<DEV_RUN>"
+  ],
+  "prediction_sources": {
+    "text": 200
+  },
+  "predictions_sha256": "977e367b92b5235af17ede75ae170c8cb166ec205588f8ec8410f6b97cd6f08e",
+  "probability_semantics": "multinomial logistic regression; not independently calibrated",
+  "source_sha256": "30b8ce3d0312442083630aeab42c8d49f11156737596d580705e18f4c3b5a2cd",
+  "training_input": {
+    "dataset_version": "c8da454c9f474bb075d3fe608940ee29e8ccfa43",
+    "labels_sha256": "5cf7d68237eab4a39790dda4faf59af6d31bff7c927564e55272e890206902c5",
+    "manifest_sha256": "4fb98eabdb15b8bc05fd7bafad0e1c9cd8885a5f50277397159cb2e4bedd65e3",
+    "metadata_sha256": "3494ba515ece8194a8aaaa43c83379431590c4ad8690ed7d2a47adfe43929743",
+    "split_version": "w1-07-pilot-v1-e61cd569ac7b",
+    "summary_sha256": "3fd2b46da052bc9d497cc3b7d2a4985bf8838279c76a8c52aedd5de0dfe99c52",
+    "targets.jsonl_sha256": "69f6dfd5b32bf42eac4371351bf38b4846fc08333f4bc4b7a3d4e895d94decc9",
+    "transcripts.jsonl_sha256": "476140fd2885759834d3fe5a8f084f834414eb9f2aa1e5cb8053918fe2d15c2f"
+  }
+}
