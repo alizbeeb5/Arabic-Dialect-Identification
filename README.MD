@@ -221,3 +221,16 @@ seeing development results; it is a small-data baseline, not a benchmark claim.
 See the [Task 14 result review](reports/transcript_tfidf_pilot_review.md),
 [exact metrics](reports/transcript_tfidf_pilot_metrics.json), and
 [reproduction instructions](docs/transcript_tfidf.md).
+
+## Week 2 — acoustic architecture A
+
+Frozen AraBEST-RQ final-layer masked mean + a 20-way linear classifier.
+Use the [training-team handoff](docs/week2_acoustic_A.md) for the sample, full-data
+checks, fixed training budget, launch commands and required return artifacts.
+Start with `bash scripts/run_acoustic_A.sh smoke` after setting `DATA_ROOT`.
+The smoke is an engineering check; full runs require the approved 67,015/10,806
+release and pass a real long-clip preflight before extraction.
+
+Open the [Colab sample](notebooks/W2_01_Acoustic_A.ipynb) to run the pinned
+500/200 engineering check. [Implementation validation](reports/week2_acoustic_A_implementation.md)
+separates offline checks from the real GPU/training work still required.
