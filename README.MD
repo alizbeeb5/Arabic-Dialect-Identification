@@ -209,3 +209,28 @@ seeing development results; it is a small-data baseline, not a benchmark claim.
 See the [Task 14 result review](reports/transcript_tfidf_pilot_review.md),
 [exact metrics](reports/transcript_tfidf_pilot_metrics.json), and
 [reproduction instructions](docs/transcript_tfidf.md).
+
+## Frozen-encoder acoustic classifier (W1-12)
+
+A 20-way linear head (16,980 parameters) trained on cached, frozen AraBEST-RQ-300M-6k
+final-layer features of the 500-clip training pilot. The encoder has 0 trainable
+parameters and its weights are fingerprinted before and after extraction; train and
+dev features come from one cache. The head first has to memorise a 40-clip subset
+before the pilot run. Run `notebooks/W1_12_Acoustic_Classifier.ipynb` on a Colab T4
+(`MODE = 'overfit_check'`, then `'full'`), or regenerate the reported predictions with:
+
+```bash
+python src/experiments/acoustic_classifier.py --audio-root "$AUDIO_ROOT" \
+  --output-root "$OUTPUT_ROOT" --device cuda --output-dir "$NEW_RUN_DIR"
+```
+
+On 2026-10-25 it scored **33.50% accuracy / 0.3149 macro-F1** on the 200-clip dev
+pilot (67/200; chance 5%), above MFCC + SVM on the same clips (exact McNemar
+p = 0.018). The head is under-trained at the fixed pilot budget (training accuracy
+53.8%), so this is not the encoder's ceiling. Predictions keep all 20 logits in
+canonical order. See the [result review](reports/acoustic_classifier_pilot_review.md)
+and [the Task 12 instructions](docs/acoustic_classifier.md). Checks:
+
+```bash
+python -m unittest discover -s tests -p 'test_acoustic_classifier*.py' -v
+```

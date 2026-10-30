@@ -1,0 +1,143 @@
+{
+  "examples_shared_across_configs": {},
+  "interpretation": "unverified; seg_id prefixes are not treated as episode, scene or speaker IDs",
+  "pattern": "(?P<prefix>\\d+)_(?P<index>\\d+)",
+  "per_config": {
+    "Algeria": {
+      "clips_per_prefix_histogram": {
+        "1": 650,
+        "2": 78,
+        "3": 7,
+        "4": 3,
+        "5": 1
+      },
+      "distinct_prefixes": 739,
+      "duplicate_seg_ids_within_config": 0,
+      "max_clips_per_prefix": 5,
+      "prefix_max": 14491,
+      "prefix_min": 11175,
+      "rows": 844,
+      "suffix_max": 13,
+      "suffix_min": 1,
+      "unparsed_seg_ids": 0
+    },
+    "Egypt": {
+      "clips_per_prefix_histogram": {
+        "1": 587,
+        "2": 100,
+        "3": 17,
+        "4": 2
+      },
+      "distinct_prefixes": 706,
+      "duplicate_seg_ids_within_config": 0,
+      "max_clips_per_prefix": 4,
+      "prefix_max": 6453,
+      "prefix_min": 2,
+      "rows": 846,
+      "suffix_max": 12,
+      "suffix_min": 1,
+      "unparsed_seg_ids": 0
+    },
+    "Jordan": {
+      "clips_per_prefix_histogram": {
+        "1": 800,
+        "2": 21,
+        "3": 2
+      },
+      "distinct_prefixes": 823,
+      "duplicate_seg_ids_within_config": 0,
+      "max_clips_per_prefix": 3,
+      "prefix_max": 41101,
+      "prefix_min": 6480,
+      "rows": 848,
+      "suffix_max": 9,
+      "suffix_min": 1,
+      "unparsed_seg_ids": 0
+    },
+    "Mauritania": {
+      "clips_per_prefix_histogram": {
+        "1": 718,
+        "2": 86,
+        "3": 17,
+        "4": 3
+      },
+      "distinct_prefixes": 824,
+      "duplicate_seg_ids_within_config": 0,
+      "max_clips_per_prefix": 4,
+      "prefix_max": 70002,
+      "prefix_min": 59356,
+      "rows": 953,
+      "suffix_max": 13,
+      "suffix_min": 1,
+      "unparsed_seg_ids": 0
+    },
+    "Morocco": {
+      "clips_per_prefix_histogram": {
+        "1": 849,
+        "2": 83,
+        "3": 10
+      },
+      "distinct_prefixes": 942,
+      "duplicate_seg_ids_within_config": 0,
+      "max_clips_per_prefix": 3,
+      "prefix_max": 59297,
+      "prefix_min": 14498,
+      "rows": 1045,
+      "suffix_max": 13,
+      "suffix_min": 1,
+      "unparsed_seg_ids": 0
+    },
+    "Palestine": {
+      "clips_per_prefix_histogram": {
+        "1": 534,
+        "2": 53,
+        "3": 9
+      },
+      "distinct_prefixes": 596,
+      "duplicate_seg_ids_within_config": 0,
+      "max_clips_per_prefix": 3,
+      "prefix_max": 50400,
+      "prefix_min": 46398,
+      "rows": 667,
+      "suffix_max": 8,
+      "suffix_min": 1,
+      "unparsed_seg_ids": 0
+    },
+    "UAE": {
+      "clips_per_prefix_histogram": {
+        "1": 627,
+        "2": 66,
+        "3": 14,
+        "4": 3
+      },
+      "distinct_prefixes": 710,
+      "duplicate_seg_ids_within_config": 0,
+      "max_clips_per_prefix": 4,
+      "prefix_max": 74005,
+      "prefix_min": 32702,
+      "rows": 813,
+      "suffix_max": 12,
+      "suffix_min": 1,
+      "unparsed_seg_ids": 0
+    },
+    "Yemen": {
+      "clips_per_prefix_histogram": {
+        "1": 650,
+        "2": 66,
+        "3": 4,
+        "4": 1,
+        "5": 1
+      },
+      "distinct_prefixes": 722,
+      "duplicate_seg_ids_within_config": 0,
+      "max_clips_per_prefix": 5,
+      "prefix_max": 79588,
+      "prefix_min": 19386,
+      "rows": 803,
+      "suffix_max": 8,
+      "suffix_min": 1,
+      "unparsed_seg_ids": 0
+    }
+  },
+  "prefixes_shared_across_configs": 0
+}

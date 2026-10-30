@@ -274,4 +274,7 @@ their pinned SHA256 hashes before loading.
   speech, and ADI20 is also YouTube-derived. Overlap with our training and evaluation
   recordings is not audited.
 - Defaults chosen pending team review: store all 26 layers, mean pooling, no crop, fp32.
-- The 30 s crop decision for the 60 long dev clips (section 2).
+- The 30 s crop decision for the 60 long dev clips (section 2). W1-12 evidence (Colab Tesla T4,
+  fp32, v2 features): batch 8 ran out of memory on the dev pilot's 142 s clip; at batch 1 that clip
+  alone peaked at 12.15 GiB allocated. Full extraction of the 212 s dev clips needs a larger GPU or
+  this crop decision. See [acoustic_classifier.md](acoustic_classifier.md).
