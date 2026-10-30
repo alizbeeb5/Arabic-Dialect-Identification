@@ -1,0 +1,1 @@
+{"clip_id": "358dae0487bd20493376cf87826eb10248ae5cccc43be913466aaee7ff109a1b", "kept_in_denominator": true, "label": "JOR", "reason": "Empty audio or decoded frame count differs from header", "seg_id": "9121_1", "source_row": 213, "source_shard": "Jordan/validation-00000-of-00001.parquet", "status": "audio_error"}
