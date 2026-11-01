@@ -294,13 +294,10 @@ class AcousticEncoder(torch.nn.Module):
             src = self.model[0](feats)  # [1, T_enc, F', C]
         return src.reshape(src.shape[1], -1)
 
-    @torch.inference_mode()
-    def encode(self, waves):
-        """Frame features for a batch of prepared waveforms.
-
-        Returns (hidden [L, B, T, D] float32, mask [B, T], n_frames [B]) where L
-        follows config.layers and mask marks each clip's real encoder frames.
-        """
+    def _encode_outputs(self, waves):
+        """Shared forward; caller controls autograd and train/eval mode."""
+        if not waves:
+            raise ValueError("At least one waveform is required")
         srcs = [self._frontend(wave) for wave in waves]
         with self._autocast():
             n_frames = torch.tensor([len(src) for src in srcs], device=self.device)
@@ -309,8 +306,24 @@ class AcousticEncoder(torch.nn.Module):
             # SpeechBrain reconstructs integer lengths and builds its attention
             # mask from these values. BF16 rounds frame counts above 256.
             final, hidden = self.model[1](batch, n_frames.float() / longest)
+        return final, hidden, frame_mask(n_frames, longest), n_frames
+
+    def encode_final(self, waves):
+        """Final [B,T,D] frames with an autograd path for encoder fine-tuning.
+
+        Frozen callers must use no_grad, rather than inference_mode, so learned
+        attention pooling can save the resulting ordinary tensors for backward.
+        No pooled cache is used on this path.
+        """
+        final, _, mask, n_frames = self._encode_outputs(waves)
+        return final.float(), mask, n_frames
+
+    @torch.inference_mode()
+    def encode(self, waves):
+        """Frozen pooled-cache interface: [L,B,T,D], real-frame mask and lengths."""
+        final, hidden, mask, n_frames = self._encode_outputs(waves)
         stacked = torch.stack([*hidden, final])[list(self.layers)].float()
-        return stacked, frame_mask(n_frames, longest), n_frames
+        return stacked, mask, n_frames
 
     def pool(self, hidden, mask):
         """[L, B, T, D] -> [B, L, D'] using only real frames."""

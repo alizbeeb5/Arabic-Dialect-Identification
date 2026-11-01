@@ -1,0 +1,69 @@
+{
+  "schema_version": "1.0",
+  "task": "EEC-23 / W2-01",
+  "seed": 11,
+  "encoder": {
+    "checkpoint": "Elyadata/AraBEST-RQ-300M-6k",
+    "revision": "dff453e2b5f72f76211a523b1050691967e5a59b",
+    "frozen": false,
+    "precision": "fp32",
+    "max_duration_sec": null
+  },
+  "model": {
+    "pooling": "masked_additive_attention",
+    "attention_dim": 128,
+    "feature_dim": 848,
+    "hidden_dim": 256,
+    "dropout": 0.2,
+    "num_labels": 20
+  },
+  "optimization": {
+    "optimizer": "AdamW",
+    "loss": "cross_entropy",
+    "head_lr": 0.001,
+    "encoder_lr": 1e-05,
+    "weight_decay": 0.01,
+    "effective_batch_size": 32,
+    "micro_batch_size": 1,
+    "gradient_clip_norm": 1.0,
+    "epochs": 30,
+    "checkpoint": "last_epoch"
+  },
+  "overfit_check": {
+    "clips_per_label": 1,
+    "epochs": 300,
+    "min_accuracy": 1.0,
+    "max_loss_ratio": 0.1
+  },
+  "experiment": {
+    "architecture": "C",
+    "scope": "full",
+    "model_name": "arabest-rq-attention-mlp-C",
+    "selection_data": "ADI-20 dev",
+    "note": "Full-clip on-the-fly frames; matched B/C pooling/head; last epoch fixed before runs; no verifier.",
+    "data": {
+      "dataset_version": "c8da454c9f474bb075d3fe608940ee29e8ccfa43",
+      "split_version": "full-8db5842080c2f643",
+      "train": {
+        "clips": 67015,
+        "sha256": "56a75aa929e2a2c4592012954386cb3d91ff7f256a7004ebe7c4a776573ea4ba"
+      },
+      "dev": {
+        "clips": 10806,
+        "sha256": "525ecea4b39c504b28858ddbfaf0a954af703c91ae8edddb252a0a6f2c8d138b"
+      }
+    },
+    "budget": {
+      "selection_seed": 11,
+      "reporting_seeds": [
+        17,
+        29,
+        43
+      ],
+      "selection_configs_declared": 1,
+      "max_selection_configs": 2,
+      "checkpoint_selection": "last_epoch",
+      "selection_metric": "dev macro_f1; ties: accuracy, then lower learning_rate"
+    }
+  }
+}

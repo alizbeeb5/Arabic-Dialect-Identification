@@ -79,7 +79,63 @@ def load_config(path):
             raise ValueError("epochs, batch_size and learning_rate must be positive")
     if gate["clips_per_label"] < 1:
         raise ValueError("overfit_check.clips_per_label must be positive")
+    experiment = config.get("experiment", {})
+    if experiment:
+        if experiment["architecture"] != "A" or experiment["scope"] not in ("smoke", "full"):
+            raise ValueError("Only Week 2 architecture A, smoke or full scope, is implemented")
+        if (enc["cached_layers"] != [25] or enc["layer_name"] != "final"
+                or enc["pooling"] != "mean" or enc["feature_dim"] != 848
+                or enc["max_duration_sec"] is not None or enc["precision"] != "fp32"):
+            raise ValueError("Architecture A requires final-layer 848D mean features, full clips and FP32")
+        if head["num_labels"] != 20 or experiment["selection_data"] != "ADI-20 dev":
+            raise ValueError("Architecture A requires the canonical 20 classes and ADI-20 dev selection")
     return config
+
+
+def validate_experiment_data(config, train_rows, dev_rows, train_meta, dev_meta):
+    """Refuse pilot data masquerading as a full-data result, before loading the model."""
+    experiment = config.get("experiment", {})
+    if experiment.get("scope") != "full":
+        return
+    contract = experiment["data"]
+    for split, rows, meta in (("train", train_rows, train_meta), ("dev", dev_rows, dev_meta)):
+        for field in ("dataset_version", "split_version"):
+            if meta[field] != contract[field]:
+                raise ValueError(f"Full A {split}: wrong {field}")
+        if len(rows) != contract[split]["clips"] or meta["manifest_sha256"] != contract[split]["sha256"]:
+            raise ValueError(f"Full A {split}: manifest differs from the approved full release")
+
+
+def long_clip_preflight(encoder, train_rows, dev_rows, audio_root):
+    """Actually encode the longest clip in each split, without labels or cached shortcuts."""
+    if audio_root is None:
+        raise ValueError("The full-data long-clip preflight requires --audio-root")
+    checks = []
+    for split, rows in (("train", train_rows), ("dev", dev_rows)):
+        row = max(rows, key=lambda r: r["duration_sec"])
+        item = {"split": split, "clip_id": row["clip_id"], "duration_sec": row["duration_sec"]}
+        if encoder.device.type == "cuda":
+            torch.cuda.reset_peak_memory_stats(encoder.device)
+            torch.cuda.synchronize(encoder.device)
+        tick = time.perf_counter()
+        try:
+            path = ae.resolve_audio_path(audio_root, row["audio_path"])
+            base.verify_audio(path, row)
+            result = encoder.extract([(row["clip_id"], ae.load_waveform(path, encoder.config))], batch_size=1)
+            item.update(status="ok", n_frames=int(result.n_frames[0]), shape=list(result.features.shape))
+        except Exception as error:
+            item.update(status="failed", error_type=type(error).__name__, message=str(error)[:500])
+        if encoder.device.type == "cuda":
+            torch.cuda.synchronize(encoder.device)
+            item["peak_gpu_memory_allocated_bytes"] = torch.cuda.max_memory_allocated(encoder.device)
+            torch.cuda.empty_cache()
+        item["elapsed_sec"] = time.perf_counter() - tick
+        checks.append(item)
+        base.progress(f"[preflight] {split} {item['duration_sec']:.2f}s: {item['status']}")
+    return {"passed": all(c["status"] == "ok" for c in checks), "checks": checks,
+            "device": str(encoder.device), "precision": encoder.config.precision,
+            "long_clip_policy": "full clip, no crop, one clip per encoder forward",
+            "gpu": torch.cuda.get_device_name(encoder.device) if encoder.device.type == "cuda" else None}
 
 
 def feature_config(encoder_config):
@@ -188,18 +244,22 @@ def load_layer(cache, clip_ids, position):
     return np.ascontiguousarray(cache.load(clip_ids).features[:, position, :], dtype=np.float32)
 
 
-def feature_stats(matrix):
+def feature_stats(matrix, cosine_sample_size=512):
     """Cheap signs of broken features: nonfinite values, constant dimensions, collapsed clips."""
     if not len(matrix):
         return None
-    unit = matrix / np.maximum(np.linalg.norm(matrix, axis=1, keepdims=True), 1e-12)
+    # Bound the pairwise diagnostic: 67k x 67k would allocate tens of GB.
+    indices = np.linspace(0, len(matrix) - 1, min(len(matrix), cosine_sample_size), dtype=int)
+    sample = matrix[indices]
+    unit = sample / np.maximum(np.linalg.norm(sample, axis=1, keepdims=True), 1e-12)
     cosine = unit @ unit.T
-    off_diagonal = cosine[~np.eye(len(matrix), dtype=bool)]
+    off_diagonal = cosine[~np.eye(len(sample), dtype=bool)]
     return {"clips": len(matrix), "finite": bool(np.isfinite(matrix).all()),
             "mean": float(matrix.mean()), "mean_abs": float(np.abs(matrix).mean()),
             "max_abs": float(np.abs(matrix).max()), "mean_dim_std": float(matrix.std(0).mean()),
             "constant_dims": int((matrix.std(0) == 0).sum()),
             "duplicate_rows": int(len(matrix) - len(np.unique(matrix, axis=0))),
+            "cosine_sample_clips": len(sample),
             "mean_offdiag_cosine": float(off_diagonal.mean()) if off_diagonal.size else None}
 
 
@@ -262,6 +322,9 @@ def train_head(train_x, train_y, settings, seed, monitor=None):
         curve.append({"epoch": epoch, "updates": updates, "mean_batch_loss": float(np.mean(batch_losses)),
                       "max_grad_norm_before_clip": max(grad_norms),
                       **{n: score_split(head, *d) for n, d in splits.items()}})
+        if settings.get("log_every_epoch"):
+            base.progress(f"Epoch {epoch}/{settings['epochs']}, updates {updates}, "
+                          f"train loss {curve[-1]['train']['loss']:.4f}")
     head.eval()
     return head, curve
 
@@ -303,11 +366,11 @@ def predict(head, matrix):
     return logits, np.argmax(logits, axis=1)
 
 
-def run_evaluator(args, predictions_path, output_dir):
+def run_evaluator(args, predictions_path, output_dir, model_name=MODEL_NAME):
     command = [sys.executable, str(ROOT / "src/evaluation/evaluate.py"),
                "--manifest", str(args.dev_manifest), "--metadata", str(args.dev_metadata),
                "--predictions", str(predictions_path), "--labels", str(args.labels),
-               "--split", "dev", "--model-name", MODEL_NAME, "--output-dir", str(output_dir)]
+               "--split", "dev", "--model-name", model_name, "--output-dir", str(output_dir)]
     completed = subprocess.run(command, cwd=ROOT, text=True, capture_output=True)
     print(completed.stdout, end="", flush=True)
     if completed.returncode != 0:
@@ -340,6 +403,9 @@ def parse_args(argv=None):
                         help="Hugging Face download cache (default: $CACHE_ROOT)")
     parser.add_argument("--device", help="Encoder device for extraction (default: cuda if available)")
     parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
+    parser.add_argument("--seed", type=int, help="Override the run seed (Week 2: 11, 17, 29 or 43)")
+    parser.add_argument("--preflight-only", action="store_true",
+                        help="Benchmark longest train/dev clips and stop; requires a full-scope config")
     parser.add_argument("--labels", type=Path, default=ROOT / "configs/labels.json")
     parser.add_argument("--output-dir", type=Path, required=True,
                         help="New directory for this run (must not exist)")
@@ -362,6 +428,15 @@ def run(args, load_encoder=ae.AcousticEncoder.from_pretrained):
     started_at = base.utc_now()
     wall_start = time.perf_counter()
     config = load_config(args.config)
+    if args.seed is not None:
+        config["seed"] = args.seed
+    experiment = config.get("experiment", {})
+    if experiment and config["seed"] not in (11, 17, 29, 43):
+        raise ValueError("Week 2 seeds are selection 11 and reporting 17, 29, 43")
+    if args.preflight_only and experiment.get("scope") != "full":
+        raise ValueError("--preflight-only requires the full-scope Week 2 config")
+    model_name = experiment.get("model_name", MODEL_NAME)
+    result_role = config.get("result_role", RESULT_ROLE)
     labels = ev.load_labels(args.labels)
     seed = int(config["seed"])
 
@@ -374,6 +449,7 @@ def run(args, load_encoder=ae.AcousticEncoder.from_pretrained):
     for field in ("dataset_version", "split_version"):
         if train_meta[field] != dev_meta[field]:
             raise ValueError(f"Train and dev metadata disagree on {field}")
+    validate_experiment_data(config, train_rows, dev_rows, train_meta, dev_meta)
     overlap = {r["clip_id"] for r in train_rows} & {r["clip_id"] for r in dev_rows}
     if overlap:
         raise ValueError(f"{len(overlap)} clip IDs appear in both train and dev")
@@ -402,6 +478,18 @@ def run(args, load_encoder=ae.AcousticEncoder.from_pretrained):
     timings["encoder_load_sec"] = time.perf_counter() - tick
     cache = ae.FeatureCache(args.output_root, provenance)
 
+    if experiment.get("scope") == "full":
+        preflight = long_clip_preflight(encoder, train_rows, dev_rows, args.audio_root)
+        preflight.update(code=base.git_state(), feature_provenance=provenance,
+                         started_at_utc=started_at.isoformat(),
+                         data={"train_manifest_sha256": train_meta["manifest_sha256"],
+                               "dev_manifest_sha256": dev_meta["manifest_sha256"]})
+        base.write_json(args.output_dir / "preflight.json", preflight)
+        if not preflight["passed"]:
+            raise RuntimeError("Long-clip preflight failed; inspect preflight.json before full extraction")
+        if args.preflight_only:
+            return 0
+
     if encoder_device.type == "cuda":
         torch.cuda.reset_peak_memory_stats(encoder_device)
     tick = time.perf_counter()
@@ -414,6 +502,7 @@ def run(args, load_encoder=ae.AcousticEncoder.from_pretrained):
     extracted_audio_sec = sum(duration_by_id[c] for c in train_extracted + dev_extracted)
     peak_gpu = (torch.cuda.max_memory_allocated(encoder_device) if encoder_device.type == "cuda" else None)
     frozen.update(state_sha256_before=state_before, state_sha256_after=state_sha256(encoder))
+    frozen["parameters_with_gradients"] = sum(p.grad is not None for p in encoder.parameters())
     if frozen["state_sha256_before"] != frozen["state_sha256_after"]:
         raise RuntimeError("Encoder parameters changed during feature extraction")
     del encoder
@@ -435,22 +524,28 @@ def run(args, load_encoder=ae.AcousticEncoder.from_pretrained):
     base.write_json(args.output_dir / "config.json", config)
 
     record = {
-        "task": "EEC-16 / W1-12",
-        "result_role": RESULT_ROLE,
-        "note": ("Linear head on frozen AraBEST-RQ features; matched classifier reference for the "
-                 "verifier experiment. In-source ADI-20 development pilot, not out-of-domain."),
-        "model_name": MODEL_NAME,
+        "task": config.get("task", "EEC-16 / W1-12"),
+        "result_role": result_role,
+        "experiment": experiment,
+        "note": experiment.get("note", "Linear head on frozen AraBEST-RQ features; matched classifier "
+                               "reference for the verifier experiment. In-source ADI-20 development "
+                               "pilot, not out-of-domain."),
+        "model_name": model_name,
         "status": None,
         "command": shlex.join([sys.executable, *sys.argv]),
         "started_at_utc": started_at.isoformat(),
         "code": {**base.git_state(), "script_sha256": ev.sha256_file(Path(__file__)),
                  "encoder_code_sha256": ev.sha256_file(Path(ae.__file__)),
                  "config_sha256": ev.sha256_file(args.config)},
+        "effective_config_sha256": base.sha256_text(base.canonical_json(config)),
         "data": {"dataset_version": train_meta["dataset_version"],
                  "split_version": train_meta["split_version"],
                  "train_manifest_sha256": train_meta["manifest_sha256"],
                  "dev_manifest_sha256": dev_meta["manifest_sha256"],
                  "labels_sha256": train_meta["labels_sha256"],
+                 "train_metadata_sha256": ev.sha256_file(args.train_metadata),
+                 "dev_metadata_sha256": ev.sha256_file(args.dev_metadata),
+                 "primary_selection_data": experiment.get("selection_data"),
                  "audio_root": str(args.audio_root) if args.audio_root else None},
         "encoder": {"repo_id": provenance["checkpoint"]["repo_id"],
                     "revision": provenance["feature_config"]["checkpoint_revision"],
@@ -474,10 +569,12 @@ def run(args, load_encoder=ae.AcousticEncoder.from_pretrained):
                                            "dev": len(dev_ids) - len(dev_extracted)},
                      "train_stats": feature_stats(train_x), "dev_stats": feature_stats(dev_x)},
         "leakage_controls": {
-            "head_fit_on": "training pilot features and labels only",
+            "head_fit_on": "training features and labels only",
             "hyperparameters": "fixed in the config before training; no search",
             "checkpoint_selection": "last epoch; no early stopping",
-            "dev_labels_used_for": "learning-curve diagnostics and the shared evaluator; never for training decisions",
+            "dev_labels_used_for": ("learning curves and evaluation; last-epoch checkpoint fixed in advance; "
+                                    "Week 2 configuration selection uses ADI-20 dev" if experiment else
+                                    "learning-curve diagnostics and the shared evaluator; never for training decisions"),
         },
         "counts": {"train_clips": len(train_rows), "train_used": len(train_ids),
                    "train_failed": len(train_failures), "dev_clips": len(dev_rows),
@@ -496,6 +593,9 @@ def run(args, load_encoder=ae.AcousticEncoder.from_pretrained):
                                "extraction_audio_sec_per_sec": (round(extracted_audio_sec / timings["feature_extraction_sec"], 2)
                                                                 if extracted_audio_sec else None),
                                "encoder_device": str(encoder_device), "head_device": "cpu",
+                               "gpu_count_used": int(encoder_device.type == "cuda"),
+                               "feature_cache_bytes": sum(p.stat().st_size for p in cache.root.iterdir()
+                                                          if p.is_file()),
                                "peak_gpu_memory_allocated_bytes": peak_gpu, "peak_rss_mib": base.peak_rss_mib()}
         record["artifacts"] = {name: ev.sha256_file(args.output_dir / name) for name in artifacts}
         base.write_json(args.output_dir / "run_record.json", record)
@@ -514,6 +614,8 @@ def run(args, load_encoder=ae.AcousticEncoder.from_pretrained):
                   f"{gate['final_loss']:.4f}, accuracy {gate['final_accuracy']:.2%} "
                   f"({'passed' if gate['passed'] else 'FAILED'})")
     gate_artifacts = ["overfit_check.json", "failures.jsonl", "config.json"]
+    if experiment.get("scope") == "full":
+        gate_artifacts.append("preflight.json")
     if not gate["passed"]:
         finish("overfit_check_failed", gate_artifacts)
         raise RuntimeError("Overfit check failed; inspect overfit_check.json before training longer")
@@ -536,8 +638,8 @@ def run(args, load_encoder=ae.AcousticEncoder.from_pretrained):
                 "layer_index": provenance["layer_indices"][position],
                 "feature_dim": provenance["output_dim"],
                 "feature_provenance_sha256": record["features"]["provenance_sha256"],
-                "config": config, "result_role": RESULT_ROLE}, checkpoint_path)
-    model_revision = f"{MODEL_NAME}:{ev.sha256_file(checkpoint_path)[:16]}"
+                "config": config, "result_role": result_role}, checkpoint_path)
+    model_revision = f"{model_name}:{ev.sha256_file(checkpoint_path)[:16]}"
 
     # 4. Dev predictions with full class scores, in manifest order.
     tick = time.perf_counter()
@@ -558,7 +660,7 @@ def run(args, load_encoder=ae.AcousticEncoder.from_pretrained):
 
     evaluation = None
     if not args.skip_evaluation:
-        evaluation = run_evaluator(args, predictions_path, args.output_dir / "evaluation")
+        evaluation = run_evaluator(args, predictions_path, args.output_dir / "evaluation", model_name)
 
     final = curve[-1]
     record.update({
@@ -567,6 +669,9 @@ def run(args, load_encoder=ae.AcousticEncoder.from_pretrained):
                  "seeds": dict(zip(("init", "shuffle"), run_seeds(seed)), run=seed),
                  "updates": final["updates"]},
         "final_epoch": {"epoch": final["epoch"], "train": final["train"], "dev": final.get("dev")},
+        "training_budget": {"epochs": settings["epochs"], "original_clip_exposures": len(train_ids) * settings["epochs"],
+                            "planned_updates": math.ceil(len(train_ids) / settings["batch_size"]) * settings["epochs"],
+                            "adequacy": "Inspect training-only loss/gradient curves; update count alone is not evidence of convergence"},
         "development_evaluation": evaluation,
     })
     base.progress(f"Final epoch {final['epoch']}: train loss {final['train']['loss']:.4f} "

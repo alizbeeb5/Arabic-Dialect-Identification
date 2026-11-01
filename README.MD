@@ -6,6 +6,15 @@ improves identification on speech from different data sources.
 The initial plan uses ADI-20 for training and Casablanca for target-domain
 evaluation, subject to source-overlap and checkpoint-exposure checks.
 
+## Train acoustic architectures A / B / C
+
+Start with [TRAINING_TEAM.md](TRAINING_TEAM.md): architecture definitions, pinned setup, one launcher, training stages and required return artifacts.
+
+- Model definitions: `src/models/acoustic_architectures.py` (shared B/C attention + MLP).
+- Common training/inference entry point: `src/experiments/acoustic_abc.py` (A delegates to the existing cached-feature implementation).
+- Architecture configurations: `configs/acoustic/A.json`, `B.json`, `C.json`.
+- Launch: `bash scripts/train_acoustic.sh all smoke`, then `preflight` and `select`.
+
 ## Week 1 results
 
 The [pilot comparison and analysis](reports/week1_results.md) combines all four models on the
@@ -67,9 +76,8 @@ status, package versions, timestamps, hardware, and metrics.
 
 ## Model environments
 
-Acoustic and Jais dependencies will use separate environments.
-Their tested versions will be recorded when the model-loading checks
-are completed.
+Acoustic and Jais use separate environments. The acoustic package is pinned in
+`environments/acoustic.txt`; use the installation commands in [TRAINING_TEAM.md](TRAINING_TEAM.md).
 
 ## Data and checkpoints
 
@@ -221,3 +229,17 @@ seeing development results; it is a small-data baseline, not a benchmark claim.
 See the [Task 14 result review](reports/transcript_tfidf_pilot_review.md),
 [exact metrics](reports/transcript_tfidf_pilot_metrics.json), and
 [reproduction instructions](docs/transcript_tfidf.md).
+
+## Architecture A compatibility workflow
+
+Frozen AraBEST-RQ final-layer masked mean + a 20-way linear classifier.
+For the unified A/B/C launcher, use [TRAINING_TEAM.md](TRAINING_TEAM.md).
+The [original A-only handoff](docs/week2_acoustic_A.md) remains available for the sample, full-data
+checks, fixed training budget, launch commands and required return artifacts.
+Start with `bash scripts/run_acoustic_A.sh smoke` after setting `DATA_ROOT`.
+The smoke is an engineering check; full runs require the approved 67,015/10,806
+release and pass a real long-clip preflight before extraction.
+
+Open the [Colab sample](notebooks/W2_01_Acoustic_A.ipynb) to run the pinned
+500/200 engineering check. [Implementation validation](reports/week2_acoustic_A_implementation.md)
+separates offline checks from the real GPU/training work still required.

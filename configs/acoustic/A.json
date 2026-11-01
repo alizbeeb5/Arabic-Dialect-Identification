@@ -1,0 +1,92 @@
+{
+  "schema_version": "1.0",
+  "task": "EEC-23 / W2-01 / architecture A",
+  "result_role": "week2_acoustic_A_in_source_development",
+  "seed": 11,
+  "labels_path": "configs/labels.json",
+  "encoder": {
+    "checkpoint": "Elyadata/AraBEST-RQ-300M-6k",
+    "revision": "dff453e2b5f72f76211a523b1050691967e5a59b",
+    "feature_code_version": "acoustic-features-v2",
+    "frozen": true,
+    "cached_layers": [
+      25
+    ],
+    "layer_name": "final",
+    "pooling": "mean",
+    "feature_dim": 848,
+    "precision": "fp32",
+    "max_duration_sec": null,
+    "batch_size": 1,
+    "chunk_size": 32
+  },
+  "head": {
+    "score": "dot(W[c], h) + b[c]",
+    "num_labels": 20,
+    "weight_init": "xavier_uniform",
+    "bias_init": "zeros",
+    "loss": "cross_entropy",
+    "label_smoothing": 0.0,
+    "device": "cpu"
+  },
+  "optimization": {
+    "optimizer": "AdamW",
+    "learning_rate": 0.001,
+    "betas": [
+      0.9,
+      0.999
+    ],
+    "eps": 1e-08,
+    "weight_decay_W": 0.01,
+    "weight_decay_bias": 0.0,
+    "gradient_clip_norm": 1.0,
+    "batch_size": 256,
+    "drop_last": false,
+    "epochs": 30,
+    "scheduler": null,
+    "early_stopping": false,
+    "checkpoint_selection": "last_epoch",
+    "augmentation": false,
+    "class_rebalancing": false,
+    "log_every_epoch": true
+  },
+  "overfit_check": {
+    "clips_per_label": 2,
+    "epochs": 300,
+    "batch_size": 256,
+    "learning_rate": 0.001,
+    "min_train_accuracy": 1.0,
+    "max_final_loss_ratio": 0.05
+  },
+  "experiment": {
+    "architecture": "A",
+    "scope": "full",
+    "model_name": "arabest-rq-frozen-linear-A",
+    "selection_data": "ADI-20 dev",
+    "note": "Full-data acoustic reference A; no verifier, no official-test or benchmark-win claim. Training curves must support adequate optimization.",
+    "data": {
+      "dataset_version": "c8da454c9f474bb075d3fe608940ee29e8ccfa43",
+      "split_version": "full-8db5842080c2f643",
+      "train": {
+        "clips": 67015,
+        "sha256": "56a75aa929e2a2c4592012954386cb3d91ff7f256a7004ebe7c4a776573ea4ba"
+      },
+      "dev": {
+        "clips": 10806,
+        "sha256": "525ecea4b39c504b28858ddbfaf0a954af703c91ae8edddb252a0a6f2c8d138b"
+      }
+    },
+    "budget": {
+      "selection_seed": 11,
+      "reporting_seeds": [
+        17,
+        29,
+        43
+      ],
+      "selection_configs_declared": 1,
+      "max_selection_configs": 2,
+      "checkpoint_selection": "last_epoch",
+      "selection_metric": "dev macro_f1; ties: accuracy, then lower learning_rate"
+    }
+  }
+}
