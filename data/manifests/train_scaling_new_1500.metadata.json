@@ -1,0 +1,106 @@
+{
+  "audio_root": "/content/drive/MyDrive/Arabic-Dialect-Identification-data/audio/adi20_micro/c8da454c9f474bb075d3fe608940ee29e8ccfa43",
+  "audio_root_relative_to_data_root": "audio/adi20_micro/c8da454c9f474bb075d3fe608940ee29e8ccfa43",
+  "clips": 1500,
+  "dataset_version": "c8da454c9f474bb075d3fe608940ee29e8ccfa43",
+  "derived_from": {
+    "manifest": "train.jsonl",
+    "release": "full-8db5842080c2f643",
+    "sha256": "56a75aa929e2a2c4592012954386cb3d91ff7f256a7004ebe7c4a776573ea4ba"
+  },
+  "development_only": false,
+  "domain_relation": "in_source (ADI-20 Micro); not out-of-domain",
+  "evaluation_label_sets": {
+    "train": [
+      "MSA",
+      "BAH",
+      "TUN",
+      "ALG",
+      "EGY",
+      "IRA",
+      "JOR",
+      "KSA",
+      "KUW",
+      "LEB",
+      "LIB",
+      "MAU",
+      "MOR",
+      "OMA",
+      "PAL",
+      "QAT",
+      "SUD",
+      "SYR",
+      "UAE",
+      "YEM"
+    ]
+  },
+  "label_counts": {
+    "ALG": 75,
+    "BAH": 75,
+    "EGY": 75,
+    "IRA": 75,
+    "JOR": 75,
+    "KSA": 75,
+    "KUW": 75,
+    "LEB": 75,
+    "LIB": 75,
+    "MAU": 75,
+    "MOR": 75,
+    "MSA": 75,
+    "OMA": 75,
+    "PAL": 75,
+    "QAT": 75,
+    "SUD": 75,
+    "SYR": 75,
+    "TUN": 75,
+    "UAE": 75,
+    "YEM": 75
+  },
+  "labels_sha256": "5cf7d68237eab4a39790dda4faf59af6d31bff7c927564e55272e890206902c5",
+  "manifest_sha256": "cf727f130e46be2e091386b5a5ed55336de5d5c61ae71fb4df600bae4f82ce94",
+  "role": "train",
+  "scaling_part": "new_1500_only",
+  "schema_version": "1.0",
+  "selection_split": null,
+  "source_independence_verified": false,
+  "source_provenance": {
+    "dataset_id": "UBC-NLP/NADI_2026_ADI20_micro",
+    "revision": "c8da454c9f474bb075d3fe608940ee29e8ccfa43"
+  },
+  "speaker_independence_verified": false,
+  "split_sha256": "e2dbe4ee0b9a4cbd7c4f50728d5c6a66cb9cc6f83833bf8885cc89c99a1bf22d",
+  "split_version": "w2-02-text-scaling-v1-e2dbe4ee0b9a",
+  "w2_02_provenance": {
+    "dev_pilot_unchanged": {
+      "dev_pilot_sha256": "fb8684c35ef68e25834d5a4c82cddbd31044a899a63b665c41d3f9a179052d02",
+      "verified": true
+    },
+    "expansion_identity": {
+      "expansion_version": "w2-02-text-scaling-v1",
+      "labels_sha256": "5cf7d68237eab4a39790dda4faf59af6d31bff7c927564e55272e890206902c5",
+      "nested_in": "w1-07-pilot-v1-e61cd569ac7b",
+      "seed": 490,
+      "source_manifest_sha256": {
+        "dev": "525ecea4b39c504b28858ddbfaf0a954af703c91ae8edddb252a0a6f2c8d138b",
+        "train": "56a75aa929e2a2c4592012954386cb3d91ff7f256a7004ebe7c4a776573ea4ba"
+      },
+      "train_per_label": 100,
+      "train_scaling_2000_sha256": "41514213e14bfbd82d4fbf8cfe6eae04a2faf4f878509a15758f431dc41f7929",
+      "train_scaling_new_1500_sha256": "cf727f130e46be2e091386b5a5ed55336de5d5c61ae71fb4df600bae4f82ce94"
+    },
+    "issue": "EEC-24 / W2-02",
+    "nested_in": {
+      "contains_all_original_ids": true,
+      "split_version": "w1-07-pilot-v1-e61cd569ac7b",
+      "train_pilot_sha256": "4fb98eabdb15b8bc05fd7bafad0e1c9cd8885a5f50277397159cb2e4bedd65e3"
+    },
+    "selection": {
+      "dev_performance_used": false,
+      "expand_code_sha256": "752c89aa4732fcf59c2db76fc7f88febb8dff6c08eb136a0ba0242c2ab3e39b7",
+      "freeze_code_sha256": "806d41e62e8e4cb804aa1844f87042c0cae2a931ad7c5f5c4ec5c32fc419a76c",
+      "freeze_version": "w1-07-pilot-v1",
+      "method": "freeze_splits.sample_balanced rerun with train_per_label=100",
+      "seed": 490
+    }
+  }
+}

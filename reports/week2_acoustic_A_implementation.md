@@ -30,3 +30,5 @@ reproduce prediction/evaluation and record identity, command and tolerance.
 
 CPU/offline checks do not establish GPU memory fit, target-cluster speed,
 convergence, dialect accuracy or benchmark performance. Keep EEC-23 In Progress.
+
+The current A/B/C package and broader validation are documented in [week2_acoustic_architectures_implementation.md](week2_acoustic_architectures_implementation.md). This report retains the historical A-only scope.

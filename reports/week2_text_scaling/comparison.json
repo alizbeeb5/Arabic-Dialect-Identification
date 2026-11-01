@@ -1,0 +1,490 @@
+{
+  "dev_ids": 200,
+  "arms": {
+    "500": {
+      "checkpoint": "sha256:cafd34a8984dbf6da189437ce37d9d4cb6fdb5f959ee0e120f6cb9cf2e7b5305",
+      "training_expected": 500,
+      "training_retained": 492,
+      "training_excluded": 8,
+      "retained_per_class_min_max": [
+        22,
+        25
+      ],
+      "feature_counts": {
+        "character": 31609,
+        "word": 13388
+      },
+      "fit_seconds": 1.4437132290004229,
+      "train_accuracy_all_ids": 0.984,
+      "dev_correct": 50,
+      "dev_accuracy": 0.25,
+      "dev_macro_f1": 0.23642323859715164,
+      "dev_prediction_sources": {
+        "text": 200
+      },
+      "per_dialect": {
+        "MSA": {
+          "recall": 0.8,
+          "f1": 0.7619047619047619
+        },
+        "BAH": {
+          "recall": 0.6,
+          "f1": 0.5217391304347826
+        },
+        "TUN": {
+          "recall": 0.3,
+          "f1": 0.3
+        },
+        "ALG": {
+          "recall": 0.2,
+          "f1": 0.18181818181818182
+        },
+        "EGY": {
+          "recall": 0.6,
+          "f1": 0.4
+        },
+        "IRA": {
+          "recall": 0.3,
+          "f1": 0.3
+        },
+        "JOR": {
+          "recall": 0.2,
+          "f1": 0.26666666666666666
+        },
+        "KSA": {
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "KUW": {
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "LEB": {
+          "recall": 0.2,
+          "f1": 0.2
+        },
+        "LIB": {
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "MAU": {
+          "recall": 0.2,
+          "f1": 0.2857142857142857
+        },
+        "MOR": {
+          "recall": 0.7,
+          "f1": 0.6363636363636364
+        },
+        "OMA": {
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "PAL": {
+          "recall": 0.1,
+          "f1": 0.1
+        },
+        "QAT": {
+          "recall": 0.1,
+          "f1": 0.08695652173913043
+        },
+        "SUD": {
+          "recall": 0.1,
+          "f1": 0.1111111111111111
+        },
+        "SYR": {
+          "recall": 0.3,
+          "f1": 0.2857142857142857
+        },
+        "UAE": {
+          "recall": 0.2,
+          "f1": 0.19047619047619047
+        },
+        "YEM": {
+          "recall": 0.1,
+          "f1": 0.1
+        }
+      },
+      "dev_predictions_sha256": "c837d4936cd6bb7386bd498dc848bb5c93f97b0c870c33fe1325e456dc159253"
+    },
+    "2000": {
+      "checkpoint": "sha256:3788d30c331cc1c039785e1cc591c04f6abe5c3afa982e66b653d2358cc507e9",
+      "training_expected": 2000,
+      "training_retained": 1976,
+      "training_excluded": 24,
+      "retained_per_class_min_max": [
+        94,
+        100
+      ],
+      "feature_counts": {
+        "character": 72693,
+        "word": 45354
+      },
+      "fit_seconds": 6.9756944070004465,
+      "train_accuracy_all_ids": 0.981,
+      "dev_correct": 75,
+      "dev_accuracy": 0.375,
+      "dev_macro_f1": 0.3601111766630342,
+      "dev_prediction_sources": {
+        "text": 200
+      },
+      "per_dialect": {
+        "MSA": {
+          "recall": 0.5,
+          "f1": 0.5555555555555556
+        },
+        "BAH": {
+          "recall": 0.7,
+          "f1": 0.6666666666666666
+        },
+        "TUN": {
+          "recall": 0.8,
+          "f1": 0.5925925925925926
+        },
+        "ALG": {
+          "recall": 0.2,
+          "f1": 0.23529411764705882
+        },
+        "EGY": {
+          "recall": 0.7,
+          "f1": 0.5185185185185185
+        },
+        "IRA": {
+          "recall": 0.6,
+          "f1": 0.631578947368421
+        },
+        "JOR": {
+          "recall": 0.3,
+          "f1": 0.375
+        },
+        "KSA": {
+          "recall": 0.4,
+          "f1": 0.36363636363636365
+        },
+        "KUW": {
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "LEB": {
+          "recall": 0.3,
+          "f1": 0.2727272727272727
+        },
+        "LIB": {
+          "recall": 0.2,
+          "f1": 0.21052631578947367
+        },
+        "MAU": {
+          "recall": 0.3,
+          "f1": 0.3
+        },
+        "MOR": {
+          "recall": 0.8,
+          "f1": 0.8
+        },
+        "OMA": {
+          "recall": 0.1,
+          "f1": 0.1111111111111111
+        },
+        "PAL": {
+          "recall": 0.3,
+          "f1": 0.3333333333333333
+        },
+        "QAT": {
+          "recall": 0.2,
+          "f1": 0.25
+        },
+        "SUD": {
+          "recall": 0.1,
+          "f1": 0.10526315789473684
+        },
+        "SYR": {
+          "recall": 0.3,
+          "f1": 0.3
+        },
+        "UAE": {
+          "recall": 0.4,
+          "f1": 0.3076923076923077
+        },
+        "YEM": {
+          "recall": 0.3,
+          "f1": 0.2727272727272727
+        }
+      },
+      "dev_predictions_sha256": "71b107001da894f247a3c5247a347467c66165c117d073dc1d8206833231cb38"
+    }
+  },
+  "week1_reference": {
+    "correct": 50,
+    "macro_f1": 0.23642323859715164
+  },
+  "baseline_500_matches_week1": true,
+  "paired": {
+    "only_2000_correct": 32,
+    "both_correct": 43,
+    "both_wrong": 118,
+    "only_500_correct": 7
+  },
+  "mcnemar_exact_p": 7.025478407740593e-05,
+  "flips": [
+    {
+      "clip_id": "0005c2e8edbe91aef0536e6b259beaee3bde7181c99978878e677a6ef9a86b51",
+      "label": "TUN",
+      "pred_500": "LIB",
+      "pred_2000": "TUN"
+    },
+    {
+      "clip_id": "0d08b34476a279f470fc826e8075281514aab66c05d2e1b0ed8929f8c8e8b041",
+      "label": "QAT",
+      "pred_500": "PAL",
+      "pred_2000": "QAT"
+    },
+    {
+      "clip_id": "106694b6fbece95a195856514496b67e7be5f6ee1c6c78c2c02e2c3617910c27",
+      "label": "UAE",
+      "pred_500": "KSA",
+      "pred_2000": "UAE"
+    },
+    {
+      "clip_id": "13a04805ae82450a7e0c3cafb9ea3e96769cfcc729e4323ea39cd637a2105ca1",
+      "label": "MAU",
+      "pred_500": "YEM",
+      "pred_2000": "MAU"
+    },
+    {
+      "clip_id": "188e70223ba26b5b11ac99f07929c384b12903a3ab6467d71037cb498c14f541",
+      "label": "KSA",
+      "pred_500": "ALG",
+      "pred_2000": "KSA"
+    },
+    {
+      "clip_id": "193c21a1ee4835a5adb5a15ed4f116116fc0b8c690a2d2b3209a850d309e262d",
+      "label": "LIB",
+      "pred_500": "MAU",
+      "pred_2000": "LIB"
+    },
+    {
+      "clip_id": "23ee3dfe257f505c0fdbddefd4bc2acd4ee531c67b3237ffee334f34e5fa05a3",
+      "label": "TUN",
+      "pred_500": "KSA",
+      "pred_2000": "TUN"
+    },
+    {
+      "clip_id": "26874cfae0fdc7af8850add5688ee3a7c4dca2a8555d8955f85ae371978b67ca",
+      "label": "MOR",
+      "pred_500": "QAT",
+      "pred_2000": "MOR"
+    },
+    {
+      "clip_id": "31a339c5522dcbb2b5733bb1057849a2c1359e5edcb850b4b0342da9d9aaf197",
+      "label": "SYR",
+      "pred_500": "UAE",
+      "pred_2000": "SYR"
+    },
+    {
+      "clip_id": "398444f1a83a3d0f94fd0c530f3d3b80527f8066e4093cb4e728b41de3ae072e",
+      "label": "BAH",
+      "pred_500": "PAL",
+      "pred_2000": "BAH"
+    },
+    {
+      "clip_id": "438c85e9301e84f6b2ed8c97a01836fc88b89f58ba6405cc53b4b76cab23fc43",
+      "label": "KSA",
+      "pred_500": "UAE",
+      "pred_2000": "KSA"
+    },
+    {
+      "clip_id": "4707e35da03a2d374e7a22672fe1f4a496644fca19a0ba338cc94141c29a716c",
+      "label": "PAL",
+      "pred_500": "OMA",
+      "pred_2000": "PAL"
+    },
+    {
+      "clip_id": "49d4edd6c0e3954f9d231acf2aab2aeaee7c4985bf3379d4e2d66ee8f1bd1407",
+      "label": "SYR",
+      "pred_500": "SYR",
+      "pred_2000": "PAL"
+    },
+    {
+      "clip_id": "4aacfa27abc5d055771905dd0752bbf220933b1a59775d3f13d36b2ed79876a9",
+      "label": "KSA",
+      "pred_500": "QAT",
+      "pred_2000": "KSA"
+    },
+    {
+      "clip_id": "4d5ee053c8a8c212ccb1c1931d15b962d856c20005409386894ab1787a397290",
+      "label": "UAE",
+      "pred_500": "UAE",
+      "pred_2000": "YEM"
+    },
+    {
+      "clip_id": "6a638135b6a2f6c5e9bbd1e15128e82945c12713454b15d839642b7d0a276915",
+      "label": "JOR",
+      "pred_500": "JOR",
+      "pred_2000": "SUD"
+    },
+    {
+      "clip_id": "73f0473bdcea6135121ed2772a5f3e821c4707f3ff5b959d61b73ef2be9366bd",
+      "label": "JOR",
+      "pred_500": "IRA",
+      "pred_2000": "JOR"
+    },
+    {
+      "clip_id": "761a3c892482a7c3fce0628a0ab055aa5413e00aa3e3f927e45fa9b0424daac8",
+      "label": "MSA",
+      "pred_500": "MSA",
+      "pred_2000": "MAU"
+    },
+    {
+      "clip_id": "7983152abeff8f7701ee22a6dc24980dff01e1bde83d42393822b6f1516705b6",
+      "label": "IRA",
+      "pred_500": "BAH",
+      "pred_2000": "IRA"
+    },
+    {
+      "clip_id": "8217ff4324e5c67c3d462e4d91b6abdc64aa817c4eb116943b38b591ba3d850a",
+      "label": "MSA",
+      "pred_500": "MSA",
+      "pred_2000": "ALG"
+    },
+    {
+      "clip_id": "8b29a30d3b57e02c291a4cc400f5d7d7153cb11be2d1319ccc6f01a2dba93357",
+      "label": "TUN",
+      "pred_500": "MOR",
+      "pred_2000": "TUN"
+    },
+    {
+      "clip_id": "938f16a4030b0f8aeba35a7cbf358e9e1f41672638d81a2d986798ed6ebf4c7b",
+      "label": "KSA",
+      "pred_500": "QAT",
+      "pred_2000": "KSA"
+    },
+    {
+      "clip_id": "a102f0b27d3a828cf514f17ea24c119416ac1f832a5d5f0bd4966d705bbfec9c",
+      "label": "EGY",
+      "pred_500": "YEM",
+      "pred_2000": "EGY"
+    },
+    {
+      "clip_id": "a159461584aeadcdc0be5c474ff97271fab9dedf7fb1fdba5c6e2dfa695bb7a2",
+      "label": "PAL",
+      "pred_500": "YEM",
+      "pred_2000": "PAL"
+    },
+    {
+      "clip_id": "a51ef3f1fc328d0c570452aba5b573a63e83c670d65af2fe35452258965d052b",
+      "label": "JOR",
+      "pred_500": "KUW",
+      "pred_2000": "JOR"
+    },
+    {
+      "clip_id": "a68bc8fb63ec15dca7db65ce823bbc856f89ed3ca31b5dea13928f1772fd6496",
+      "label": "EGY",
+      "pred_500": "PAL",
+      "pred_2000": "EGY"
+    },
+    {
+      "clip_id": "af9ebb851ae42ef52793a9f995acca75a106844f10d31b2578d4aaf278e059b0",
+      "label": "TUN",
+      "pred_500": "UAE",
+      "pred_2000": "TUN"
+    },
+    {
+      "clip_id": "afdfa069f3ea8616c4289c5f70eb92632815d5c6ec2b21d191fceea41a4f9b75",
+      "label": "UAE",
+      "pred_500": "YEM",
+      "pred_2000": "UAE"
+    },
+    {
+      "clip_id": "b1bd698b614343862a1d2eff5190e383e958bb5b9a281b5a374fe3048be657b7",
+      "label": "MSA",
+      "pred_500": "MSA",
+      "pred_2000": "MAU"
+    },
+    {
+      "clip_id": "c11c51f449b1d5c23527bd346f51e31b3c58e422e390a9ae4d1e1f58f1530933",
+      "label": "UAE",
+      "pred_500": "ALG",
+      "pred_2000": "UAE"
+    },
+    {
+      "clip_id": "cd99a562acce3cdb9e7419ea56c341767ad056104b870b4face875a6d5ec59c9",
+      "label": "OMA",
+      "pred_500": "ALG",
+      "pred_2000": "OMA"
+    },
+    {
+      "clip_id": "cff0fdd3107fe17f6c32283f764d35e69a0651ba06d0f101622c851cab2b1fbe",
+      "label": "IRA",
+      "pred_500": "LIB",
+      "pred_2000": "IRA"
+    },
+    {
+      "clip_id": "d237540dcbe0dfc6f2a47c6fdd49d87f1f22d278f5d746ec6360f81f242e6d1d",
+      "label": "LEB",
+      "pred_500": "KSA",
+      "pred_2000": "LEB"
+    },
+    {
+      "clip_id": "da6dc62a575603a15790b2ed9993476b2472472a3f9f9f39ae2ae0521c7a1262",
+      "label": "LIB",
+      "pred_500": "MAU",
+      "pred_2000": "LIB"
+    },
+    {
+      "clip_id": "ea8671d71c689535f8ddcf85fa0bf03b5b084d2936dd7c209cb920cadc5ae0d0",
+      "label": "YEM",
+      "pred_500": "PAL",
+      "pred_2000": "YEM"
+    },
+    {
+      "clip_id": "eb5af2541c2463e82378c5737d161452943db7c68e2a7975251a614b111aa728",
+      "label": "IRA",
+      "pred_500": "QAT",
+      "pred_2000": "IRA"
+    },
+    {
+      "clip_id": "ec63a0a6992e2e7336a08f2518c15857a581653b2d64be56c5725ad9ac28130f",
+      "label": "EGY",
+      "pred_500": "EGY",
+      "pred_2000": "UAE"
+    },
+    {
+      "clip_id": "f2b06f160699ae32b8469a702ab15d450ebadaa20b38f5a68acc21c168d1350a",
+      "label": "TUN",
+      "pred_500": "KUW",
+      "pred_2000": "TUN"
+    },
+    {
+      "clip_id": "f4dbc1453ec0936db360933a9840884783c45b30c907f5f456812d83ff45e587",
+      "label": "YEM",
+      "pred_500": "QAT",
+      "pred_2000": "YEM"
+    }
+  ],
+  "delta": {
+    "dev_correct": 25,
+    "dev_accuracy_points": 12.5,
+    "dev_macro_f1": 0.12368793806588257
+  },
+  "per_dialect_recall_change": {
+    "MSA": -0.30000000000000004,
+    "BAH": 0.09999999999999998,
+    "TUN": 0.5,
+    "ALG": 0.0,
+    "EGY": 0.09999999999999998,
+    "IRA": 0.3,
+    "JOR": 0.09999999999999998,
+    "KSA": 0.4,
+    "KUW": 0.0,
+    "LEB": 0.09999999999999998,
+    "LIB": 0.2,
+    "MAU": 0.09999999999999998,
+    "MOR": 0.10000000000000009,
+    "OMA": 0.1,
+    "PAL": 0.19999999999999998,
+    "QAT": 0.1,
+    "SUD": 0.0,
+    "SYR": 0.0,
+    "UAE": 0.2,
+    "YEM": 0.19999999999999998
+  }
+}

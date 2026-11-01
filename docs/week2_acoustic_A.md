@@ -1,5 +1,7 @@
 # Architecture A — training-team handoff
 
+For the current unified A/B/C package, start with [TRAINING_TEAM.md](../TRAINING_TEAM.md). This file retains the original A-only workflow.
+
 **Project:** EECE 490 — Arabic Dialect Identification / NADI ADI-20
 **Team:** ALI ZBEEB, FATIMA KARNIB, HAIDAR MADI
 **Linear:** EEC-23 / W2-01

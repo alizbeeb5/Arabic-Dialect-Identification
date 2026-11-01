@@ -1,0 +1,123 @@
+{
+  "clips_per_episode_histogram": {
+    "1": 41,
+    "2": 25,
+    "3": 44,
+    "4": 31,
+    "5": 40,
+    "6": 39,
+    "7": 29,
+    "8": 25,
+    "9": 17,
+    "10": 21,
+    "11": 26,
+    "12": 29,
+    "13": 20,
+    "14": 27,
+    "15": 26,
+    "16": 23,
+    "17": 14,
+    "18": 10,
+    "19": 12,
+    "20": 7,
+    "21": 5,
+    "22": 9,
+    "23": 10,
+    "24": 5,
+    "25": 7,
+    "26": 7,
+    "27": 7,
+    "28": 5,
+    "29": 6,
+    "30": 7,
+    "31": 4,
+    "32": 1,
+    "33": 1,
+    "34": 1,
+    "35": 1,
+    "36": 3,
+    "37": 1,
+    "38": 2,
+    "39": 1,
+    "40": 1,
+    "41": 1,
+    "42": 1,
+    "46": 2
+  },
+  "clips_sharing_a_parent_segment": 1404,
+  "code_sha256": "c65309ed5da6f5ad77536a779c46835b12de4cfa39d24dee04d13fb0ade306b1",
+  "episode_groups": 594,
+  "episode_groups_spanning_labels": 0,
+  "manifest_sha256": "5ed7a36491ba6a41782302e1f3d31c3033b4d72ac18f1f7a2d04e85177dd064e",
+  "method": "inferred_from_original_path_not_verified",
+  "notes": [
+    "The filename window is the parent segment span; sub-segment offsets are not given.",
+    "Episode files of one TV series are separate groups; series-level grouping is not derived.",
+    "Speakers are unknown; episodes of one series likely share actors.",
+    "Groups are for auditing only and must not enter model features or prompts."
+  ],
+  "parent_segment_groups": 6062,
+  "parent_segments_with_one_window": 6062,
+  "parsed": 6819,
+  "per_label": {
+    "ALG": {
+      "clips": 844,
+      "episode_groups": 39,
+      "largest_episode_share": 0.0498,
+      "max_clips_per_episode": 42,
+      "median_clips_per_episode": 22
+    },
+    "EGY": {
+      "clips": 846,
+      "episode_groups": 64,
+      "largest_episode_share": 0.0426,
+      "max_clips_per_episode": 36,
+      "median_clips_per_episode": 13
+    },
+    "JOR": {
+      "clips": 848,
+      "episode_groups": 55,
+      "largest_episode_share": 0.0472,
+      "max_clips_per_episode": 40,
+      "median_clips_per_episode": 14
+    },
+    "MAU": {
+      "clips": 953,
+      "episode_groups": 201,
+      "largest_episode_share": 0.021,
+      "max_clips_per_episode": 20,
+      "median_clips_per_episode": 4
+    },
+    "MOR": {
+      "clips": 1045,
+      "episode_groups": 89,
+      "largest_episode_share": 0.022,
+      "max_clips_per_episode": 23,
+      "median_clips_per_episode": 12
+    },
+    "PAL": {
+      "clips": 667,
+      "episode_groups": 30,
+      "largest_episode_share": 0.051,
+      "max_clips_per_episode": 34,
+      "median_clips_per_episode": 23
+    },
+    "UAE": {
+      "clips": 813,
+      "episode_groups": 63,
+      "largest_episode_share": 0.0566,
+      "max_clips_per_episode": 46,
+      "median_clips_per_episode": 11
+    },
+    "YEM": {
+      "clips": 803,
+      "episode_groups": 53,
+      "largest_episode_share": 0.0361,
+      "max_clips_per_episode": 29,
+      "median_clips_per_episode": 15
+    }
+  },
+  "rows": 6819,
+  "split_version": "casablanca-val-v1-90d7d870540d",
+  "unparsed_clip_ids": []
+}

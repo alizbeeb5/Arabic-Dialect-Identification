@@ -1,0 +1,13 @@
+{
+  "historical_summary_sha256": "e941af4e0147d85f27f58f44642fd5a7b0a40020e594ba0a79330a9f61936139",
+  "historical_merge_code_sha256": "1c2f33b96e9024f34c68ba9008d3a0c550b46e306a6f29f6cb7c2567acfa0ad8",
+  "historical_generator_status": "source_not_recovered",
+  "historical_generator_note": "The recorded merge generator hash matches neither the submitted script nor its notebook copy. The executed source is unavailable in this checkout; no equivalence or full replay is claimed. The original summary is preserved as historical evidence.",
+  "reviewed_source_sha256": {
+    "src/data/merge_text_exports.py": "d07ccfc637ceec14e7d49b76cb272c0867d938db8279244a3399df35f098b9a9",
+    "src/analysis/text_scaling_compare.py": "0cea42bde09ce1b5464b85621ade660404bba69a6f3255733a7a24f484bdafaf"
+  },
+  "saved_dev_predictions_independently_rescored": true,
+  "full_training_replay_verified": false,
+  "review_scope": "Ali Zbeeb review via Codex: frozen manifests, saved all-200-dev probabilities, evaluator metrics, paired correctness and regression checks. No audio, raw transcripts or model checkpoint replay."
+}

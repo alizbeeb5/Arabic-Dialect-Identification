@@ -1,0 +1,650 @@
+{
+  "adi20_manifests_checked": {
+    "src/data/manifests/dev.jsonl": {
+      "rows": 10806,
+      "sha256": "525ecea4b39c504b28858ddbfaf0a954af703c91ae8edddb252a0a6f2c8d138b"
+    },
+    "src/data/manifests/train.jsonl": {
+      "rows": 67015,
+      "sha256": "56a75aa929e2a2c4592012954386cb3d91ff7f256a7004ebe7c4a776573ea4ba"
+    }
+  },
+  "adi20_overlap_findings": {},
+  "code_sha256": "f72fb296f2dee6b99c18288eeb0a64573c7ac15ea7aeb01d87a6a68c566891a4",
+  "decoded_counts": {
+    "Algeria": 844,
+    "Egypt": 846,
+    "Jordan": 848,
+    "Mauritania": 953,
+    "Morocco": 1045,
+    "Palestine": 667,
+    "UAE": 813,
+    "Yemen": 803
+  },
+  "duration_mismatches_over_tolerance": 0,
+  "duration_tolerance_sec": 0.01,
+  "exact_duplicate_groups": {},
+  "exact_duplicate_label_conflicts": 0,
+  "finished_at_utc": "2026-10-29T22:36:45.675274+00:00",
+  "hardware": {
+    "cpu_count": 2,
+    "machine": "x86_64",
+    "platform": "Linux-6.6.159+-x86_64-with-glibc2.39"
+  },
+  "labels_sha256": "5cf7d68237eab4a39790dda4faf59af6d31bff7c927564e55272e890206902c5",
+  "manifest": {
+    "path": "data/manifests/casablanca_validation.jsonl",
+    "sha256": "5ed7a36491ba6a41782302e1f3d31c3033b4d72ac18f1f7a2d04e85177dd064e"
+  },
+  "near_duplicate_audit_completed": false,
+  "notes": [
+    "Original WAV bytes preserved; no resampling, trimming, channel mixing or normalization.",
+    "audio_error rows stay in the manifest and the denominator.",
+    "Exact duplicates and ADI-20 exact matches are reported, not removed.",
+    "Transcripts and gender are summarized here only; they are not in the manifest.",
+    "Casablanca test was not downloaded, decoded or hashed."
+  ],
+  "per_config": {
+    "Algeria": {
+      "audio_errors": 0,
+      "channel_counts": {
+        "2": 844
+      },
+      "clips_in_transcription_duplicate_groups_audit_only": 10,
+      "clips_over_10_sec": 44,
+      "clips_over_1pct_near_full_scale": 12,
+      "clips_over_30_sec": 2,
+      "clips_under_0_5_sec": 2,
+      "clips_under_1_sec": 20,
+      "clips_with_near_full_scale_samples": 166,
+      "duration_hours": 1.0001786819727891,
+      "duration_sec": {
+        "max": 40.78687074829932,
+        "mean": 4.266164994196731,
+        "median": 3.3674489795918365,
+        "min": 0.1947845804988662,
+        "p05": 1.2188662131519274,
+        "p95": 10.337369614512472
+      },
+      "empty_transcriptions_audit_only": 0,
+      "encoded_bytes": 636840444,
+      "format_counts": {
+        "WAV/PCM_16": 844
+      },
+      "gender_counts_audit_only": {
+        "?": 1,
+        "F": 228,
+        "M": 577,
+        "M,": 1,
+        "Missing": 37
+      },
+      "longest_clip": {
+        "clip_id": "bc296119c0acca2493f239d3d7ce1782630bde0ad25e16956f988036d09c99ff",
+        "duration_sec": 40.78687074829932,
+        "frame_count": 1798701,
+        "sample_rate_hz": 44100
+      },
+      "missing_published_duration": 0,
+      "ok": 844,
+      "rows": 844,
+      "sample_rate_counts": {
+        "44100": 817,
+        "48000": 27
+      },
+      "silent_clips": 0,
+      "stereo_distinct_channels": 696,
+      "stereo_identical_channels": 148,
+      "transcription_duplicate_groups_audit_only": 4
+    },
+    "Egypt": {
+      "audio_errors": 0,
+      "channel_counts": {
+        "2": 846
+      },
+      "clips_in_transcription_duplicate_groups_audit_only": 6,
+      "clips_over_10_sec": 52,
+      "clips_over_1pct_near_full_scale": 0,
+      "clips_over_30_sec": 0,
+      "clips_under_0_5_sec": 0,
+      "clips_under_1_sec": 46,
+      "clips_with_near_full_scale_samples": 59,
+      "duration_hours": 1.0005261085915846,
+      "duration_sec": {
+        "max": 27.221315192743763,
+        "mean": 4.257557908900361,
+        "median": 3.343197278911565,
+        "min": 0.6003854875283446,
+        "p05": 0.9687528344671201,
+        "p95": 11.038163265306123
+      },
+      "empty_transcriptions_audit_only": 0,
+      "encoded_bytes": 635411324,
+      "format_counts": {
+        "WAV/PCM_16": 846
+      },
+      "gender_counts_audit_only": {
+        "F": 135,
+        "M": 696,
+        "None": 15
+      },
+      "longest_clip": {
+        "clip_id": "84bd0de6fb54fdadf3834787ca49d47a79552043f0353485b3ccdf7e4ad93159",
+        "duration_sec": 27.221315192743763,
+        "frame_count": 1200460,
+        "sample_rate_hz": 44100
+      },
+      "missing_published_duration": 0,
+      "ok": 846,
+      "rows": 846,
+      "sample_rate_counts": {
+        "44100": 846
+      },
+      "silent_clips": 0,
+      "stereo_distinct_channels": 637,
+      "stereo_identical_channels": 209,
+      "transcription_duplicate_groups_audit_only": 2
+    },
+    "Jordan": {
+      "audio_errors": 1,
+      "channel_counts": {
+        "2": 847
+      },
+      "clips_in_transcription_duplicate_groups_audit_only": 0,
+      "clips_over_10_sec": 25,
+      "clips_over_1pct_near_full_scale": 55,
+      "clips_over_30_sec": 0,
+      "clips_under_0_5_sec": 0,
+      "clips_under_1_sec": 11,
+      "clips_with_near_full_scale_samples": 201,
+      "duration_hours": 1.000363149053603,
+      "duration_sec": {
+        "max": 17.82775,
+        "mean": 4.251838650050733,
+        "median": 3.7045351473922903,
+        "min": 0.6400453514739229,
+        "p05": 1.3545625,
+        "p95": 8.6983125
+      },
+      "empty_transcriptions_audit_only": 0,
+      "encoded_bytes": 418386788,
+      "format_counts": {
+        "WAV/PCM_16": 847
+      },
+      "gender_counts_audit_only": {
+        "F": 308,
+        "M": 533,
+        "Missing": 1,
+        "None": 6
+      },
+      "longest_clip": {
+        "clip_id": "2006af78a26fd15591824e67d754e6e542ae89b367f88aba9bb6f1d5e50fd138",
+        "duration_sec": 17.82775,
+        "frame_count": 285244,
+        "sample_rate_hz": 16000
+      },
+      "missing_published_duration": 0,
+      "ok": 847,
+      "rows": 848,
+      "sample_rate_counts": {
+        "16000": 450,
+        "44100": 344,
+        "48000": 53
+      },
+      "silent_clips": 0,
+      "stereo_distinct_channels": 812,
+      "stereo_identical_channels": 35,
+      "transcription_duplicate_groups_audit_only": 0
+    },
+    "Mauritania": {
+      "audio_errors": 0,
+      "channel_counts": {
+        "1": 162,
+        "2": 791
+      },
+      "clips_in_transcription_duplicate_groups_audit_only": 9,
+      "clips_over_10_sec": 40,
+      "clips_over_1pct_near_full_scale": 35,
+      "clips_over_30_sec": 0,
+      "clips_under_0_5_sec": 0,
+      "clips_under_1_sec": 21,
+      "clips_with_near_full_scale_samples": 108,
+      "duration_hours": 1.0008640277777778,
+      "duration_sec": {
+        "max": 26.385645833333335,
+        "mean": 3.7808084994753415,
+        "median": 3.07625,
+        "min": 0.658625,
+        "p05": 1.1945625,
+        "p95": 9.241229166666667
+      },
+      "empty_transcriptions_audit_only": 0,
+      "encoded_bytes": 624017902,
+      "format_counts": {
+        "WAV/PCM_16": 953
+      },
+      "gender_counts_audit_only": {
+        "F": 313,
+        "M": 608,
+        "Missing": 29,
+        "None": 3
+      },
+      "longest_clip": {
+        "clip_id": "387c44ae57b5d2216916ebdca234b291e732f717888b70c99f9f1066e4c33d35",
+        "duration_sec": 26.385645833333335,
+        "frame_count": 1266511,
+        "sample_rate_hz": 48000
+      },
+      "missing_published_duration": 0,
+      "ok": 953,
+      "rows": 953,
+      "sample_rate_counts": {
+        "48000": 953
+      },
+      "silent_clips": 0,
+      "stereo_distinct_channels": 777,
+      "stereo_identical_channels": 14,
+      "transcription_duplicate_groups_audit_only": 2
+    },
+    "Morocco": {
+      "audio_errors": 0,
+      "channel_counts": {
+        "2": 1045
+      },
+      "clips_in_transcription_duplicate_groups_audit_only": 2,
+      "clips_over_10_sec": 19,
+      "clips_over_1pct_near_full_scale": 0,
+      "clips_over_30_sec": 0,
+      "clips_under_0_5_sec": 1,
+      "clips_under_1_sec": 75,
+      "clips_with_near_full_scale_samples": 0,
+      "duration_hours": 1.001255681531872,
+      "duration_sec": {
+        "max": 17.485714285714284,
+        "mean": 3.449301869392095,
+        "median": 3.079614512471655,
+        "min": 0.39891156462585037,
+        "p05": 0.9261451247165533,
+        "p95": 7.633061224489796
+      },
+      "empty_transcriptions_audit_only": 0,
+      "encoded_bytes": 635883388,
+      "format_counts": {
+        "WAV/PCM_16": 1045
+      },
+      "gender_counts_audit_only": {
+        "F": 448,
+        "M": 594,
+        "Missing": 1,
+        "None": 2
+      },
+      "longest_clip": {
+        "clip_id": "26bfa68c75a030c148f5ff9eb40ebb60294d01d85289466116b8ad7e3852409c",
+        "duration_sec": 17.485714285714284,
+        "frame_count": 771120,
+        "sample_rate_hz": 44100
+      },
+      "missing_published_duration": 0,
+      "ok": 1045,
+      "rows": 1045,
+      "sample_rate_counts": {
+        "44100": 1045
+      },
+      "silent_clips": 0,
+      "stereo_distinct_channels": 921,
+      "stereo_identical_channels": 124,
+      "transcription_duplicate_groups_audit_only": 1
+    },
+    "Palestine": {
+      "audio_errors": 0,
+      "channel_counts": {
+        "2": 667
+      },
+      "clips_in_transcription_duplicate_groups_audit_only": 0,
+      "clips_over_10_sec": 73,
+      "clips_over_1pct_near_full_scale": 0,
+      "clips_over_30_sec": 0,
+      "clips_under_0_5_sec": 0,
+      "clips_under_1_sec": 24,
+      "clips_with_near_full_scale_samples": 183,
+      "duration_hours": 1.0000801776266062,
+      "duration_sec": {
+        "max": 22.048798185941042,
+        "mean": 5.397734092137605,
+        "median": 4.42766439909297,
+        "min": 0.5208616780045352,
+        "p05": 1.1224943310657596,
+        "p95": 13.145600907029479
+      },
+      "empty_transcriptions_audit_only": 0,
+      "encoded_bytes": 635120264,
+      "format_counts": {
+        "WAV/PCM_16": 667
+      },
+      "gender_counts_audit_only": {
+        "F": 46,
+        "M": 620,
+        "Missing": 1
+      },
+      "longest_clip": {
+        "clip_id": "0ae55fae5112c6007696781a2f713dc9582c8597f5e4c594baab67d0dba13c99",
+        "duration_sec": 22.048798185941042,
+        "frame_count": 972352,
+        "sample_rate_hz": 44100
+      },
+      "missing_published_duration": 0,
+      "ok": 667,
+      "rows": 667,
+      "sample_rate_counts": {
+        "44100": 667
+      },
+      "silent_clips": 0,
+      "stereo_distinct_channels": 582,
+      "stereo_identical_channels": 85,
+      "transcription_duplicate_groups_audit_only": 0
+    },
+    "UAE": {
+      "audio_errors": 0,
+      "channel_counts": {
+        "2": 813
+      },
+      "clips_in_transcription_duplicate_groups_audit_only": 2,
+      "clips_over_10_sec": 48,
+      "clips_over_1pct_near_full_scale": 0,
+      "clips_over_30_sec": 0,
+      "clips_under_0_5_sec": 0,
+      "clips_under_1_sec": 17,
+      "clips_with_near_full_scale_samples": 0,
+      "duration_hours": 1.0024566830829553,
+      "duration_sec": {
+        "max": 24.923990929705216,
+        "mean": 4.438922581917145,
+        "median": 3.486938775510204,
+        "min": 0.554375,
+        "p05": 1.1500833333333333,
+        "p95": 10.41185941043084
+      },
+      "empty_transcriptions_audit_only": 0,
+      "encoded_bytes": 648250364,
+      "format_counts": {
+        "WAV/PCM_16": 813
+      },
+      "gender_counts_audit_only": {
+        "F": 215,
+        "M": 597,
+        "M\\": 1
+      },
+      "longest_clip": {
+        "clip_id": "2acd7aa0c2aaf51a9b41bac196c162047f1cf0f1b14934b2b69b772b804c8042",
+        "duration_sec": 24.923990929705216,
+        "frame_count": 1099148,
+        "sample_rate_hz": 44100
+      },
+      "missing_published_duration": 0,
+      "ok": 813,
+      "rows": 813,
+      "sample_rate_counts": {
+        "44100": 619,
+        "48000": 194
+      },
+      "silent_clips": 0,
+      "stereo_distinct_channels": 805,
+      "stereo_identical_channels": 8,
+      "transcription_duplicate_groups_audit_only": 1
+    },
+    "Yemen": {
+      "audio_errors": 0,
+      "channel_counts": {
+        "2": 803
+      },
+      "clips_in_transcription_duplicate_groups_audit_only": 2,
+      "clips_over_10_sec": 43,
+      "clips_over_1pct_near_full_scale": 0,
+      "clips_over_30_sec": 0,
+      "clips_under_0_5_sec": 2,
+      "clips_under_1_sec": 32,
+      "clips_with_near_full_scale_samples": 63,
+      "duration_hours": 1.0012810151722726,
+      "duration_sec": {
+        "max": 24.106916099773244,
+        "mean": 4.488931076737462,
+        "median": 3.7344583333333334,
+        "min": 0.3081632653061224,
+        "p05": 1.0799166666666666,
+        "p95": 10.159229166666666
+      },
+      "empty_transcriptions_audit_only": 0,
+      "encoded_bytes": 656006180,
+      "format_counts": {
+        "WAV/PCM_16": 803
+      },
+      "gender_counts_audit_only": {
+        ",F": 1,
+        "F": 207,
+        "M": 580,
+        "M,": 1,
+        "Missing": 14
+      },
+      "longest_clip": {
+        "clip_id": "c5a5501a1283c974a15131891d1bbb418014fe48b1ef6ba227d83845be7af12a",
+        "duration_sec": 24.106916099773244,
+        "frame_count": 1063115,
+        "sample_rate_hz": 44100
+      },
+      "missing_published_duration": 0,
+      "ok": 803,
+      "rows": 803,
+      "sample_rate_counts": {
+        "44100": 488,
+        "48000": 315
+      },
+      "silent_clips": 0,
+      "stereo_distinct_channels": 726,
+      "stereo_identical_channels": 77,
+      "transcription_duplicate_groups_audit_only": 1
+    }
+  },
+  "pipeline_version": "casablanca-validation-audit-v1",
+  "processed_shards": [
+    {
+      "bytes": 311325856,
+      "expected_sha256": "b34460443cc8af4e74024216009ee0dbb662adada493354edb4d485d45be1b7f",
+      "hub_hash_verified": true,
+      "path": "Algeria/validation-00000-of-00002.parquet",
+      "rows": 422,
+      "sha256": "b34460443cc8af4e74024216009ee0dbb662adada493354edb4d485d45be1b7f"
+    },
+    {
+      "bytes": 315796295,
+      "expected_sha256": "ad7729229cbff070d421076c132d3613dc0f4c6d6ce4661033fab63e7ec10f48",
+      "hub_hash_verified": true,
+      "path": "Algeria/validation-00001-of-00002.parquet",
+      "rows": 422,
+      "sha256": "ad7729229cbff070d421076c132d3613dc0f4c6d6ce4661033fab63e7ec10f48"
+    },
+    {
+      "bytes": 284718756,
+      "expected_sha256": "312205473f151fd99292994b5c50edfd7c09ba336e8f1ce815d88900337ad817",
+      "hub_hash_verified": true,
+      "path": "Egypt/validation-00000-of-00002.parquet",
+      "rows": 423,
+      "sha256": "312205473f151fd99292994b5c50edfd7c09ba336e8f1ce815d88900337ad817"
+    },
+    {
+      "bytes": 287257047,
+      "expected_sha256": "b6b53b952248d27ca5d8850397d34f33bc51b0bcb94a96a5d9ca3d43e1520ac1",
+      "hub_hash_verified": true,
+      "path": "Egypt/validation-00001-of-00002.parquet",
+      "rows": 423,
+      "sha256": "b6b53b952248d27ca5d8850397d34f33bc51b0bcb94a96a5d9ca3d43e1520ac1"
+    },
+    {
+      "bytes": 392662192,
+      "expected_sha256": "d06640c25841e05182bd25ae04fb2563c5b7cf3ecc2e06a086cc178909d4ae5c",
+      "hub_hash_verified": true,
+      "path": "Jordan/validation-00000-of-00001.parquet",
+      "rows": 848,
+      "sha256": "d06640c25841e05182bd25ae04fb2563c5b7cf3ecc2e06a086cc178909d4ae5c"
+    },
+    {
+      "bytes": 313895260,
+      "expected_sha256": "606dec52031a8b0b62be0bb58af29cb34355b67f98ce1a97829886a9c740885b",
+      "hub_hash_verified": true,
+      "path": "Mauritania/validation-00000-of-00002.parquet",
+      "rows": 477,
+      "sha256": "606dec52031a8b0b62be0bb58af29cb34355b67f98ce1a97829886a9c740885b"
+    },
+    {
+      "bytes": 293437764,
+      "expected_sha256": "73dc03829e77fc8aa03fbc727520a017806697e94b037df008cb6d1a4a6b47e1",
+      "hub_hash_verified": true,
+      "path": "Mauritania/validation-00001-of-00002.parquet",
+      "rows": 476,
+      "sha256": "73dc03829e77fc8aa03fbc727520a017806697e94b037df008cb6d1a4a6b47e1"
+    },
+    {
+      "bytes": 303581536,
+      "expected_sha256": "203de6598a183b61fdf642859b87ddc1403ba60609379992221382403821aa10",
+      "hub_hash_verified": true,
+      "path": "Morocco/validation-00000-of-00002.parquet",
+      "rows": 523,
+      "sha256": "203de6598a183b61fdf642859b87ddc1403ba60609379992221382403821aa10"
+    },
+    {
+      "bytes": 307671563,
+      "expected_sha256": "51b32069710f5227e0092f7eec67094e7c27817e6eeee60df724d892c4b09a0f",
+      "hub_hash_verified": true,
+      "path": "Morocco/validation-00001-of-00002.parquet",
+      "rows": 522,
+      "sha256": "51b32069710f5227e0092f7eec67094e7c27817e6eeee60df724d892c4b09a0f"
+    },
+    {
+      "bytes": 299349536,
+      "expected_sha256": "1d415f2de327918a748c05d3e87e3ffc5d2de3b88970d010a3a88852f761ced2",
+      "hub_hash_verified": true,
+      "path": "Palestine/validation-00000-of-00002.parquet",
+      "rows": 334,
+      "sha256": "1d415f2de327918a748c05d3e87e3ffc5d2de3b88970d010a3a88852f761ced2"
+    },
+    {
+      "bytes": 314009718,
+      "expected_sha256": "0d210ef83a7a4739582fad1431636f31400bf5acb75b0ebe35f67e2fc3acc735",
+      "hub_hash_verified": true,
+      "path": "Palestine/validation-00001-of-00002.parquet",
+      "rows": 333,
+      "sha256": "0d210ef83a7a4739582fad1431636f31400bf5acb75b0ebe35f67e2fc3acc735"
+    },
+    {
+      "bytes": 277483521,
+      "expected_sha256": "251f5f1f5fa15522250c78aa4633548a02f2f7c15bcc2bf975efb659690bb35a",
+      "hub_hash_verified": true,
+      "path": "UAE/validation-00000-of-00002.parquet",
+      "rows": 407,
+      "sha256": "251f5f1f5fa15522250c78aa4633548a02f2f7c15bcc2bf975efb659690bb35a"
+    },
+    {
+      "bytes": 294545860,
+      "expected_sha256": "ae49cb95cbb5a6e37972f7a9a0091cdbe6221b5c208dd0107e2d95f479e5c4c0",
+      "hub_hash_verified": true,
+      "path": "UAE/validation-00001-of-00002.parquet",
+      "rows": 406,
+      "sha256": "ae49cb95cbb5a6e37972f7a9a0091cdbe6221b5c208dd0107e2d95f479e5c4c0"
+    },
+    {
+      "bytes": 320508178,
+      "expected_sha256": "f3d2b73388200bddcf8a6f38b4b599be5b756e843931c151c1379cfb4e26582b",
+      "hub_hash_verified": true,
+      "path": "Yemen/validation-00000-of-00002.parquet",
+      "rows": 402,
+      "sha256": "f3d2b73388200bddcf8a6f38b4b599be5b756e843931c151c1379cfb4e26582b"
+    },
+    {
+      "bytes": 301230913,
+      "expected_sha256": "bca538aa5e3b9385a380f7f405e8f96fc77e0aad6ef7da69ca7cd940fd42c220",
+      "hub_hash_verified": true,
+      "path": "Yemen/validation-00001-of-00002.parquet",
+      "rows": 401,
+      "sha256": "bca538aa5e3b9385a380f7f405e8f96fc77e0aad6ef7da69ca7cd940fd42c220"
+    }
+  ],
+  "published_validation_counts": {
+    "Algeria": 844,
+    "Egypt": 846,
+    "Jordan": 848,
+    "Mauritania": 953,
+    "Morocco": 1045,
+    "Palestine": 667,
+    "UAE": 813,
+    "Yemen": 803
+  },
+  "runtime_sec": 613.5,
+  "seg_id_prefixes_shared_across_configs": 0,
+  "source_ids_recovered": false,
+  "speaker_independence_verified": false,
+  "split_version": "casablanca-val-v1-90d7d870540d",
+  "started_at_utc": "2026-10-29T22:26:32.208678+00:00",
+  "status": "completed_with_audio_errors",
+  "summary": {
+    "audio_errors": 1,
+    "channel_counts": {
+      "1": 162,
+      "2": 6656
+    },
+    "clips_in_transcription_duplicate_groups_audit_only": 36,
+    "clips_over_10_sec": 344,
+    "clips_over_1pct_near_full_scale": 102,
+    "clips_over_30_sec": 2,
+    "clips_under_0_5_sec": 5,
+    "clips_under_1_sec": 246,
+    "clips_with_near_full_scale_samples": 780,
+    "duration_hours": 8.007005524809461,
+    "duration_sec": {
+      "max": 40.78687074829932,
+      "mean": 4.2278116587436285,
+      "median": 3.4513830782312924,
+      "min": 0.1947845804988662,
+      "p05": 1.1043990929705216,
+      "p95": 10.02984126984127
+    },
+    "empty_transcriptions_audit_only": 0,
+    "encoded_bytes": 4889916654,
+    "format_counts": {
+      "WAV/PCM_16": 6818
+    },
+    "gender_counts_audit_only": {
+      ",F": 1,
+      "?": 1,
+      "F": 1900,
+      "M": 4805,
+      "M,": 2,
+      "M\\": 1,
+      "Missing": 83,
+      "None": 26
+    },
+    "longest_clip": {
+      "clip_id": "bc296119c0acca2493f239d3d7ce1782630bde0ad25e16956f988036d09c99ff",
+      "duration_sec": 40.78687074829932,
+      "frame_count": 1798701,
+      "sample_rate_hz": 44100
+    },
+    "missing_published_duration": 0,
+    "ok": 6818,
+    "rows": 6819,
+    "sample_rate_counts": {
+      "16000": 450,
+      "44100": 4826,
+      "48000": 1542
+    },
+    "silent_clips": 0,
+    "stereo_distinct_channels": 5956,
+    "stereo_identical_channels": 700,
+    "transcription_duplicate_groups_audit_only": 13
+  },
+  "validation_test_overlap_checked": false,
+  "versions": {
+    "libsndfile": "1.2.2",
+    "numpy": "2.1.3",
+    "pyarrow": "23.0.1",
+    "python": "3.13.18",
+    "soundfile": "0.14.0"
+  }
+}
