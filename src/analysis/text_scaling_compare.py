@@ -27,11 +27,39 @@ DEV = ROOT / "data/manifests/dev_pilot.jsonl"
 BASELINE = {"correct": 50, "macro_f1": 0.23642323859715164}
 
 
-def load(run):
+def checked_predictions(path, metrics, labels, references=None, expected_revision=None):
+    """Validate original rows before indexing and bind metrics to the actual file."""
+    predictions = ev.validate_prediction_fields(ev.read_jsonl(path), labels)
+    if ev.sha256_file(path) != metrics.get("predictions_sha256"):
+        raise ValueError(f"{path}: predictions SHA256 differs from saved metrics")
+    revision = expected_revision or metrics.get("model_revision")
+    if not revision or metrics.get("model_revision") != revision or any(
+            row["model_revision"] != revision for row in predictions.values()):
+        raise ValueError(f"{path}: prediction checkpoint differs from saved run")
+    if references is not None:
+        rescored = ev.compute_metrics(ev.join_predictions(
+            references, predictions, allow_incomplete=False), labels)
+        for key, value in rescored.items():
+            if metrics.get(key) != value:
+                raise ValueError(f"{path}: saved {key} disagrees with re-scoring")
+    return predictions
+
+
+def load(run, labels, manifest, split):
     run = Path(run)
-    return (json.loads((run / "metrics.json").read_text()),
-            json.loads((run / "run_record.json").read_text()),
-            {p["clip_id"]: p for p in ev.read_jsonl(run / "predictions.jsonl")})
+    metrics = json.loads((run / "metrics.json").read_text())
+    record = json.loads((run / "run_record.json").read_text())
+    for key, path in (("manifest_sha256", manifest),
+                      ("metadata_sha256", manifest.with_suffix(".metadata.json")),
+                      ("labels_sha256", ROOT / "configs/labels.json")):
+        if metrics.get(key) != ev.sha256_file(path):
+            raise ValueError(f"{run}: saved {key} differs from frozen inputs")
+    if metrics.get("split") != split:
+        raise ValueError(f"{run}: saved split differs from requested split")
+    references = ev.validate_references(ev.read_jsonl(manifest), labels, split)
+    predictions = checked_predictions(run / "predictions.jsonl", metrics, labels,
+                                      references, record["model_revision"])
+    return metrics, record, predictions
 
 
 def mcnemar_exact(b, c):
@@ -55,8 +83,10 @@ def main(argv=None):
     result = {"dev_ids": len(references), "arms": {}}
     preds = {}
     for arm in ("500", "2000"):
-        train_m, train_r, _ = load(getattr(args, f"train_{arm}"))
-        dev_m, dev_r, dev_p = load(getattr(args, f"dev_{arm}"))
+        train_manifest = ROOT / "data/manifests" / (
+            "train_pilot.jsonl" if arm == "500" else "train_scaling_2000.jsonl")
+        train_m, train_r, _ = load(getattr(args, f"train_{arm}"), labels, train_manifest, "train")
+        dev_m, dev_r, dev_p = load(getattr(args, f"dev_{arm}"), labels, DEV, "dev")
         if set(dev_p) != set(references):
             raise SystemExit(f"{arm}: dev predictions do not cover exactly the 200 frozen IDs")
         rescored = ev.compute_metrics(ev.join_predictions(

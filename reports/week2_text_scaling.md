@@ -171,7 +171,7 @@ stop the text branch. A suggested scope for the team to decide:
   model's own loader, records copied unchanged
 - `src/analysis/text_scaling_compare.py`: re-scores both dev prediction files with the
   shared evaluator, plus the paired/McNemar comparison
-- `notebooks/W2_02_Text_Scaling.ipynb`: the exact Colab cells run
+- `notebooks/W2_02_Text_Scaling.ipynb`: the Colab workflow, with post-review validation fixes
 - `tests/test_expand_train_pilot.py`
 - `reports/week2_text_scaling/`: `comparison.json`, both dev prediction files (all-20 class
   probabilities), dev metrics, prediction-source diagnostics and training diagnostics
@@ -216,6 +216,22 @@ the recorded package set.
 - [x] Expanded IDs are training-only, nested and deterministic; dev IDs and targets unchanged.
 - [x] Only data quantity changes in the primary comparison; all 24 unavailable training texts are accounted for; dev has none.
 - [x] Training/source/config hashes recorded; clean-checkout commands above.
-- [ ] **Different-teammate verification of saved predictions and evaluation: pending** (reviewer and commands to be recorded on EEC-24).
+- [x] **Saved predictions/evaluation reviewed by Ali Zbeeb via Codex**, with commands and scope recorded below. Full training replay remains unverified.
 - [x] No full-corpus transcription, transformer fine-tuning, fusion or verifier is claimed.
-- [ ] Deviation (re-transcribed original 700 instead of reusing the archive) to be acknowledged by the reviewer.
+- [x] Re-transcription deviation acknowledged for this exploratory screen; original transcript byte identity is not verified.
+
+## Post-review verification and provenance limits
+
+Ali Zbeeb reviewed the saved evidence via Codex on 2026-11-01. Both all-200-dev prediction files were independently validated and re-scored, including all metric fields, canonical probabilities, file hashes and model revisions. The 500-arm probabilities equal Week 1 exactly; paired correctness is 32 gained and 7 lost. The nested manifest/metadata regeneration and focused regression checks passed. The disclosed re-transcription of the original 700 clips is acknowledged for this exploratory screen; equality of the original transcript bytes remains unverified.
+
+The historical `train2000_export_summary.json` records merge-generator SHA256 `1c2f33b96e9024f34c68ba9008d3a0c550b46e306a6f29f6cb7c2567acfa0ad8`. It matches neither the submitted helper nor the notebook copy. The historical generator source was not recovered, so that summary is preserved unchanged as historical evidence, not represented as an output reproduced by the checked-in helper. `reports/week2_text_scaling/review_provenance.json` separates that recorded identity from the exact reviewed source hashes. Raw exports and checkpoints are outside this checkout; full merge/training/prediction replay is not verified. Saved development metrics are independently verified despite this historical source limitation.
+
+The reviewed comparison command now rejects duplicate IDs before indexing, checks actual prediction-file hashes and checkpoint identity, and re-scores all metric fields against the frozen manifests. It also checks saved manifest/sidecar/label hashes for both training and development runs. The notebook contains the updated helper rather than claiming to archive the historical executed bytes.
+
+Offline review commands:
+
+```bash
+python -m pytest tests/test_expand_train_pilot.py tests/test_text_scaling_compare.py tests/test_transcript_tfidf.py tests/test_freeze_splits.py tests/test_evaluate.py -q
+```
+
+These checks verify the committed evidence without requiring new Jais generation. The GPU and full text-model replay commands above still require the external exports/checkpoints.
