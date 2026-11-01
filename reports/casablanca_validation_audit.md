@@ -67,7 +67,7 @@ All 6,818 decodable clips are PCM_16 WAV. No silent clips. Decoded duration agre
 
 Shortest clip 0.195 s (5 clips under 0.5 s); 2 clips over 30 s. Longest: 40.79 s, 44.1 kHz stereo (ALG), used for the memory benchmark at scoring time.
 
-**Recording properties are label-correlated.** Only MAU has mono clips and it is 100% 48 kHz; JOR is the only label with 16 kHz audio (53%); clipping concentrates in JOR, MAU and ALG. ADI-20-trained checkpoints never saw Casablanca, so they cannot have learned these as shortcuts, but they can still change per-dialect error rates. ADI-20 itself is 16 kHz mono. Two consequences:
+**Recording properties are label-correlated.** Only MAU has mono clips and it is 100% 48 kHz; JOR is the only label with 16 kHz audio (53%); clipping concentrates in JOR, MAU and ALG. Our downstream ADI-20 training does not use Casablanca. Encoder pretraining exposure remains unknown, so prior learning of these cues cannot be ruled out; recording properties may affect per-dialect error rates. ADI-20 itself is 16 kHz mono. Two consequences:
 1. Per-dialect differences between models must not be explained by dialect alone; report JOR results split by native sample rate as a diagnostic.
 2. Any later model **trained or tuned on Casablanca** could exploit sample rate, channel layout or clipping. Such work needs a check for these channel cues.
 
@@ -132,7 +132,7 @@ Maximum output peak was 1.043: resampling can overshoot full scale on clipped in
 - [x] Offline tests: `python -m unittest discover -s tests -p test_prepare_casablanca.py -v` (5 tests).
 - [x] Colab run used exactly the local code, rules, labels and ADI-20 manifests (hashes checked on return).
 - [ ] A different teammate reruns the notebook (or the commands above) and confirms the same manifest SHA256 and split version.
-- [ ] A different teammate reviews this audit.
+- [x] Ali Zbeeb reviewed the audit via Codex; see the post-review verification scope below.
 - [ ] Team decision on checking validation/test episode overlap from test metadata only.
 
 ## Files
@@ -149,3 +149,13 @@ Maximum output peak was 1.043: resampling can overshoot full scale on clipped in
 | `reports/casablanca_validation_audit/preprocessing_check.json` | 50-clip preprocessing check |
 
 Colab run logs are kept on Drive (`reports/casablanca/` under the data root) and are not committed (`*.log` is ignored). Their results are captured in `audit.json` and `preprocessing_check.json`.
+
+## Post-review fixes and verification (2026-11-01)
+
+Ali Zbeeb reviewed this preparation PR via Codex. The synthetic preparation checks and existing data/evaluator checks passed. The committed 6,819 manifest IDs, label counts, failure list and manifest/freeze/audit hashes were independently checked. The episode grouping command reproduced both committed grouping artifacts byte for byte. A fresh full audio download or 50-clip preprocessing execution was not performed during this review; the recorded Colab results above remain historical evidence.
+
+The notebook now stops on preprocessing failure, requires a nonempty passing report tied to the current manifest hash and split version, and writes each attempt to a unique report path. The results ZIP includes that current report in place of the historical copy shipped in the code ZIP. Offline notebook regression checks cover failed subprocesses, absent/stale reports and current-report packaging. Encoder pretraining exposure is explicitly unknown. A/B/C checkpoint scoring remains pending in EEC-25.
+
+```bash
+python -m pytest tests/test_prepare_casablanca.py tests/test_casablanca_notebook.py tests/test_prepare.py tests/test_evaluate.py -q
+```
