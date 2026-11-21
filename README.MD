@@ -221,3 +221,40 @@ seeing development results; it is a small-data baseline, not a benchmark claim.
 See the [Task 14 result review](reports/transcript_tfidf_pilot_review.md),
 [exact metrics](reports/transcript_tfidf_pilot_metrics.json), and
 [reproduction instructions](docs/transcript_tfidf.md).
+
+## Layer sweep and learned layer mixture (Idea 1 pilot)
+
+Tests whether frozen AraBEST-RQ layers other than the final one, or a learned
+mix of layers, separate dialects better than the W1-12 head. It reads only the
+existing 26-layer feature cache (no encoder, GPU or audio), chooses budgets and
+the best layer by grouped cross-validation on training clips, and scores dev
+only afterwards.
+
+Run1 (2026-11-19, Colab) used the frozen 500-clip training and 200-clip
+development pilot with seeds 490, 491 and 492. Training cross-validation chose
+conformer layer 19 and every epoch budget before dev labels were read. This is
+an **in-source development result** (one clip = 0.5 points), not official-test
+or out-of-domain benchmark performance.
+
+| Arm | Layers | Epochs | Dev accuracy (mean ± std) | Dev macro-F1 |
+|---|---|---:|---:|---:|
+| Final layer, z-scored | final | 1000 | 47.3% ± 0.6 | 0.472 |
+| Final layer, raw | final | 1000 | 47.3% ± 0.5 | 0.471 |
+| Best single layer (training CV) | conformer 19 | 1000 | 79.0% ± 0.8 | 0.790 |
+| All-layer mixture | all 26 | 500 | 82.8% ± 1.0 | 0.827 |
+| Middle-layer mixture | conformer 6–18 | 500 | **83.2% ± 0.6** | **0.830** |
+
+The team's 2026-11-20 handoff review rescored all 15 heads (5 arms × 3 seeds)
+with the shared evaluator. The middle-layer mixture is the main acoustic
+candidate for full-data training. Checkpoints, dev predictions and the run
+record are on the team Google Drive under
+`Arabic-Dialect-Identification-data/output/runs/layer_mixture/run1/`, not in
+this repository. See the [method and run instructions](docs/layer_mixture.md).
+
+## Casablanca check of the Idea 1 heads
+
+Scores the frozen Idea 1 heads, unchanged, on the frozen Casablanca validation
+split (6,819 TV-drama clips, 8 dialects) as a cross-dataset diagnostic. Casablanca
+labels choose nothing. Every head must first reproduce its saved ADI-20 dev
+logits. It has not been run yet. See the
+[method and Colab steps](docs/casablanca_check.md).
