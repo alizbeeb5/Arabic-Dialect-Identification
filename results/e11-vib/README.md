@@ -31,4 +31,17 @@ The within-dialect diagnostic fits a distance score on ADI-20 training features.
 - [4K sweep](4k_dev_sweep.csv), [domain summary](domain_summary.csv), and [domain scores by dialect](domain_by_seed_and_dialect.csv) support the compression and corpus analysis.
 - All 204 primary accuracy and macro-F1 entries were recomputed from the archived prediction rows before publication.
 
-Run EXP-02 and EXP-04 next. The first follow-up is a matched 1K rerun using the strongest single AraBEST layer selected on ADI-20 development. See the [experiment plan](../../docs/future_experiments.md).
+## Layer 20 ablation
+
+The source-development layer probes selected Conformer Layer 20. The ablation repeated the 1K, 128-dimensional stochastic comparison with the same training draws and evaluation clips as the layers 6–18 run. The full Casablanca validation manifest contains 6,819 rows with 6,818 scorable clips. The model predicts from all 20 labels, and macro-F1 averages the eight reference dialects.
+
+| Seed | Layer 20 β = 0 macro-F1 | Layer 20 β = 0.01 macro-F1 | Paired gain |
+| ---: | ---: | ---: | ---: |
+| 490 | 0.5125 | 0.5814 | +6.88 pp |
+| 491 | 0.5039 | 0.5846 | +8.07 pp |
+| 492 | 0.5218 | 0.5573 | +3.55 pp |
+| Mean | 0.5127 | 0.5744 | +6.17 pp |
+
+Paired seed SD was 2.34 points. On the 20-label ADI-20 dev200 cohort, the corresponding gain was +1.04 points. The cohorts use different label sets for macro-F1. On Casablanca, gains were largest for Algerian and Moroccan, Palestinian F1 fell by 3.96 points, and Jordanian recall rose from 0.94% to 3.22%.
+
+The [next ablation](../../notebooks/research/ADI20_E11_Layer20_KL_Controls_Kaggle.ipynb) compares the mean and variance terms of the KL with shared-variance and weight-decay controls.
