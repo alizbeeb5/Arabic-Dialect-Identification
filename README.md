@@ -29,7 +29,30 @@ Scores in this table are means over seeds 490–492. On the **same balanced 800 
 | [Future experiments](docs/future_experiments.md) | E11 priorities, ablations, and conditions for stronger transfer claims |
 | [Evaluations](results/README.md) | Saved metrics, paired deltas, provenance, and error analysis |
 
-**E11 is complete.** The KL penalty improved full Casablanca macro-F1 versus the same-width stochastic control by **10.07, 4.60, and 1.17 percentage points** at 1K, 4K, and 16K labels. See the [matched results and corpus diagnostic](results/e11-vib/README.md). The completed [EXP-02 layer probes and EXP-04 within-dialect corpus probes](results/exp02-exp04-probes/README.md) select Conformer layer 20 for the next ablation. EXP-01 and EXP-03/05/06/07 are available in the research notebooks.
+## Layer 20 ablation and KL controls
+
+E11 found that the KL penalty improved Casablanca macro-F1 by **10.07, 4.60, and 1.17 percentage points** at 1K, 4K, and 16K labels on the layers 6–18 average. The source-selected Layer 20 ablation repeated the 1K comparison with matched training draws, initialization seeds, latent width, and update budget.
+
+| AraBEST input, 1K labels | Casablanca macro-F1, β = 0 | Casablanca macro-F1, β = 0.01 | Paired gain, mean ± SD |
+| --- | ---: | ---: | ---: |
+| Layers 6–18 average | 0.4338 | 0.5344 | +10.07 ± 2.81 pp |
+| Layer 20 | 0.5127 | 0.5744 | +6.17 ± 2.34 pp |
+
+Both rows use the full 6,819-clip Casablanca validation manifest and unrestricted 20-way predictions. Layer 20's gain was positive in all three seeds. See the [verified E11 and Layer 20 results](results/e11-vib/README.md#layer-20-ablation) and [layer and corpus probes](results/exp02-exp04-probes/README.md).
+
+The [KL controls notebook](notebooks/research/ADI20_E11_Layer20_KL_Controls_Kaggle.ipynb) tests whether the improvement comes from penalizing the posterior mean, penalizing the posterior variance, or using input-dependent rather than shared variance. It also compares source-tuned AdamW weight decay. This experiment is ready to run.
+
+For an exact 1K replay, run the original Layer 20 notebook through its training-position definition and export the ordered positions locally:
+
+```python
+positions = {
+    str(seed): np.frombuffer(zlib.decompress(base64.b85decode(packed)), dtype="<u4").tolist()
+    for seed, packed in TRAIN_POSITIONS.items()
+}
+Path("/kaggle/working/layer20_train_positions.json").write_text(json.dumps(positions))
+```
+
+Attach that JSON alongside the feature cache as a Kaggle input. Set `DRAW_NEW_COHORTS = True` to generate fresh balanced draws. Those draws may require additional feature extraction.
 
 ### Reuse the AraBEST cache on Kaggle
 
