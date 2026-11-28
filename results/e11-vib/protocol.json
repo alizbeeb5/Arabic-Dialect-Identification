@@ -1,0 +1,286 @@
+{
+  "archived_8k_vs_16k": null,
+  "e11": {
+    "sweep_train_size": 4000,
+    "extension_train_sizes": [
+      1000,
+      16000
+    ],
+    "dimensions": [
+      16,
+      32,
+      64,
+      128,
+      256
+    ],
+    "betas": [
+      0.0,
+      0.001,
+      0.01,
+      0.1
+    ],
+    "encode_missing": true,
+    "casablanca_fit_n": 0,
+    "selection": "ADI20_dev200",
+    "evaluation_manifests": {
+      "ADI20_dev200": "ab77a78422db2280b77797cbd4e5dce54cbbe7746f94d52d3dd01f3428f0209a",
+      "Casablanca_full6819": "11f1d20094ddf0c88338aa45549961be8d2ff53252f89f7285991c0830488790"
+    }
+  },
+  "perturb_head_selection": "auto",
+  "experiments": [
+    11
+  ],
+  "seeds": [
+    490,
+    491,
+    492
+  ],
+  "fixed_draw": 490,
+  "train_size": 4000,
+  "pool_size": 4000,
+  "fixed_updates": 1000,
+  "convergence_max_updates": 5000,
+  "scaling_sizes": [
+    100,
+    200,
+    500,
+    1000,
+    2000,
+    4000,
+    8000,
+    16000,
+    "full"
+  ],
+  "perturbations": {
+    "pitch_minus2": [
+      "pitch",
+      -2
+    ],
+    "pitch_plus2": [
+      "pitch",
+      2
+    ],
+    "rate_085": [
+      "rate",
+      0.85
+    ],
+    "rate_115": [
+      "rate",
+      1.15
+    ],
+    "shuffle_250ms": [
+      "shuffle",
+      0.25
+    ],
+    "shuffle_500ms": [
+      "shuffle",
+      0.5
+    ],
+    "telephone": [
+      "bandpass",
+      null
+    ],
+    "noise_20db": [
+      "noise",
+      20
+    ],
+    "noise_10db": [
+      "noise",
+      10
+    ],
+    "volume_rms": [
+      "volume",
+      null
+    ]
+  },
+  "max_extraction_hours": 6,
+  "repo_commit": "b64437a37e7eda2f1721a56860278640bf085bdd",
+  "encoder": {
+    "encoder": "arabest-rq-300m-6k",
+    "checkpoint": {
+      "repo_id": "Elyadata/AraBEST-RQ-300M-6k",
+      "revision": "dff453e2b5f72f76211a523b1050691967e5a59b",
+      "files": {
+        "model.ckpt": "2e9dc6347b93ed7b55c3847c68cfe25947ff4fe21aa7faa9fe5048f15c0ca35a",
+        "normalizer.ckpt": "30209fa89aad9f7fa007ea2ef17e33ba45c6eacbf7160b581d1946b49dfe6c04"
+      }
+    },
+    "architecture": {
+      "d_model": 848,
+      "nhead": 8,
+      "num_layers": 24,
+      "d_ffn": 2048
+    },
+    "feature_config": {
+      "encoder": "arabest-rq-300m-6k",
+      "checkpoint_revision": "dff453e2b5f72f76211a523b1050691967e5a59b",
+      "sample_rate_hz": 16000,
+      "channel_mix": "mean",
+      "resampler": "torchaudio.functional.resample:sinc_interp_hann",
+      "max_duration_sec": null,
+      "crop": "start",
+      "n_fft": 400,
+      "win_length_ms": 25,
+      "hop_length_ms": 10,
+      "n_mels": 80,
+      "normalization": "sentence",
+      "attention": "full",
+      "padding_invariant_batching": true,
+      "layers": "all",
+      "pooling": "mean",
+      "precision": "fp32",
+      "code_version": "acoustic-features-v2"
+    },
+    "feature_config_sha256": "e4b3c287854e40f9a54070de436754442225d1798d02c81956077742881f70bb",
+    "layer_indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25
+    ],
+    "layer_names": [
+      "frontend",
+      "conformer_1",
+      "conformer_2",
+      "conformer_3",
+      "conformer_4",
+      "conformer_5",
+      "conformer_6",
+      "conformer_7",
+      "conformer_8",
+      "conformer_9",
+      "conformer_10",
+      "conformer_11",
+      "conformer_12",
+      "conformer_13",
+      "conformer_14",
+      "conformer_15",
+      "conformer_16",
+      "conformer_17",
+      "conformer_18",
+      "conformer_19",
+      "conformer_20",
+      "conformer_21",
+      "conformer_22",
+      "conformer_23",
+      "conformer_24",
+      "final"
+    ],
+    "output_dim": 848,
+    "frame_shift_sec": 0.04
+  },
+  "baseline_optimizer": {
+    "optimizer": "AdamW",
+    "learning_rate": 0.001,
+    "betas": [
+      0.9,
+      0.999
+    ],
+    "eps": 1e-08,
+    "weight_decay_W": 0.01,
+    "weight_decay_bias": 0.0,
+    "gradient_clip_norm": 1.0,
+    "batch_size": 256,
+    "drop_last": false,
+    "scheduler": null,
+    "layer_weight_init": "uniform",
+    "layer_weight_learning_rate": 0.01,
+    "layer_weight_decay": 0.0
+  },
+  "source_manifest_sha256": {
+    "train": "56a75aa929e2a2c4592012954386cb3d91ff7f256a7004ebe7c4a776573ea4ba",
+    "dev": "525ecea4b39c504b28858ddbfaf0a954af703c91ae8edddb252a0a6f2c8d138b",
+    "dev_pilot": "fb8684c35ef68e25834d5a4c82cddbd31044a899a63b665c41d3f9a179052d02",
+    "casablanca_validation": "5ed7a36491ba6a41782302e1f3d31c3033b4d72ac18f1f7a2d04e85177dd064e"
+  },
+  "train_anchor_clip_ids_sha256": {
+    "2000": "1dd3e9d46a2ccf743749daeea5622e13916e2f9191ae277a5308eed8e94d5a60",
+    "4000": "479cfc0fe208949f287eaf6c4a88dde543ff0022ed017a6909d3f4d1f6199b9c",
+    "8000": "427d357704b98526c3100ea74bdb081e76340f1dd8a7efb03a979165fb84ac7a",
+    "16000": "698d6ef6cb98e7b03ba21be386d39ceed9b6a8de3d67e5aee7ac93dda1b54427"
+  },
+  "eval_clip_ids_sha256": {
+    "ADI20_dev200": "ab77a78422db2280b77797cbd4e5dce54cbbe7746f94d52d3dd01f3428f0209a",
+    "ADI20_shared800": "534abdbb63215de6169efb9a8cf414887a1780cfdb8ad97efcda02ac62d2d848",
+    "Casablanca_fixed800": "482f0feec274a59fed1b2e246ed82e91bcd5d3d126f85bf257a2a536bf19d7e6"
+  },
+  "source_domain_mode": "disabled",
+  "source_domains_file_sha256": null,
+  "layer_index": {
+    "0": "frontend",
+    "1": "conformer_1",
+    "2": "conformer_2",
+    "3": "conformer_3",
+    "4": "conformer_4",
+    "5": "conformer_5",
+    "6": "conformer_6",
+    "7": "conformer_7",
+    "8": "conformer_8",
+    "9": "conformer_9",
+    "10": "conformer_10",
+    "11": "conformer_11",
+    "12": "conformer_12",
+    "13": "conformer_13",
+    "14": "conformer_14",
+    "15": "conformer_15",
+    "16": "conformer_16",
+    "17": "conformer_17",
+    "18": "conformer_18",
+    "19": "conformer_19",
+    "20": "conformer_20",
+    "21": "conformer_21",
+    "22": "conformer_22",
+    "23": "conformer_23",
+    "24": "conformer_24",
+    "25": "final"
+  },
+  "project_selected_layers": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18
+  ],
+  "device": "cuda:0",
+  "gpu": "Tesla T4",
+  "versions": {
+    "torch": "2.11.0+cu130",
+    "numpy": "2.1.3",
+    "pandas": "2.3.3",
+    "scikit-learn": "1.6.1",
+    "pyarrow": "23.0.1",
+    "soundfile": "0.14.0"
+  },
+  "casablanca_role": "external development; no fresh external benchmark claim"
+}

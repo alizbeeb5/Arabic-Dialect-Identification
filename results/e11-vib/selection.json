@@ -1,0 +1,11 @@
+{
+  "train_n": 4000,
+  "selection_split": "ADI20_dev200",
+  "selection_ids_sha256": "ab77a78422db2280b77797cbd4e5dce54cbbe7746f94d52d3dd01f3428f0209a",
+  "criterion": "Three-seed mean ADI-20 dev macro-F1 among beta > 0, then accuracy, smaller dimension and beta",
+  "latent_dim": 128.0,
+  "beta": 0.01,
+  "dev_macro_f1": 0.8776893840008323,
+  "dev_accuracy": 0.8783333333333333,
+  "seeds": 3.0
+}

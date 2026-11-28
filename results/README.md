@@ -1,6 +1,10 @@
 # Results
 
-E11’s final comparison is pending a complete export. The results below are from completed baseline, scaling, and diagnostic runs. Macro-F1 averages over the dialects in the reference cohort. Casablanca acoustic models make unrestricted 20-class predictions unless stated otherwise. Casablanca validation has informed earlier experiments and serves as external development.
+These results cover the completed E11 study, baselines, scaling, and diagnostic runs. Macro-F1 averages over the dialects in the reference cohort. Casablanca acoustic models make unrestricted 20-class predictions unless stated otherwise. Casablanca validation has informed earlier experiments and serves as external development.
+
+## E11 variational bottleneck
+
+The source-selected 128-dimensional VIB head with β = 0.01 beat its same-width β = 0 control on full Casablanca at each training size and seed. The largest mean difference was +10.07 macro-F1 points at 1K labels. Read the [E11 protocol, matched comparisons, and corpus diagnostic](e11-vib/README.md).
 
 ## Frozen AraBEST scaling
 
