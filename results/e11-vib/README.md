@@ -44,4 +44,4 @@ The source-development layer probes selected Conformer Layer 20. The ablation re
 
 Paired seed SD was 2.34 points. On the 20-label ADI-20 dev200 cohort, the corresponding gain was +1.04 points. The cohorts use different label sets for macro-F1. On Casablanca, gains were largest for Algerian and Moroccan, Palestinian F1 fell by 3.96 points, and Jordanian recall rose from 0.94% to 3.22%.
 
-The [next ablation](../../notebooks/research/ADI20_E11_Layer20_KL_Controls_Kaggle.ipynb) compares the mean and variance terms of the KL with shared-variance and weight-decay controls.
+The [completed KL-controls ablation](kl-controls/README.md) compares the mean and variance terms of the KL with shared-variance and weight-decay controls. The posterior-mean penalty recovered most of the 1K Casablanca gain, and the shared-variance head scored close to full VIB.

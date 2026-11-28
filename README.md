@@ -40,7 +40,7 @@ E11 found that the KL penalty improved Casablanca macro-F1 by **10.07, 4.60, and
 
 Both rows use the full 6,819-clip Casablanca validation manifest and unrestricted 20-way predictions. Layer 20's gain was positive in all three seeds. See the [verified E11 and Layer 20 results](results/e11-vib/README.md#layer-20-ablation) and [layer and corpus probes](results/exp02-exp04-probes/README.md).
 
-The [KL controls notebook](notebooks/research/ADI20_E11_Layer20_KL_Controls_Kaggle.ipynb) tests whether the improvement comes from penalizing the posterior mean, penalizing the posterior variance, or using input-dependent rather than shared variance. It also compares source-tuned AdamW weight decay. This experiment is ready to run.
+The [completed KL controls](results/e11-vib/kl-controls/README.md) found that the posterior-mean penalty recovered 5.51 of the full 6.17-point Casablanca gain at 1K labels. Sharing the learned variance across clips produced 0.5748 macro-F1, close to 0.5744 with clip-dependent variance. See the [KL controls notebook](notebooks/research/ADI20_E11_Layer20_KL_Controls_Kaggle.ipynb) to reproduce the comparison.
 
 For an exact 1K replay, run the original Layer 20 notebook through its training-position definition and export the ordered positions locally:
 

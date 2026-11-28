@@ -1,0 +1,164 @@
+{
+  "arms_mean_beta_variance_beta_adamw_decay": {
+    "beta0": [
+      0.0,
+      0.0,
+      0.01
+    ],
+    "mean_only": [
+      0.01,
+      0.0,
+      0.01
+    ],
+    "variance_only": [
+      0.0,
+      0.01,
+      0.01
+    ],
+    "vib": [
+      0.01,
+      0.01,
+      0.01
+    ],
+    "vib_shared_variance": [
+      0.01,
+      0.01,
+      0.01
+    ],
+    "decay_0.001": [
+      0.0,
+      0.0,
+      0.001
+    ],
+    "decay_0.1": [
+      0.0,
+      0.0,
+      0.1
+    ]
+  },
+  "tuning_rule": "Highest mean ADI20_dev200 macro-F1 across seeds. Ties prefer decay nearest 0.01.",
+  "tap": "conformer_20",
+  "encoder": {
+    "encoder": "arabest-rq-300m-6k",
+    "checkpoint": {
+      "repo_id": "Elyadata/AraBEST-RQ-300M-6k",
+      "revision": "dff453e2b5f72f76211a523b1050691967e5a59b",
+      "files": {
+        "model.ckpt": "2e9dc6347b93ed7b55c3847c68cfe25947ff4fe21aa7faa9fe5048f15c0ca35a",
+        "normalizer.ckpt": "30209fa89aad9f7fa007ea2ef17e33ba45c6eacbf7160b581d1946b49dfe6c04"
+      }
+    },
+    "architecture": {
+      "d_model": 848,
+      "nhead": 8,
+      "num_layers": 24,
+      "d_ffn": 2048
+    },
+    "feature_config": {
+      "encoder": "arabest-rq-300m-6k",
+      "checkpoint_revision": "dff453e2b5f72f76211a523b1050691967e5a59b",
+      "sample_rate_hz": 16000,
+      "channel_mix": "mean",
+      "resampler": "torchaudio.functional.resample:sinc_interp_hann",
+      "max_duration_sec": null,
+      "crop": "start",
+      "n_fft": 400,
+      "win_length_ms": 25,
+      "hop_length_ms": 10,
+      "n_mels": 80,
+      "normalization": "sentence",
+      "attention": "full",
+      "padding_invariant_batching": true,
+      "layers": "all",
+      "pooling": "mean",
+      "precision": "fp32",
+      "code_version": "acoustic-features-v2"
+    },
+    "feature_config_sha256": "e4b3c287854e40f9a54070de436754442225d1798d02c81956077742881f70bb",
+    "layer_indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25
+    ],
+    "layer_names": [
+      "frontend",
+      "conformer_1",
+      "conformer_2",
+      "conformer_3",
+      "conformer_4",
+      "conformer_5",
+      "conformer_6",
+      "conformer_7",
+      "conformer_8",
+      "conformer_9",
+      "conformer_10",
+      "conformer_11",
+      "conformer_12",
+      "conformer_13",
+      "conformer_14",
+      "conformer_15",
+      "conformer_16",
+      "conformer_17",
+      "conformer_18",
+      "conformer_19",
+      "conformer_20",
+      "conformer_21",
+      "conformer_22",
+      "conformer_23",
+      "conformer_24",
+      "final"
+    ],
+    "output_dim": 848,
+    "frame_shift_sec": 0.04
+  },
+  "source_commit": "b64437a37e7eda2f1721a56860278640bf085bdd",
+  "training_draws": "historical",
+  "train_ids_sha256": {
+    "490": "b32f689df4bda1192cee783d66f0a027b42db62f7e4dbfb2cc30692ce49c1fd0",
+    "491": "89964792c6ef6a861fee41898f64718135ba432da8f063551b9737fa856fe18f",
+    "492": "6e034fe90fa5131411ca0dc37460358a178c2828afa0b080447bd9dfaec05be0"
+  },
+  "eval_ids_sha256": {
+    "ADI20_dev200": "ab77a78422db2280b77797cbd4e5dce54cbbe7746f94d52d3dd01f3428f0209a",
+    "Casablanca_full6819": "11f1d20094ddf0c88338aa45549961be8d2ff53252f89f7285991c0830488790"
+  },
+  "seeds": [
+    490,
+    491,
+    492
+  ],
+  "latent_dim": 128,
+  "updates": 1000,
+  "learning_rate": 0.001,
+  "batch_size": 256,
+  "torch": "2.11.0+cu130",
+  "device": "Tesla T4",
+  "inference": "Posterior mean, unrestricted 20-way argmax. Casablanca macro-F1 uses 8 reference labels.",
+  "evaluation_role": {
+    "ADI20_dev200": "source development",
+    "Casablanca_full6819": "external development"
+  }
+}
