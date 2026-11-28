@@ -1,0 +1,11 @@
+{
+  "selected_arm": "layer_20",
+  "selected_tap": "conformer_20",
+  "selection_split": "ADI20_dev200",
+  "selection_mode": "20way",
+  "training_clips": 4000,
+  "criterion": "Maximum ADI-20 development macro-F1 among single layers",
+  "dev_macro_f1": 0.8637537024379128,
+  "n_seed_entries": 3,
+  "validation_manifest_ids_sha256": "ab77a78422db2280b77797cbd4e5dce54cbbe7746f94d52d3dd01f3428f0209a"
+}

@@ -6,6 +6,13 @@ These results cover the completed E11 study, baselines, scaling, and diagnostic 
 
 The source-selected 128-dimensional VIB head with β = 0.01 beat its same-width β = 0 control on full Casablanca at each training size and seed. The largest mean difference was +10.07 macro-F1 points at 1K labels. Read the [E11 protocol, matched comparisons, and corpus diagnostic](e11-vib/README.md).
 
+## EXP-02 and EXP-04 probes
+
+Conformer layer 20 led the single-layer probes on 20-way ADI-20 development (0.8638 macro-F1).
+Layer 19 led on the balanced 800-clip Casablanca cohort with unrestricted predictions
+(0.6285 macro-F1). The grouped corpus probe recovered corpus labels from layer 20 at 88.15%
+mean accuracy. See [protocol, plots, and per-seed scores](exp02-exp04-probes/README.md).
+
 ## Frozen AraBEST scaling
 
 Learned middle-layer mixture, training-only normalization, and 1,000 head updates per seed (490–492). Cohorts are the fixed 200-clip ADI-20 development pilot and full Casablanca validation. One unreadable Casablanca clip remains in the 6,819-row denominator for every run.
