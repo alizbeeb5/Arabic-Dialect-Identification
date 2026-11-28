@@ -29,7 +29,7 @@ Scores in this table are means over seeds 490–492. On the **same balanced 800 
 | [Future experiments](docs/future_experiments.md) | E11 priorities, ablations, and conditions for stronger transfer claims |
 | [Evaluations](results/README.md) | Saved metrics, paired deltas, provenance, and error analysis |
 
-**E11 is complete.** The KL penalty improved full Casablanca macro-F1 versus the same-width stochastic control by **10.07, 4.60, and 1.17 percentage points** at 1K, 4K, and 16K labels. See the [matched results and corpus diagnostic](results/e11-vib/README.md). EXP-02 (layer probes) and EXP-04 (within-dialect corpus probes) provide the supporting analyses. EXP-01 and EXP-03/05/06/07 are available in the research notebooks.
+**E11 is complete.** The KL penalty improved full Casablanca macro-F1 versus the same-width stochastic control by **10.07, 4.60, and 1.17 percentage points** at 1K, 4K, and 16K labels. See the [matched results and corpus diagnostic](results/e11-vib/README.md). The completed [EXP-02 layer probes and EXP-04 within-dialect corpus probes](results/exp02-exp04-probes/README.md) select Conformer layer 20 for the next ablation. EXP-01 and EXP-03/05/06/07 are available in the research notebooks.
 
 ## Repository guide
 

@@ -6,9 +6,11 @@ distance score showed little change from the input at 1K and 4K, and more separa
 
 ## Next run
 
-Run EXP-02 and EXP-04 together with `RUN = (2, 4)` and `TRAIN_SIZE = 4000`. Reuse the E11 feature
-cache. Keep layer selection on ADI-20 development. EXP-04’s grouped corpus probe and E11’s
-source-fitted distance score measure different kinds of corpus recoverability.
+[EXP-02 and EXP-04](../results/exp02-exp04-probes/README.md) are complete. EXP-02 selected
+AraBEST Conformer layer 20 on 20-way ADI-20 development. Run the 1K E11 comparison with this
+single tap and both KL settings (β = 0 and β = 0.01). Keep the 128-dimensional stochastic heads,
+the original training draws, seeds 490–492, 1,000 updates, and full Casablanca validation.
+Compare the paired difference with the +10.07-point gain from averaging layers 6–18.
 
 ## Targeted ablations
 
