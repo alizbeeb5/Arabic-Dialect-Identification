@@ -1,0 +1,132 @@
+{
+ "oracle": {
+  "dev_audio_errors": 49,
+  "dev_audio_errors_text_right": 13,
+  "dev_audio_right_text_wrong": 89,
+  "dev_oracle_upper_bound_acc": 0.82,
+  "train_oof_audio_errors": 162,
+  "train_oof_audio_errors_text_right": 22
+ },
+ "fixed_lambda": 0.05,
+ "gate_params": [
+  -5.233399463515365e-05,
+  -0.019537909116672865,
+  -0.5458316039623287,
+  -2.693781504210808
+ ],
+ "gate_feature_names": [
+  "text_usable",
+  "text_margin",
+  "audio_margin",
+  "bias"
+ ],
+ "dev": {
+  "audio_only": {
+   "accuracy": 0.755,
+   "macro_f1": 0.7531370888276259,
+   "correct": 151,
+   "n": 200
+  },
+  "text_only": {
+   "accuracy": 0.375,
+   "macro_f1": 0.3601111766630342,
+   "correct": 75,
+   "n": 200
+  },
+  "fixed_fusion": {
+   "accuracy": 0.755,
+   "macro_f1": 0.7531370888276259,
+   "correct": 151,
+   "n": 200
+  },
+  "gated_fusion": {
+   "accuracy": 0.755,
+   "macro_f1": 0.7531370888276259,
+   "correct": 151,
+   "n": 200
+  }
+ },
+ "train_oof_500": {
+  "audio_only": {
+   "accuracy": 0.676,
+   "macro_f1": 0.6769357116498853,
+   "correct": 338,
+   "n": 500
+  },
+  "text_only": {
+   "accuracy": 0.32,
+   "macro_f1": 0.309954646173779,
+   "correct": 160,
+   "n": 500
+  },
+  "fixed_fusion": {
+   "accuracy": 0.676,
+   "macro_f1": 0.6769357116498853,
+   "correct": 338,
+   "n": 500
+  },
+  "gated_fusion": {
+   "accuracy": 0.676,
+   "macro_f1": 0.6769357116498853,
+   "correct": 338,
+   "n": 500
+  }
+ },
+ "mcnemar_dev": {
+  "gated_vs_audio": {
+   "only_second_right": 0,
+   "only_first_right": 0,
+   "exact_p": 1.0
+  },
+  "gated_vs_fixed": {
+   "only_second_right": 0,
+   "only_first_right": 0,
+   "exact_p": 1.0
+  },
+  "fixed_vs_audio": {
+   "only_second_right": 0,
+   "only_first_right": 0,
+   "exact_p": 1.0
+  }
+ },
+ "mean_gate_dev": 0.06739687941108817,
+ "gate_by_audio_confidence": {
+  "audio_unsure (low margin)": {
+   "n": 67,
+   "mean_g": 0.11450803333195614,
+   "audio_acc": 0.40298507462686567,
+   "gated_acc": 0.40298507462686567
+  },
+  "audio_mid": {
+   "n": 66,
+   "mean_g": 0.04958132195986738,
+   "audio_acc": 0.9090909090909091,
+   "gated_acc": 0.9090909090909091
+  },
+  "audio_confident (high margin)": {
+   "n": 67,
+   "mean_g": 0.03783537909888545,
+   "audio_acc": 0.9552238805970149,
+   "gated_acc": 0.9552238805970149
+  }
+ },
+ "gate_by_transcript_status": {
+  "ok": {
+   "n": 196,
+   "mean_g": 0.06765936447196721
+  },
+  "truncated": {
+   "n": 4,
+   "mean_g": 0.05453511142801498
+  }
+ },
+ "missing_transcript_test": {
+  "all_masked_equals_audio_only": true,
+  "all_masked_acc": 0.755,
+  "half_masked_acc": 0.755,
+  "half_masked_n_text_kept": 108,
+  "fixed_fusion_half_masked_acc": 0.755
+ },
+ "n_train_pilot": 500,
+ "n_dev": 200
+}

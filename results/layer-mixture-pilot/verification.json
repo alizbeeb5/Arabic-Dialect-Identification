@@ -1,0 +1,181 @@
+{
+  "verified_fatima_artifacts": 67,
+  "verified_original_evaluations": [
+    {
+      "model": "b0_final",
+      "seed": 490,
+      "accuracy": 0.48,
+      "macro_f1": 0.4800059786760554
+    },
+    {
+      "model": "b0_final",
+      "seed": 491,
+      "accuracy": 0.475,
+      "macro_f1": 0.47665881164198565
+    },
+    {
+      "model": "b0_final",
+      "seed": 492,
+      "accuracy": 0.465,
+      "macro_f1": 0.45910418712246015
+    },
+    {
+      "model": "b0_final_raw",
+      "seed": 490,
+      "accuracy": 0.48,
+      "macro_f1": 0.4780803307459654
+    },
+    {
+      "model": "b0_final_raw",
+      "seed": 491,
+      "accuracy": 0.47,
+      "macro_f1": 0.4660548224888984
+    },
+    {
+      "model": "b0_final_raw",
+      "seed": 492,
+      "accuracy": 0.47,
+      "macro_f1": 0.46837816024405743
+    },
+    {
+      "model": "selected_layer",
+      "seed": 490,
+      "accuracy": 0.78,
+      "macro_f1": 0.7805751678661895
+    },
+    {
+      "model": "selected_layer",
+      "seed": 491,
+      "accuracy": 0.79,
+      "macro_f1": 0.7888655496176697
+    },
+    {
+      "model": "selected_layer",
+      "seed": 492,
+      "accuracy": 0.8,
+      "macro_f1": 0.8014694295997298
+    },
+    {
+      "model": "mixture_all",
+      "seed": 490,
+      "accuracy": 0.84,
+      "macro_f1": 0.8401742491254875
+    },
+    {
+      "model": "mixture_all",
+      "seed": 491,
+      "accuracy": 0.815,
+      "macro_f1": 0.8125843793588443
+    },
+    {
+      "model": "mixture_all",
+      "seed": 492,
+      "accuracy": 0.83,
+      "macro_f1": 0.8276807177693906
+    },
+    {
+      "model": "mixture_middle",
+      "seed": 490,
+      "accuracy": 0.825,
+      "macro_f1": 0.8246652427006446
+    },
+    {
+      "model": "mixture_middle",
+      "seed": 491,
+      "accuracy": 0.83,
+      "macro_f1": 0.827524539668166
+    },
+    {
+      "model": "mixture_middle",
+      "seed": 492,
+      "accuracy": 0.84,
+      "macro_f1": 0.8380912137062022
+    },
+    {
+      "model": "text_tfidf_eec24",
+      "accuracy": 0.375,
+      "macro_f1": 0.3601111766630342
+    },
+    {
+      "model": "audio_layer_mixture_rebuild",
+      "accuracy": 0.755,
+      "macro_f1": 0.7531370888276259
+    },
+    {
+      "model": "fusion_prob_fixed",
+      "accuracy": 0.755,
+      "macro_f1": 0.7531370888276259
+    },
+    {
+      "model": "fusion_prob_gated",
+      "accuracy": 0.755,
+      "macro_f1": 0.7531370888276259
+    },
+    {
+      "model": "fusion_log_fixed",
+      "accuracy": 0.78,
+      "macro_f1": 0.778554695853794
+    },
+    {
+      "model": "fusion_log_gated",
+      "accuracy": 0.78,
+      "macro_f1": 0.778554695853794
+    }
+  ],
+  "fatima_feature_preprocessing": "train-only per-layer per-dimension z-score, std floor 1e-6",
+  "fusion_weight": 1.3,
+  "fusion_weight_origin": "transferred unchanged from Haidar training OOF fit",
+  "combined": [
+    {
+      "seed": 490,
+      "audio_accuracy": 0.825,
+      "fusion_accuracy": 0.85,
+      "fusion_macro_f1": 0.8507997489266839,
+      "coverage": 1.0,
+      "fixed": 7,
+      "broken": 2
+    },
+    {
+      "seed": 491,
+      "audio_accuracy": 0.83,
+      "fusion_accuracy": 0.865,
+      "fusion_macro_f1": 0.8628556015707718,
+      "coverage": 1.0,
+      "fixed": 7,
+      "broken": 0
+    },
+    {
+      "seed": 492,
+      "audio_accuracy": 0.84,
+      "fusion_accuracy": 0.84,
+      "fusion_macro_f1": 0.8371578196149134,
+      "coverage": 1.0,
+      "fixed": 3,
+      "broken": 3
+    }
+  ],
+  "audio_accuracy_mean": 0.8316666666666666,
+  "fusion_accuracy_mean": 0.8516666666666666,
+  "fusion_accuracy_seed_std": 0.010274023338281637,
+  "fusion_macro_f1_mean": 0.8502710567041231,
+  "limits": [
+    "Exploratory result on previously inspected 200-clip dev pilot.",
+    "Three seeds share the same evaluation examples.",
+    "Fatima feature cache is absent, so real-data retraining and checkpoint-to-logit reproduction were not run.",
+    "Fatima head checkpoints omit fitted z-score mean/std.",
+    "Haidar OOF fold assignments are absent and audio/text use different fold schemes.",
+    "Haidar text vectorizer/classifier checkpoints and source transcript exports are absent.",
+    "Full-data training budget must be set using updates/exposure and convergence checks."
+  ],
+  "existing_unit_tests_passed": 15,
+  "haidar_log_fusion_reproduction": {
+    "fusion_log_fixed": {
+      "maximum_probability_difference": 0.0,
+      "changed_predicted_labels": 0
+    },
+    "fusion_log_gated": {
+      "maximum_probability_difference": 0.0001389019968020544,
+      "changed_predicted_labels": 0
+    }
+  }
+}

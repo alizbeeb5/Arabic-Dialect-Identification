@@ -1,0 +1,32 @@
+[
+  {
+    "arm": "linear",
+    "accuracy": 0.405,
+    "macro_f1": 0.3964757696007696,
+    "coverage": 1.0,
+    "train_accuracy": 0.6179999709129333,
+    "train_loss": 1.9510716199874878,
+    "training_seconds": 1.3948258190000047,
+    "trainable_parameters": 16980
+  },
+  {
+    "arm": "bottleneck",
+    "accuracy": 0.44,
+    "macro_f1": 0.43309749965090527,
+    "coverage": 1.0,
+    "train_accuracy": 1.0,
+    "train_loss": 0.0071803811006248,
+    "training_seconds": 3.0591511430000082,
+    "trainable_parameters": 126436
+  },
+  {
+    "arm": "residual",
+    "accuracy": 0.455,
+    "macro_f1": 0.4531427726040729,
+    "coverage": 1.0,
+    "train_accuracy": 1.0,
+    "train_loss": 0.007456042338162661,
+    "training_seconds": 3.2439204169999982,
+    "trainable_parameters": 126436
+  }
+]

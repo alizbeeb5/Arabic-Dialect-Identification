@@ -1,0 +1,17 @@
+{
+  "accuracy": 0.4375,
+  "macro_f1_8_dialects": 0.499093321539142,
+  "clips": 80,
+  "failed": 0,
+  "role": "convenience-sample validation diagnostic, not full test benchmark",
+  "dataset_revision": "8951b1b88e28c1107142ced57967b8d16350951d",
+  "feature_settings": {
+    "model": "Elyadata/AraBEST-RQ-300M-6k",
+    "revision": "dff453e2b5f72f76211a523b1050691967e5a59b",
+    "max_seconds": 10.0,
+    "pooling": "mean",
+    "precision": "fp32",
+    "sample_rate": 16000,
+    "implementation": "simple-v1"
+  }
+}
