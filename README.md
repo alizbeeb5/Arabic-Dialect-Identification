@@ -31,6 +31,10 @@ Scores in this table are means over seeds 490–492. On the **same balanced 800 
 
 **E11 is complete.** The KL penalty improved full Casablanca macro-F1 versus the same-width stochastic control by **10.07, 4.60, and 1.17 percentage points** at 1K, 4K, and 16K labels. See the [matched results and corpus diagnostic](results/e11-vib/README.md). The completed [EXP-02 layer probes and EXP-04 within-dialect corpus probes](results/exp02-exp04-probes/README.md) select Conformer layer 20 for the next ablation. EXP-01 and EXP-03/05/06/07 are available in the research notebooks.
 
+### Reuse the AraBEST cache on Kaggle
+
+In your Kaggle notebook, select **Add Input** and attach the [AraBEST pooled feature cache](https://www.kaggle.com/datasets/alizbeeb/adi20-arabest-cache-private). Kaggle mounts the cache files under `/kaggle/input`, where the AraBEST notebooks find them automatically. Check the `to_encode` column before fitting heads. A zero means the mounted cache covers that cohort.
+
 ## Repository guide
 
 - [Research notebooks](notebooks/research/) contain E11 and EXP-01 through EXP-07. [Pilot notebooks](notebooks/pilots/) contain earlier scaling, fusion, and diagnostics.
