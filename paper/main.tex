@@ -1,0 +1,290 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage[hidelinks]{hyperref}
+
+\title{Variational Compression of AraBEST Representations\\\large A Study of Cross-Corpus Arabic Dialect Identification}
+\author{Ali Zbeeb \and Fatima Karnib \and Haidar Madi}
+\date{Working manuscript}
+
+\begin{document}
+\maketitle
+% Draft the abstract after the main comparisons have been reviewed.
+
+\section{Introduction}
+A dialect classifier trained on one collection of Arabic speech may later have to handle different speakers, topics, and recording conditions. In NADI 2026, one system reached 91.54\% accuracy in its source domain and 52.51\% on the blind evaluation \cite{iskandar}. A frozen AraBEST encoder gives us a way to study that problem while holding the acoustic model fixed.
+
+Our question is whether compressing frozen speech representations helps a dialect classifier transfer when labeled speech is limited. We also ask whether a change in dialect performance comes with a change in how easily the two corpora can be told apart within the same dialect. E11 tests these questions with a variational information bottleneck (VIB) and matched controls. The layer and corpus probes motivate the experiment by showing what a classifier can recover before compression.
+
+We test whether the KL penalty affects transfer beyond the effects of narrowing the latent and sampling during training. We also examine whether that effect changes with the number of labeled clips. A sufficiently strong penalty may remove features useful for dialect recognition. This gives us a trade-off to look for in the width and regularization sweeps. We compare the projectors on ADI-20 development and Casablanca external development, then relate the dialect scores to a within-dialect corpus diagnostic.
+
+\section{Related Work}
+\paragraph{Arabic speech representations and corpus shift.}
+Ara-BEST-RQ uses self-supervised pretraining on multidialectal Arabic speech and has been evaluated on dialect identification and speech recognition \cite{arabest}. Iskandar et al.\ studied cross-corpus model selection for NADI 2026 and showed that in-domain evaluation could favor a different encoder from evaluation on external speech \cite{iskandar}. Here, we fix the speech encoder and vary how we extract and compress the representations used by the dialect classifier.
+
+\paragraph{Variational information bottlenecks.}
+The information bottleneck trades predictive information about a target against information retained about the input. Alemi et al.\ optimize a variational approximation using a stochastic encoder and a prior on its latent representation \cite{alemi}. We use that objective to study the readout of a frozen speech representation and compare it with a stochastic head trained with the same classification objective and no KL penalty.
+
+\section{Experimental Foundation}
+\paragraph{Training and source development.}
+ADI-20 Micro contains 67{,}015 training clips and 10{,}806 validation clips over 20 labels, including Modern Standard Arabic \cite{adi20}. All classifier parameters and feature normalization statistics are fitted on subsets of the source training split. We use a fixed 200-clip source development cohort covering all 20 labels. For comparisons restricted to dialects shared with Casablanca, we also use a source development cohort of 800 clips, with 100 from each shared dialect. At each training size, competing methods share the same clip assignments for each seed. The historical 4K and 16K subsets use fixed clip membership across seeds, while the 1K subsets are drawn separately by seed.
+
+\paragraph{External development.}
+Casablanca provides speech from eight dialects also present in ADI-20 Micro \cite{casablanca}. The layer study uses a fixed balanced cohort of 800 Casablanca clips. The bottleneck study evaluates on all 6{,}819 clips in the Casablanca validation manifest. We treat both cohorts as external development because Casablanca validation was used in earlier project comparisons. The 800-clip and 6{,}819-clip scores describe different cohorts, so each experimental comparison uses a common evaluation set.
+
+\paragraph{Metrics.}
+Macro-F1 is the primary metric. For the main Casablanca comparisons, predictions retain the original 20-way label space, and macro-F1 averages over the eight reference dialects. The layer study additionally records scores with predictions restricted to those eight labels. We report these separately because they assume the set of possible labels is known in advance. We report accuracy, evaluation coverage, and per-dialect precision, recall, and F1 where the predictions permit. We summarize variation across three seeds with the mean and standard deviation and compute paired differences on matching assignments. We also record trainable parameter counts, head training time, and feature extraction cost. These measurements distinguish the cost of fitting a head with cached features from the cost of producing those features.
+
+\section{Representation and Corpus Analysis}
+We freeze the \texttt{AraBEST-RQ-300M-6k} checkpoint throughout. Mean pooling gives an 848-dimensional clip vector at each tap. We standardize each coordinate separately at each tap using source training statistics. The 26 taps include the acoustic front end, 24 Conformer blocks, and the final normalization output.
+
+\textbf{Dialect probing (EXP-02).} We fit a linear probe at each tap using 4K labeled clips. We also evaluate uniform feature averages and learned mixtures. The probes ask where a classifier can recover dialect cues and whether the layer rankings change across corpora. The uniform and learned mixtures use different fitting procedures, so their scores compare complete classifiers. The original average of blocks 6--18 is the fixed input to E11. The earlier layer comparisons provide context for that engineering choice.
+
+\textbf{Corpus probing (EXP-04).} We compare how easily probes distinguish ADI-20 and Casablanca within the same dialect. The grouped holdouts keep known speakers and recording groups together where the metadata permit. The resulting layer profile motivates the compression study. We treat it as a separate analysis from E11's source-fitted distance diagnostic because the two procedures ask different questions about recoverability.
+
+\emph{Results pending.} Figure~\ref{fig:study-workflow} shows the shared feature extraction stage. The layer and corpus profiles will form a compact motivation figure, with the evaluation cohorts and metrics labeled in each panel. Full layer and mixture comparisons belong in the appendix.
+
+\section{Variational Information Compression}
+\paragraph{Formulation.}
+Let \(H\) be the frozen input, \(Z\) the sampled latent, \(Y\) the dialect label, and \(D\) the recording corpus. We start from the classical information bottleneck objective,
+\[
+  \min_{q(z\mid h)} I(H;Z)-\lambda I(Z;Y), \qquad \lambda>0.
+\]
+Dividing by \(\lambda\) and using \(I(Z;Y)=H(Y)-H(Y\mid Z)\) gives the equivalent objective \(H(Y\mid Z)+\beta I(H;Z)\), up to an additive constant for fixed label entropy, with \(\beta=1/\lambda\).
+
+\paragraph{Variational head.}
+The input \(H\) is the uniform average of the standardized Ara-BEST-RQ representations from blocks 6--18. The head maps \(h\) to a Gaussian with mean \(\mu_\theta(h)\) and diagonal variance \(\sigma_\theta^2(h)\). During training, we draw \(z=\mu_\theta(h)+\sigma_\theta(h)\odot\epsilon\), where \(\epsilon\sim\mathcal{N}(0,I)\), and predict the dialect from \(z\). Following Alemi et al.~\cite{alemi}, we minimize the following variational objective with \(r(z)=\mathcal{N}(0,I)\).
+\[
+  \mathcal{L}(h,y)
+  =
+  \mathbf{E}_{z\sim q_\theta(z\mid h)}
+    [-\log p_\phi(y\mid z)]
+  +\beta D_{\mathrm{KL}}\!\left(q_\theta(z\mid h)\Vert r(z)\right).
+\]
+Under the joint distribution induced by \(q_\theta\), expected classification cross-entropy upper-bounds the conditional entropy \(H_q(Y\mid Z)\). Minimizing it encourages the latent to retain information about the dialect label. To interpret the second term, define the aggregated posterior \(q_\theta(z)=\mathbf{E}_{H}[q_\theta(z\mid H)]\). Averaging the KL term over the input distribution gives
+\begin{equation}
+\label{eq:kl-decomp}
+  \mathbf{E}_{H}\!\left[D_{\mathrm{KL}}
+   \bigl(q_\theta(z\mid H)\Vert r(z)\bigr)\right]
+  =
+  I_q(H;Z)+D_{\mathrm{KL}}\!\left(q_\theta(z)\Vert r(z)\right).
+\end{equation}
+The expected KL thus upper-bounds \(I_q(H;Z)\) for the \emph{sampled} latent and also penalizes a mismatch between its marginal distribution and the prior. The quantity \(I(Z;D\mid Y)\) describes corpus information after conditioning on dialect. We investigate that idea through within-dialect corpus separation. The distance diagnostic measures separability for its chosen score. At inference, variational heads use the posterior mean. Equation~\ref{eq:kl-decomp} applies to the stochastic representation used during training. Appendix~\ref{app:vib} derives both variational bounds and gives the Gaussian KL used in the implementation.
+
+\paragraph{Matched comparisons.}
+All four arms use the same input features, training assignments, and update budget. We compare positive \(\beta\) directly with \(\beta=0\) to test the KL penalty at the same latent width and with the same stochastic architecture.
+
+\begin{table}[tbp]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+Head & Role in the comparison \\
+\midrule
+Projection MLP & Existing classifier baseline for practical performance. \\
+Deterministic bottleneck & Same-width control for dimensional compression. \\
+Stochastic bottleneck, \(\beta=0\) & Same-width control for stochastic training. \\
+Variational bottleneck, \(\beta>0\) & Adds KL regularization to the stochastic head. \\
+\bottomrule
+\end{tabularx}
+\caption{The E11 comparison uses a fixed AraBEST input and matched training budgets.}
+\end{table}
+
+At 4K labeled clips, we sweep latent widths of 16, 32, 64, 128, and 256 and \(\beta\) values of 0, 0.001, 0.01, and 0.1. We select a positive-\(\beta\) configuration by mean ADI-20 development macro-F1 across three seeds, breaking ties with source accuracy, then smaller width and smaller \(\beta\). We carry that configuration and its matched controls to the 1K and 16K training budgets. The primary transfer comparison uses the selected configuration and its controls on the full Casablanca validation cohort.
+
+\paragraph{Corpus separation.}
+For each shared dialect, we fit a coordinate-wise squared distance from the ADI-20 training distribution using source means and standard deviations. We apply the score to ADI-20 development and Casablanca clips of the same reference dialect and compute the AUROC for separating the two corpora. We compare separation before and after compression. An AUROC nearer 0.5 means that this distance score distinguishes the corpora less effectively. We use this diagnostic to interpret the transfer scores. Appendix~\ref{app:workflow} gives the distance and a pairwise interpretation of its AUROC.
+
+\section{Experimental Results}
+\subsection{Transfer and label budgets}
+\emph{Results pending.} Lead with the paired macro-F1 differences on full Casablanca validation for positive \(\beta\) versus the same-width deterministic and \(\beta=0\) heads. Include the MLP baseline, ADI-20 development scores, and seed variability at 1K, 4K, and 16K. Inspect per-dialect errors and confusion patterns to see whether changes are broad or concentrated in a few dialects.
+
+\subsection{Width, regularization, and realized KL}
+\emph{Results pending.} Use the 4K grid to compare latent widths and KL weights. For heads that yield a Gaussian posterior, record mean unweighted KL on a common cohort when the saved outputs permit it. Plot performance against realized KL and label the latent width and training budget. Interpret mean KL as an upper bound for the corresponding sampled latent on that cohort. Report corpus AUROC separately on the posterior means and compare the change with dialect macro-F1.
+
+\section{Ablation Studies and Mechanistic Analysis}
+Choose follow-ups after reviewing the paired comparisons. The first candidate repeats the selected 4K configuration and its matched controls on one alternate representation, such as the strongest single layer on ADI-20 development. This tests whether the effect depends on the original layer average.
+
+If the probes point to corpus-specific directions, compare removal of corpus-predictive directions with removal of the same number of random directions. Fit the projection on a recording-group-disjoint partition where possible, and record which corpora informed it. A projection fitted with Casablanca data is a target-informed experiment. If the sweep instead suggests that many latents approach the prior, examine per-dimension KL and posterior variance before deciding whether an annealing or prior ablation addresses the observed pattern.
+
+\section{Discussion and Limitations}
+The experiments characterize one frozen encoder and the available corpora. ADI-20 development guides model selection. Earlier project comparisons examined Casablanca validation, so we use it as external development. An independent evaluation cohort would let us test whether the strongest observed pattern carries over. Use overlap and speaker checks where metadata permits and describe the limits of pretraining provenance.
+
+A paired transfer gain can occur with little change in corpus separation. A decrease in separation can also coincide with flat or lower dialect performance. The joint trends will help interpret the intervention. The mathematical bound concerns information about the input in the sampled latent, and the empirical diagnostic concerns detectable corpus separation in the inference representation. The discussion will distinguish those conclusions.
+
+\section{Conclusion}
+\emph{Pending results.} Answer whether the KL penalty changed transfer relative to its matched controls, how the result depended on width or training size, and what the corpus diagnostic adds to that interpretation.
+
+% Draft the abstract and contribution paragraph after reviewing the main results.
+% Checkpoint revision: dff453e2b5f72f76211a523b1050691967e5a59b.
+% Record final manifest IDs and experiment revisions from the exports.
+% Figure plan: workflow, layer and corpus profiles, VIB architecture,
+% realized KL versus transfer, width-by-beta heatmaps, learning curves,
+% corpus separation before and after compression, and per-dialect or ablation results.
+
+\begin{thebibliography}{9}
+\bibitem{arabest}
+H. Elleuch et al.
+\newblock Ara-Best-RQ: Multi Dialectal Arabic SSL.
+\newblock \url{https://arxiv.org/abs/2603.21900}, 2026.
+
+\bibitem{iskandar}
+M. Iskandar et al.
+\newblock AI Elites at NADI 2026 Shared Task: Selecting on Out-of-Domain
+Accuracy for Cross-Domain Spoken Arabic Dialect Identification.
+\newblock \url{https://aclanthology.org/2026.arabicnlp-sharedtasks.10/}, 2026.
+
+\bibitem{alemi}
+A. A. Alemi, I. Fischer, J. V. Dillon, and K. Murphy.
+\newblock Deep Variational Information Bottleneck.
+\newblock \url{https://arxiv.org/abs/1612.00410}, 2016.
+
+\bibitem{adi20}
+UBC Deep Learning and NLP Lab.
+\newblock ADI-20 Micro dataset card.
+\newblock \url{https://huggingface.co/datasets/UBC-NLP/NADI_2026_ADI20_micro}.
+
+\bibitem{casablanca}
+B. Talafha et al.
+\newblock Casablanca: Data and Models for Multidialectal Arabic Speech Recognition.
+\newblock \url{https://arxiv.org/abs/2410.04527}, 2024.
+\end{thebibliography}
+
+
+\clearpage
+\appendix
+\section{Deriving the Variational Objective}
+\label{app:vib}
+Let \(p(h,y)\) be the data distribution over the frozen input and its dialect
+label. The stochastic head defines the joint distribution
+\(q(h,y,z)=p(h,y)q_\theta(z\mid h)\). The two parts of the objective follow
+from this joint distribution.
+
+\subsection{Keeping information useful for dialect prediction}
+At a given \(z\), the expected negative log probability assigned by the
+classifier is the cross-entropy between \(q(y\mid z)\) and \(p_\phi(y\mid z)\).
+Averaging over \(Z\) gives
+\begin{align}
+ \mathbf{E}_q[-\log p_\phi(Y\mid Z)]
+ &= \mathbf{E}_q[-\log q(Y\mid Z)]
+    +\mathbf{E}_q\!\left[\log\frac{q(Y\mid Z)}{p_\phi(Y\mid Z)}\right]\\
+ &= H_q(Y\mid Z)+\mathbf{E}_{q(Z)}
+       \!\left[D_{\mathrm{KL}}\bigl(q(Y\mid Z)\Vert p_\phi(Y\mid Z)\bigr)\right].
+\end{align}
+The KL term is nonnegative, so cross-entropy upper-bounds \(H_q(Y\mid Z)\).
+Since \(I_q(Y;Z)=H(Y)-H_q(Y\mid Z)\) and the label distribution is fixed,
+lower cross-entropy improves a lower bound on how much information \(Z\)
+retains about \(Y\).
+
+\subsection{Bounding the information retained about the input}
+Insert the aggregate density \(q_\theta(z)\) inside the log ratio:
+\begin{align}
+ \mathbf{E}_{H}D_{\mathrm{KL}}\bigl(q_\theta(z\mid H)\Vert r(z)\bigr)
+ &= \mathbf{E}_{q(H,Z)}
+       \!\left[\log\frac{q_\theta(Z\mid H)}{r(Z)}\right]\\
+ &= \mathbf{E}_{q(H,Z)}
+       \!\left[\log\frac{q_\theta(Z\mid H)}{q_\theta(Z)}\right]
+    + \mathbf{E}_{q(Z)}
+       \!\left[\log\frac{q_\theta(Z)}{r(Z)}\right]\\
+ &= I_q(H;Z)+D_{\mathrm{KL}}\bigl(q_\theta(z)\Vert r(z)\bigr).
+\end{align}
+The first term measures input information in the sampled latent. The second
+accounts for the difference between its aggregate distribution and the
+chosen prior. This is the bound in Eq.~\ref{eq:kl-decomp}.
+
+\subsection{The KL penalty we compute}
+For \(q_\theta(z\mid h)=
+\mathcal{N}\bigl(\mu_\theta(h),\operatorname{diag}(\sigma_\theta^2(h))\bigr)\)
+and \(r=\mathcal{N}(0,I)\), the two densities factorize across coordinates.
+In coordinate \(j\), taking the expected log-density ratio uses
+\(\mathbf{E}[Z_j^2\mid h]=\mu_j^2+\sigma_j^2\) and
+\(\mathbf{E}[(Z_j-\mu_j)^2/\sigma_j^2\mid h]=1\). Summing over coordinates gives
+\[
+ D_{\mathrm{KL}}\bigl(q_\theta(z\mid h)\Vert r(z)\bigr)
+ = \frac12\sum_j\bigl(\mu_j^2+\sigma_j^2-1-\log\sigma_j^2\bigr).
+\]
+During training we draw \(Z=\mu_\theta(h)+\sigma_\theta(h)\odot\epsilon\),
+where \(\epsilon\sim\mathcal{N}(0,I)\). The variational heads use the same
+sampling rule for \(\beta=0\) and \(\beta>0\), so the latter adds a cost for
+departing from the prior.
+
+\clearpage
+\section{Experimental Workflow and Corpus Diagnostic}
+\label{app:workflow}
+
+\begin{figure}[htbp]
+\centering
+\setlength{\fboxsep}{7pt}
+\setlength{\tabcolsep}{8pt}
+\begin{tabular}{@{}c@{}}
+  \fbox{\parbox{0.88\linewidth}{\centering
+    \textbf{Shared input}\\[2pt]
+    Speech clip \(\longrightarrow\) frozen Ara-BEST-RQ
+    \(\longrightarrow\) 26 mean-pooled, standardized representations
+  }}\\[4pt]
+  \begin{tabular}{@{}c@{\hspace{0.06\linewidth}}c@{}}
+    \(\swarrow\) & \(\searrow\)\\[3pt]
+    \fbox{\parbox[t][10.7em][t]{0.40\linewidth}{\centering
+      \textbf{Layer study}\\[3pt]
+      Individual layers, uniform averages, or learned mixtures\\[3pt]
+      \(\downarrow\)\\[2pt]
+      Linear classifier\\[3pt]
+      \(\downarrow\)\\[2pt]
+      ADI-20 dev and balanced Casablanca development
+    }}
+    &
+    \fbox{\parbox[t][10.7em][t]{0.40\linewidth}{\centering
+      \textbf{Bottleneck study}\\[3pt]
+      Uniform average of blocks 6--18\\[3pt]
+      \(\downarrow\)\\[2pt]
+      MLP, deterministic, or VIB head\\[3pt]
+      \(\downarrow\)\\[2pt]
+      ADI-20 dev and full Casablanca development
+    }}
+  \end{tabular}
+\end{tabular}
+\caption{The layer study varies the representation passed to the classifier.
+The bottleneck study holds that input fixed and varies the head. Both sets of
+classifiers are fitted on ADI-20 training clips.}
+\label{fig:study-workflow}
+\end{figure}
+
+\subsection{What the within-dialect comparison measures}
+For each shared dialect \(d\), we estimate the coordinate-wise mean
+\(m_{dj}\) and standard deviation \(s_{dj}\) from ADI-20 training clips in
+the representation being evaluated. For an evaluation vector \(u\) of
+dimension \(D\), we compute
+\[
+ S_d(u)=\frac{1}{D}\sum_{j=1}^D
+ \left(\frac{u_j-m_{dj}}{\max(s_{dj},10^{-4})}\right)^2.
+\]
+We apply the same source-fitted score to both corpora. Imagine picking
+one ADI-20 development clip and one Casablanca clip of the same dialect.
+The AUROC is the probability that the Casablanca clip receives a higher
+score, with half credit for ties. Values farther from \(0.5\) indicate
+more separation recoverable by this score, in either direction.
+
+We run the same calculation on the pooled input and on the representation
+passed to the final linear classifier. For variational heads that
+representation is the posterior mean. We compare the resulting separation
+with the change in dialect recognition across the same models.
+
+\section{Supporting Experiments and Reproducibility}
+Use the following experiments to contextualize the E11 findings. Their full protocol and result tables will accompany the final manuscript as available.
+
+\begin{description}
+  \item[EXP-01] Learning curves for frozen AraBEST readouts.
+  \item[EXP-02 and EXP-04] Full layer, mixture, and grouped corpus probe results.
+  \item[EXP-03] Sensitivity to acoustic and temporal perturbations.
+  \item[EXP-05] Supervised contrastive learning as an alternative objective.
+  \item[EXP-06] Domain-adversarial training as an alternative form of corpus suppression.
+  \item[EXP-07] Temporal pooling comparisons.
+\end{description}
+
+The earlier JAIS text baseline, acoustic classifiers, acoustic--linguistic fusion, and residual adapters provide project context. For reproducibility, record the frozen checkpoint revision, training and evaluation manifests, seeds, run settings, and wall times. Include the coverage and per-dialect tables for the comparisons used in the main text.
+
+\end{document}

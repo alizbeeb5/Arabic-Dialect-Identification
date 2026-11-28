@@ -1,0 +1,19 @@
+{
+  "commit": "b64437a37e7eda2f1721a56860278640bf085bdd",
+  "levels": [
+    50,
+    100
+  ],
+  "seeds": [
+    490,
+    491,
+    492
+  ],
+  "updates": 1000,
+  "head_device": "cuda",
+  "baseline": "original saved heads; reproduced dev logits; Casablanca archived versus regenerated metrics in baseline_reproduction.csv",
+  "normalization": "supplied original pilot training mean/std, fixed across arms",
+  "control": "repeat original JOR 25 x4",
+  "test_role": "exploratory Casablanca validation; not blind test",
+  "speaker_independence_verified": false
+}

@@ -1,0 +1,89 @@
+{
+  "fixed_text_weight": 1.3,
+  "weight_source": "Haidar EEC-27 training OOF preset",
+  "text_inputs": {
+    "ADI20_dev": "Saved Jais 500-clip training export; saved ADI20_dev Jais transcripts",
+    "Casablanca": "Saved Jais 500-clip training export; saved Casablanca Jais transcripts"
+  },
+  "text_training_n": 500,
+  "text_training_diagnostics": {
+    "expected_training_clips": 500,
+    "retained_training_clips": 492,
+    "retained_training_class_counts": {
+      "MSA": 25,
+      "BAH": 24,
+      "TUN": 25,
+      "ALG": 25,
+      "EGY": 25,
+      "IRA": 25,
+      "JOR": 25,
+      "KSA": 25,
+      "KUW": 24,
+      "LEB": 25,
+      "LIB": 25,
+      "MAU": 24,
+      "MOR": 24,
+      "OMA": 22,
+      "PAL": 25,
+      "QAT": 25,
+      "SUD": 25,
+      "SYR": 24,
+      "UAE": 25,
+      "YEM": 25
+    },
+    "training_transcript_status_counts": {
+      "ok": 492,
+      "refused": 8
+    },
+    "feature_counts": {
+      "word": 13388,
+      "character": 31609
+    },
+    "training_matrix_shape": [
+      492,
+      44997
+    ],
+    "optimizer_iterations": [
+      11
+    ],
+    "fit_seconds": 1.5439111050000065,
+    "excluded_training_count": 8
+  },
+  "haidar_text_availability_disagreements": 0,
+  "casablanca_subset_source": "Saved balanced Jais Casablanca validation sample, 100 clips per dialect",
+  "rows": {
+    "ADI20_dev": 200,
+    "Casablanca": 800
+  },
+  "audio_checkpoint_protocol": {
+    "repo_commit": "b64437a37e7eda2f1721a56860278640bf085bdd",
+    "encoder": {
+      "checkpoint": "Elyadata/AraBEST-RQ-300M-6k",
+      "revision": "dff453e2b5f72f76211a523b1050691967e5a59b",
+      "feature_code_version": "acoustic-features-v2",
+      "frozen": true,
+      "cached_layers": "all",
+      "pooling": "mean",
+      "feature_dim": 848,
+      "precision": "fp32",
+      "max_duration_sec": null
+    },
+    "seeds": [
+      490,
+      491,
+      492
+    ],
+    "optimizer_updates_per_head": 1000,
+    "head_device": "cuda:0",
+    "normalization": "Fit independently on the training clips of each arm.",
+    "previous_4k_reference": {
+      "adi20_dev_accuracy": 0.8683,
+      "casablanca_accuracy": 0.5799,
+      "casablanca_macro_f1": 0.6249
+    },
+    "evaluation": "Same 200 ADI-20 dev rows and 6,819 Casablanca validation rows for both arms.",
+    "speaker_independence_verified": false
+  },
+  "fallback": "Use exact acoustic scores when text is unusable. Acoustic failures remain failures.",
+  "casablanca_reference_set_n": 6819
+}

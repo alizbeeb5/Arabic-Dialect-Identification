@@ -1,0 +1,63 @@
+{
+  "dataset": "shams-nlp/shams",
+  "revision": "0d4aa7dba621f5483c372eac718d4ecce5b1b4e3",
+  "subset": "LangMedia only",
+  "support": {
+    "JOR": 168,
+    "LEB": 316,
+    "PAL": 208,
+    "SYR": 215
+  },
+  "model_outputs": [
+    "MSA",
+    "BAH",
+    "TUN",
+    "ALG",
+    "EGY",
+    "IRA",
+    "JOR",
+    "KSA",
+    "KUW",
+    "LEB",
+    "LIB",
+    "MAU",
+    "MOR",
+    "OMA",
+    "PAL",
+    "QAT",
+    "SUD",
+    "SYR",
+    "UAE",
+    "YEM"
+  ],
+  "training_protocol": {
+    "repo_commit": "b64437a37e7eda2f1721a56860278640bf085bdd",
+    "encoder": {
+      "checkpoint": "Elyadata/AraBEST-RQ-300M-6k",
+      "revision": "dff453e2b5f72f76211a523b1050691967e5a59b",
+      "feature_code_version": "acoustic-features-v2",
+      "frozen": true,
+      "cached_layers": "all",
+      "pooling": "mean",
+      "feature_dim": 848,
+      "precision": "fp32",
+      "max_duration_sec": null
+    },
+    "seeds": [
+      490,
+      491,
+      492
+    ],
+    "optimizer_updates_per_head": 1000,
+    "head_device": "cuda:0",
+    "normalization": "Fit independently on the training clips of each arm.",
+    "previous_4k_reference": {
+      "adi20_dev_accuracy": 0.8683,
+      "casablanca_accuracy": 0.5799,
+      "casablanca_macro_f1": 0.6249
+    },
+    "evaluation": "Same 200 ADI-20 dev rows and 6,819 Casablanca validation rows for both arms.",
+    "speaker_independence_verified": false
+  },
+  "source_and_speaker_overlap_with_adi20_training_verified": false
+}

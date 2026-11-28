@@ -1,0 +1,98 @@
+{
+ "fixed_weight_from_train": 1.3,
+ "gate_params(text_margin,audio_margin,bias)": [
+  -0.036,
+  -0.106,
+  -0.834
+ ],
+ "dev": {
+  "audio_only": {
+   "accuracy": 0.755,
+   "macro_f1": 0.7531370888276259,
+   "correct": 151
+  },
+  "text_only": {
+   "accuracy": 0.375,
+   "macro_f1": 0.3601111766630342,
+   "correct": 75
+  },
+  "log_fixed_fusion": {
+   "accuracy": 0.78,
+   "macro_f1": 0.7785546958537941,
+   "correct": 156
+  },
+  "log_gated_fusion": {
+   "accuracy": 0.78,
+   "macro_f1": 0.7785546958537941,
+   "correct": 156
+  }
+ },
+ "train_oof_500": {
+  "audio_only": {
+   "accuracy": 0.676,
+   "macro_f1": 0.6769357116498853,
+   "correct": 338
+  },
+  "log_fixed_fusion": {
+   "accuracy": 0.688,
+   "macro_f1": 0.6901086656747104,
+   "correct": 344
+  },
+  "log_gated_fusion": {
+   "accuracy": 0.688,
+   "macro_f1": 0.6901595620636719,
+   "correct": 344
+  }
+ },
+ "mcnemar_dev": {
+  "fixed_vs_audio": {
+   "fixed_by_second": 5,
+   "broken_by_second": 0,
+   "exact_p": 0.0625
+  },
+  "gated_vs_audio": {
+   "fixed_by_second": 5,
+   "broken_by_second": 0,
+   "exact_p": 0.0625
+  },
+  "gated_vs_fixed": {
+   "fixed_by_second": 0,
+   "broken_by_second": 0,
+   "exact_p": 1.0
+  }
+ },
+ "mcnemar_train_oof": {
+  "gated_vs_audio": {
+   "fixed_by_second": 12,
+   "broken_by_second": 6,
+   "exact_p": 0.237884521484375
+  },
+  "fixed_vs_audio": {
+   "fixed_by_second": 12,
+   "broken_by_second": 6,
+   "exact_p": 0.237884521484375
+  }
+ },
+ "mean_w_dev": 1.2005842983864654,
+ "gate_by_audio_confidence": {
+  "audio_unsure": {
+   "n": 67,
+   "mean_w": 1.3192254593891881,
+   "audio_acc": 0.40298507462686567,
+   "gated_acc": 0.47761194029850745
+  },
+  "audio_mid": {
+   "n": 66,
+   "mean_w": 1.161331547203386,
+   "audio_acc": 0.9090909090909091,
+   "gated_acc": 0.9090909090909091
+  },
+  "audio_confident": {
+   "n": 67,
+   "mean_w": 1.1206100266088652,
+   "audio_acc": 0.9552238805970149,
+   "gated_acc": 0.9552238805970149
+  }
+ },
+ "no_transcript_equals_audio": true
+}
