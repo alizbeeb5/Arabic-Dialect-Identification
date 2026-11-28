@@ -1,16 +1,20 @@
 # Future experiments
 
-## E11 primary comparison
+[E11](../results/e11-vib/README.md) is complete. The strongest transfer gain was at 1K labels, with a
++10.07-point Casablanca macro-F1 difference versus the same-width β = 0 control. The within-dialect
+distance score showed little change from the input at 1K and 4K, and more separation at 16K.
 
-1. Finish the three-seed 4K grid at widths 16, 32, 64, 128, and 256 with β in {0, 0.001, 0.01, 0.1}. Use the same split, cached inputs, and update count for every arm. Select positive β by mean ADI-20 development macro-F1, then source accuracy, smaller width, and smaller β.
-2. Carry the selected arm, its matched deterministic and β = 0 controls, and the projection MLP to 1K and 16K. Evaluate all arms on the same ADI-20 dev pilot and all 6,819 Casablanca validation rows. Report paired differences by seed, mean and standard deviation, coverage, and per-dialect results. Record realized KL, trainable parameters, head fit time, and feature extraction time separately.
-3. Run EXP-02 and EXP-04 for the supporting layer and corpus figures. Report the grouped probe results and the source-fitted E11 distance AUROC separately. Check whether changes in Casablanca macro-F1 track changes in within-dialect separation.
+## Next run
+
+Run EXP-02 and EXP-04 together with `RUN = (2, 4)` and `TRAIN_SIZE = 4000`. Reuse the E11 feature
+cache. Keep layer selection on ADI-20 development. EXP-04’s grouped corpus probe and E11’s
+source-fitted distance score measure different kinds of corpus recoverability.
 
 ## Targeted ablations
 
 | If the primary run shows… | Follow-up |
 | --- | --- |
-| A repeatable KL effect | Repeat the matched 4K comparison on the best single layer selected on source development to test dependence on the input representation |
+| A repeatable KL effect | Repeat the 1K, 128-dimensional β = 0.01 versus β = 0 comparison on the best single layer selected on ADI-20 development. Reuse the original train draws, three seeds, update budget, and Casablanca cohort |
 | Corpus separation concentrated in a few directions | Compare removal of corpus-predictive directions with equally many random directions. Fit on group-disjoint data and record any target-corpus use |
 | Strong compression with little active latent capacity | Inspect per-dimension KL and posterior variance before testing annealing or a different prior |
 | Persistent Jordanian confusions | Compare matched pairs by recording group, available dialect metadata, and JOR→SYR counts. Include recall and precision on a common evaluation cohort |
